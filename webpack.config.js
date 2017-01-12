@@ -1,3 +1,5 @@
+var path = require("path");
+
 module.exports = {
     entry: './src/index.jsx',
     output: {
@@ -19,6 +21,10 @@ module.exports = {
         ]
     },
     resolve: {
+        root: [
+          path.resolve('./src'),
+          path.resolve('./node_modules')
+        ],
         extensions: ['', '.js', '.jsx']
     },
     devServer: {

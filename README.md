@@ -16,7 +16,8 @@ Sketching allows a designer to perform many iterations of an early design if the
 
 ## Development Setup
 
-Rapido requires NodeJS and npm and a backend Rapido implementation.
+Rapido requires NodeJS and npm and a [backend Rapido](http://github.com/apiacademy/rapido-backend) implementation.
+
 To install:
 `npm install`
 

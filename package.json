@@ -1,0 +1,42 @@
+{
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "webpack-dev-server --display-error-details --watch --watch-polling --progress --colors --host=0.0.0.0 --port 8090 --history-api-fallback"
+  },
+  "name": "rapido-web",
+  "description": "SPA front end for the Rapido API design app",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Ronnie Mitra",
+  "homepage": "",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "d3": "^4.2.3",
+    "jquery": "^2.2.3",
+    "react": "^15.0.2",
+    "react-d3-wrap": "^2.1.2",
+    "react-dom": "^15.0.2",
+    "react-router": "^2.4.0",
+    "jasmine": "~2.5.2",
+    "style-loader": "~0.13.1",
+    "css-loader": "~0.26.1"
+  },
+  "devDependencies": {
+    "http-server": "^0.9.0",
+    "jsx-loader": "^0.13.2",
+    "babel-core": "^6.5.1",
+    "babel-loader": "^6.2.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "webpack": "^1.13.0",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "keywords": [],
+  "repository": "",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ]
+}

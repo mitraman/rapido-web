@@ -23,6 +23,7 @@ const CRUDTree = d3Wrap ({
 
   update (svg, data, options) {
 
+console.log('in update');
     const resourceBoxWidth = 200;
     const resourceBoxHeight = 60;
     const halfBoxWidth = resourceBoxWidth / 2;
@@ -72,7 +73,7 @@ node.append("text")
   .attr("x", 10)
   .attr("y", function(d) { return d.children ? -20 : 20; })
   .style("text-anchor", "start")
-  .text(function(d) { return d.data.url; });
+  .text(function(d) { console.log(d.data.url); return d.data.url; });
 
   },
 

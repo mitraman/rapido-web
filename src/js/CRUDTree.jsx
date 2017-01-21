@@ -1,12 +1,11 @@
 import d3Wrap from 'react-d3-wrap'
 import * as d3 from 'd3'
 
-import 'css/tree.css'
+import '../css/tree.css'
 
-const CanvasExample = d3Wrap ({
+const CRUDTree = d3Wrap ({
 
   initialize (svg, data, options) {
-    console.log('initialize');
     // Optional initialize method called once when component mounts
     const g = d3.select(svg)
       .append('g')
@@ -19,21 +18,18 @@ const CanvasExample = d3Wrap ({
       g: g,
       tree: tree
     };
-    console.log('initialize complete');
 
   },
 
   update (svg, data, options) {
 
-
-
     const resourceBoxWidth = 200;
     const resourceBoxHeight = 60;
     const halfBoxWidth = resourceBoxWidth / 2;
     const halfBoxHeight = resourceBoxHeight / 2;
+    const urlLeftMargin = 5;
 
     // setup container, root svg element passed in along with data and options
-    console.log('update');
     const g = this.state.g;
     const treeData = data[0];
     var root = d3.hierarchy(treeData);
@@ -76,7 +72,7 @@ node.append("text")
   .attr("x", 10)
   .attr("y", function(d) { return d.children ? -20 : 20; })
   .style("text-anchor", "start")
-  .text(function(d) { console.log(d); console.log("text:" + d.data.id + '-' + d.data.name); return d.data.url; });
+  .text(function(d) { return d.data.url; });
 
   },
 
@@ -86,4 +82,4 @@ node.append("text")
 
 });
 
-export default CanvasExample;
+export default CRUDTree;

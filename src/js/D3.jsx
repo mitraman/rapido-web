@@ -1,7 +1,6 @@
 import React from 'react'
 import  CanvasExample from './CanvasExample'
 
-
 class ChangeDataButton extends React.Component {
   constructor() {
     super();
@@ -42,7 +41,7 @@ export default React.createClass({
       "id": 0,
       "name": "API",
       "children": [
-        { "id" : 1, "name" : "projects"}
+        { "id" : 1, "name" : "projects", "url": "/projects"}
       ]
     }
     };
@@ -55,11 +54,11 @@ export default React.createClass({
         "id": 0,
         "name": "API",
         "children": [
-          { "id": 1, "name": "projects"},
-          { "id": 2, "name": "groups"},
-          { "id": 3, "name": "users",
+          { "id": 1, "name": "projects", "url": "/projects"},
+          { "id": 2, "name": "groups", "url": "/groups"},
+          { "id": 3, "name": "users", "url": "/users",
             "children": [
-              {"id": 4, "name": "{id}"}
+              {"id": 4, "name": "{id}", "url": "/users/{id}"}
             ]}
         ]
       }
@@ -68,7 +67,7 @@ export default React.createClass({
   render() {
     return (
       <div>
-        <CRUDCanvas
+        <CanvasExample
           data={[this.state.treeData]}
           width={1000} height={600}
           options={ {

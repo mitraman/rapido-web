@@ -1,12 +1,16 @@
 import React from 'react'
+import { Link } from 'react-router'
 
 export default React.createClass({
   render() {
     return (
-      <div>
-      <a href="/d3">D3 sample</a><br/>
-      <a href="/ace">ACE editor sample</a>
-      </div>
+
+    <div>
+      <ul>
+      <li><Link to="/d3">D3</Link></li>
+      <li><Link to="/ace">ACE editor sample</Link></li>
+      </ul>
+    </div>
     )
   }
 })

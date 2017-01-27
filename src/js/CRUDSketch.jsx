@@ -1,5 +1,23 @@
 import React from 'react'
-import  CanvasExample from './CanvasExample'
+import CRUDTree from './CRUDTree'
+import { browserHistory } from 'react-router'
+
+
+// create an event handler for actions on CRUD nodes
+class ClickHandler {
+  fire(event, source) {
+    if( event === "detail" ) {
+      if( source ) {
+        const path = '/nodes/' + source;
+        browserHistory.push(path);
+      }else {
+        console.log.warn('Invalid node ID:' + source);
+      }
+    } else if( event === "add" ) {
+
+    }
+  }
+}
 
 class ChangeDataButton extends React.Component {
   constructor() {
@@ -37,11 +55,12 @@ class RadiusInput extends React.Component {
 export default React.createClass({
   getInitialState() {
     return {
+    editing: false,
     treeData: {
       "id": 0,
       "name": "API",
       "children": [
-        { "id" : 1, "name" : "projects", "url": "/projects"}
+        { "id" : 1, "name" : "projects", "url": "/projects", "fullpath": "/projects", "get": true}
       ]
     }
     };
@@ -54,11 +73,11 @@ export default React.createClass({
         "id": 0,
         "name": "API",
         "children": [
-          { "id": 1, "name": "projects", "url": "/projects"},
-          { "id": 2, "name": "groups", "url": "/groups"},
-          { "id": 3, "name": "users", "url": "/users",
+          { "id": 1, "name": "projects", "url": "/projects", "fullpath": "/projects"},
+          { "id": 2, "name": "groups", "url": "/groups", "fullpath": "/groups"},
+          { "id": 3, "name": "users", "url": "/users", "fullpath": "/users",
             "children": [
-              {"id": 4, "name": "{id}", "url": "/users/{id}"}
+              {"id": 4, "name": "{id}", "url": "{id}", "fullpath": "/users/{id}"}
             ]}
         ]
       }
@@ -66,9 +85,10 @@ export default React.createClass({
   },
   render() {
     return (
+      <div className="row">
       <div>
-        <CanvasExample
-          data={[this.state.treeData]}
+        <CRUDTree
+          data={[this.state.treeData, new ClickHandler()]}
           width={1000} height={600}
           options={ {
             border: "2px solid black",
@@ -83,6 +103,10 @@ export default React.createClass({
           <div>
             <ChangeDataButton onClick={this.onDataChange}/>
           </div>
+      </div>
+      <div>
+        {this.props.children}
+      </div>
       </div>
     )
   }

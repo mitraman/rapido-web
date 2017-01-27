@@ -8,6 +8,7 @@ function onChange(newValue) {
 
 export default React.createClass({
   render() {
+    console.log(this.props.params.nodeId);
     return (
       <div>
         <AceEditor

@@ -3,6 +3,7 @@ import AuthenticatedBody from './AuthenticatedBody';
 import Header from './Header';
 
 import 'bootstrap/dist/css/bootstrap.css';
+import '../css/app.css'
 
 export default React.createClass({
   render() {
@@ -11,7 +12,6 @@ export default React.createClass({
     let header = <Header authenticated={false}/>
     if( authState == "authenticated") {
       header = <Header authenticated={true}/>
-      body = <AuthenticatedBody/>
     }
 
     return (
@@ -19,7 +19,6 @@ export default React.createClass({
       	{header}
         <div className="row">
           <div className="col-md-12">
-            {body}
             {this.props.children}
           </div>
         </div>

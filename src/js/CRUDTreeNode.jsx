@@ -24,6 +24,7 @@ export default class {
     .enter().append("g")
       .attr("class", function(d) { return "node" +
           (d.children ? " node--internal" : " node--leaf"); })
+      .attr("id", function(d) { return d.data.id })
       .attr("transform", function(d) {
         return "translate(" + d.y + "," + d.x + ")"; });
 
@@ -46,8 +47,12 @@ export default class {
           .attr("ry", 10)
   		    .attr("class", "node-uri")
           .on("click", function(d) {
-            console.log('rect clicked')
-            handler.fire("detail", d.data.id)
+            handler({
+              name: "detail",
+              source: d.data.id,
+              x: d.y,
+              y: d.x
+            })
           });
 
   // CRUD Node URI (not the full path)
@@ -82,7 +87,7 @@ export default class {
       })
       .on("click", function(d) {
         console.log("out connector clicked");
-        handler.fire("add", d.data.id)
+        handler("add", d.data.id)
       });
 
     node.append("text")

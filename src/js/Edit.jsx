@@ -1,5 +1,10 @@
 import React from 'react'
 import AceEditor from 'react-ace'
+import EditObserver from './EditObserver'
+import { browserHistory } from 'react-router'
+
+import 'brace/mode/json'
+import 'brace/theme/github'
 
 
 function closeWindow() {
@@ -8,7 +13,10 @@ function closeWindow() {
   let event = {
     id: "closewindow"
   };
-  observer.notify({id: 'closewindow'});
+  observer.notify({id: 'closeeditor'});
+  // route back
+  const path = "/nodes";
+  browserHistory.push(path);
 }
 
 function onChange(evt) {
@@ -19,6 +27,7 @@ export default React.createClass({
   render() {
     return (
       <div>
+        <input type="text"></input>
         <button type="button" className="btn btn-cancel btn-lg"
           onClick={() => closeWindow()}>Close</button>
         <AceEditor

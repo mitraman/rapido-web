@@ -7,11 +7,13 @@ import '../css/tree.css'
 const CRUDTree = d3Wrap ({
 
   initialize (svg, data, options) {
-    // Optional initialize method called once when component mounts
+    // initialize method called once when component mounts
     const g = d3.select(svg)
       .append('g')
+      .attr('ref', 'sketch')
       .attr('transform', `translate(${options.margin.left}, ${options.margin.top})`);
 
+      //TODO: why 300 and 600?
     var tree = d3.tree()
       .size([300,600]);
 
@@ -49,9 +51,12 @@ var link = g.selectAll(".tree-link")
 
 
 
-let node = CRUDTreeNode.drawNode(g, nodes, handler);
-node.exit().remove();
+  let node = CRUDTreeNode.drawNode(g, nodes, handler);
+  node.exit().remove();
 
+  let offsetX = data[2].x;
+  let offsetY = data[2].y;
+  g.attr("transform", "translate(" + offsetX + "," + offsetY + ")");
   },
 
   destroy () {

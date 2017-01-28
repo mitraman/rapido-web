@@ -1,5 +1,6 @@
 import React from 'react'
 import CRUDTree from './CRUDTree'
+import EditObserver from './EditObserver'
 import { browserHistory } from 'react-router'
 
 
@@ -19,70 +20,27 @@ class ClickHandler {
   }
 }
 
-class ChangeDataButton extends React.Component {
-  constructor() {
-    super();
-  }
-
-  render() {
-    return (
-      <button onClick={this.props.onClick}>Press Me!</button>
-    );
-  }
-}
-
-class RadiusInput extends React.Component {
-  constructor() {
-     super();
-     this.state = {
-       aRadius: 10
-     };
-     this.handleChange = this.handleChange.bind(this)
-  }
-
-  handleChange(event) {
-    this.setState({aRadius: event.target.value});
-    this.props.onRadiusChange(event.target.value);
-  }
-
-  render() {
-    return (
-      <input type="text" onChange={this.handleChange} value={this.state.aRadius}></input>
-    );
-  }
-}
-
-export default React.createClass({
-  getInitialState() {
-    return {
-    editing: false,
-    treeData: {
-      "id": 0,
-      "name": "API",
-      "children": [
-        { "id" : 1, "name" : "projects", "url": "/projects", "fullpath": "/projects", "get": true}
-      ]
-    }
-    };
-  },
-  onDataChange: function() {
-    // Change the treeData
-    console.log('click');
-    this.setState({
+export default class extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = {
+      editing: false,
       treeData: {
         "id": 0,
         "name": "API",
         "children": [
-          { "id": 1, "name": "projects", "url": "/projects", "fullpath": "/projects"},
-          { "id": 2, "name": "groups", "url": "/groups", "fullpath": "/groups"},
-          { "id": 3, "name": "users", "url": "/users", "fullpath": "/users",
-            "children": [
-              {"id": 4, "name": "{id}", "url": "{id}", "fullpath": "/users/{id}"}
-            ]}
+          { "id" : 1, "name" : "projects", "url": "/projects", "fullpath": "/projects", "get": true}
         ]
       }
-    });
-  },
+    }
+
+    // add an observer for the child edit view
+    let observer = new EditObserver();
+    observer.addObserver(function(event) {
+      console.log(event.id);
+    }) 
+  }
+
   render() {
     return (
       <div className="row">
@@ -99,10 +57,6 @@ export default React.createClass({
                 right: 0
             } }
           }/>
-
-          <div>
-            <ChangeDataButton onClick={this.onDataChange}/>
-          </div>
       </div>
       <div>
         {this.props.children}
@@ -110,4 +64,4 @@ export default React.createClass({
       </div>
     )
   }
-})
+}

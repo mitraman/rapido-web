@@ -4,8 +4,6 @@ import Header from './Header';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
-
-
 export default React.createClass({
   render() {
     let authState = "authenticated";

@@ -31,7 +31,6 @@ let height = 800;
     expect(gNodeEl.className.baseVal).toContain('node');
     // Make sure the node looks the way we expect
     
-    console.log(gElement);
 
 /*
     const wrapper = mount(<CRUDTree data={[treeData]} width={width} height={height} />);

@@ -1,0 +1,109 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="./rapido.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+<body>
+  <script src="https://use.fontawesome.com/80fe1399d9.js"></script>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <h1>Rapido</h1>
+        <h4>My API Project</h4>
+        <h4>Iteration 3</h4>
+      </div>
+      <div class="col-md-9 text-center">
+        <div class="btn-group" role="group">
+        <button type="button" style="stroke:black; stroke-width:2px; border-radius: 25px;width: 50px;height: 50px;padding: 10px 16px;vertical-align:center" class="btn btn-default btn-lg"><i class="fa fa-book fa-2x"></i></button>
+        <button type="button" style="border-radius: 25px;width: 50px;height: 50px;padding: 10px 16px;" class="btn btn-default btn-lg"><i class="fa fa-pencil fa-2x fa-align-center"></i></button>
+        <button type="button" style="border-radius: 50%;width: 50px;height: 50px;padding: 10px 16px;line-height:1.33" class="btn btn-default btn-lg"><i class="fa fa-share fa-2x"></i></button>
+      </div>
+      </div>
+      <div class="col-md-1">
+        <button type="button" class="btn btn-default btn-lg"><i class="glyphicon glyphicon-user"></i></button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="row">
+        <svg width="100%" height="150" >
+          <g transform="translate(50,0)">
+            <path class="node-link" d="M300,90,420,90"></path>
+            <path class="node-link" d="M650,90,900,90"></path>
+
+            <g transform="translate(250,77)">
+              <rect class="root" width="70" height="28" rx="5" ry="5"></rect>
+              <text transform="translate(15,19)">ROOT</text>
+            </g>
+
+            <g transform="translate(420,45)">
+              <circle class="connector-in" transform="translate(0,45)" r="10"></circle>
+              <rect class="node selected" width="250" height="90" rx="10" ry="10"></rect>
+              <text font-size="20" transform="translate(10,52)">/users</text>
+              <text font-size="10" transform="translate(10,84)">/users</text>
+              <path style="stroke:gray;strok-width:1px" class="node" d="M0,20,250,20"></path>
+              <path style="stroke:gray;strok-width:1px" class="node" d="M0,70,250,70"></path>
+              <g class="badges">
+                <rect transform="translate(8,4)" class="get" width="33" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(14,14)" font-size="9">GET</text>
+                <rect transform="translate(47,4)" class="post" width="35" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(51,14)" font-size="9" style="font-weight:bold">POST</text>
+                <rect transform="translate(88,4)" class="put" width="32" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(93,14)" font-size="9">PUT</text>
+                <rect transform="translate(126,4)" class="delete" width="48" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(131,14)" font-size="9">DELETE</text>
+                <rect transform="translate(181,4)" class="patch" width="40" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(185,14)" font-size="9">PATCH</text>
+              </g>
+              <circle class="connector-out" transform="translate(250,45)" r="15"></circle>
+              <text transform="translate(245,52)" font-size="18">+</text>
+            </g>
+
+            <g transform="translate(820,45)">
+              <circle class="connector-in" transform="translate(0,45)" r="10"></circle>
+              <rect class="node" width="250" height="90" rx="10" ry="10"></rect>
+              <text font-size="20" transform="translate(10,52)">/{id}</text>
+              <text font-size="10" transform="translate(10,84)">/users/{id}</text>
+              <path style="stroke:gray;strok-width:1px" class="node" d="M0,20,250,20"></path>
+              <path style="stroke:gray;strok-width:1px" class="node" d="M0,70,250,70"></path>
+              <g class="badges">
+                <rect transform="translate(8,4)" class="get" width="33" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(14,13)" font-size="9">GET</text>
+                <rect transform="translate(47,4)" class="delete" width="48" height="12" rx="3" ry="2"></rect>
+                <text transform="translate(53,13)" font-size="9">DELETE</text>
+              </g>
+              <circle class="connector-out" transform="translate(250,45)" r="15"></circle>
+              <text transform="translate(245,52)" font-size="18">+</text>
+            </g>
+
+
+          </g>
+        </svg>
+      </div>
+      <div class="row">
+        <form>
+          <div class="form-group">
+            <input type="text" class="form-control" id="url" value="/users">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="url" value="?sort=date_added">
+          </div>
+        </form>
+        <div id="editor">function foo(items) {
+          var x = "All this is syntax highlighted";
+          return x;
+        }</div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/javascript");
+  </script>
+  
+</body>
+</html>

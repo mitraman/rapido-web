@@ -1,9 +1,14 @@
 import React from 'react';
 import AuthenticatedBody from './AuthenticatedBody';
 import Header from './Header';
+import Login from './LoginComponent'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../css/app.css'
+
+function loginHandler(params) {
+  console.log(params);
+}
 
 export default React.createClass({
   render() {
@@ -17,6 +22,11 @@ export default React.createClass({
     return (
       <div className ="container">
       	{header}
+        <div className="row">
+          <div className="col-md-12">
+            <Login onSubmit={loginHandler}/>
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-12">
             {this.props.children}

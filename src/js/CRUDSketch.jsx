@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import CRUDTreeElement from './d3/CRUDTreeElement'
+import CRUDTree from './d3/CRUDTreeComponent'
 import EditObserver from './EditObserver'
 import { browserHistory } from 'react-router'
 
@@ -96,7 +96,7 @@ export default class extends React.Component{
     return (
       <div className="row">
       <div>
-        <CRUDTreeElement
+        <CRUDTree
           data={
             [
               this.state.treeData,

@@ -14,10 +14,11 @@ export default class {
   static halfBoxHeight() { return halfBoxHeight; }
   static halfBoxWidth() { return halfBoxWidth; }
 
-  static drawNode(g, nodes, handler) {
+  static drawNodes(g, rootTreeNode, handler) {
 
-  let node = g.selectAll(".node")
-      .data(nodes.descendants(), function(d) {
+    // Create a new <g> for every object in the nodeList
+    let node = g.selectAll(".node")
+      .data(rootTreeNode.descendants(), function(d) {
         // Use the ID as the d3 identifier so that nodes can be replaced by ID
         return d.data.id;
       })

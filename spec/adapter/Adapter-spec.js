@@ -8,6 +8,8 @@ describe("Backend Adapter", function() {
   })
 
   it("should return the stored backend implementation", function() {
+    expect(Adapter.call()).not.toBe(null);
+    console.log(Adapter.call());
     expect(Adapter.call().getName()).toBe("MockBackend");
   })
 
@@ -15,6 +17,7 @@ describe("Backend Adapter", function() {
     Adapter.call().login("username", "password")
       .catch(function(error) {
         expect(error.message).not.toBeNull();
+        done();
       });
   })
 

@@ -1,10 +1,10 @@
 import d3Wrap from 'react-d3-wrap'
 import * as d3 from 'd3'
-import CRUDTreeNode from './CRUDTreeNode'
+import CRUDTree from './CRUDTree'
 
-import '../css/tree.css'
+import '../../css/tree.css'
 
-const CRUDTree = d3Wrap ({
+const CRUDTreeElement = d3Wrap ({
 
   initialize (svg, data, options) {
     // initialize method called once when component mounts
@@ -26,37 +26,35 @@ const CRUDTree = d3Wrap ({
 
   update (svg, data, options) {
 
-    // Cleanup old graph
+    // Cleanup any existing graphs
     var svg = d3.select("svg > g");
     svg.selectAll("*").remove();
 
-    // setup container, root svg element passed in along with data and options
+    // setup the container, root svg element passed in along with data and options
     const g = this.state.g;
     const treeData = data[0];
     const handler = data[1];
-    var root = d3.hierarchy(treeData);
+    const root = d3.hierarchy(treeData);
     var nodes = this.state.tree(root);
 
-
-
-    // adds the links between the nodes
-var link = g.selectAll(".tree-link")
+    // draw link paths between the nodes in the tree
+    var link = g.selectAll(".tree-link")
     .data( nodes.descendants().slice(1), function(d) { return d.data.id; })
   .enter().append("path")
     .attr("class", "tree-link")
     .attr("d", function(d) {
-        return "M" + (d.y) + "," + (d.x + CRUDTreeNode.halfBoxHeight())
-            + " " + (d.parent.y + CRUDTreeNode.resourceBoxWidth()) + "," + (d.parent.x + CRUDTreeNode.halfBoxHeight());
+        return "M" + (d.y) + "," + (d.x + CRUDTree.halfBoxHeight())
+            + " " + (d.parent.y + CRUDTree.resourceBoxWidth()) + "," + (d.parent.x + CRUDTree.halfBoxHeight());
       });
 
+    // draw the tree nodes
+    let node = CRUDTree.drawNodes(g, nodes, handler);
+    node.exit().remove();
 
-
-  let node = CRUDTreeNode.drawNode(g, nodes, handler);
-  node.exit().remove();
-
-  let offsetX = data[2].x;
-  let offsetY = data[2].y;
-  g.attr("transform", "translate(" + offsetX + "," + offsetY + ")");
+    // Move the position of the tree graph based on x and y parameters
+    let offsetX = data[2].x;
+    let offsetY = data[2].y;
+    g.attr("transform", "translate(" + offsetX + "," + offsetY + ")");
   },
 
   destroy () {
@@ -65,4 +63,4 @@ var link = g.selectAll(".tree-link")
 
 });
 
-export default CRUDTree;
+export default CRUDTreeElement;

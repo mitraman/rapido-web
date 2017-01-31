@@ -1,5 +1,5 @@
 import React from 'react';
-import CRUDTree from '../src/js/CRUDTree.jsx';
+import CRUDTreeElement from '../../src/js/d3/CRUDTreeElement.jsx';
 import ReactTestUtils from 'react-addons-test-utils';
 
 describe('CRUDTree', function() {
@@ -17,7 +17,16 @@ let height = 800;
       "children": []
     }
 
-    let crudTree = ReactTestUtils.renderIntoDocument(<CRUDTree data={[treeData]} width={width} height={height} />);
+    let clickHandler = {};
+
+    let crudTree = ReactTestUtils.renderIntoDocument(<CRUDTreeElement
+       data={ [treeData,
+         clickHandler,
+         { x: 0, y: 0 }]
+       }
+       width={width}
+       height={height} />);
+
     let svgElement = ReactTestUtils.findRenderedDOMComponentWithTag(crudTree, 'svg');
     expect(svgElement.childNodes.length).toBe(1);
     let gElement = svgElement.firstChild;
@@ -30,7 +39,7 @@ let height = 800;
     // We need to use baseVal because this is an SVG element
     expect(gNodeEl.className.baseVal).toContain('node');
     // Make sure the node looks the way we expect
-    
+
 
 /*
     const wrapper = mount(<CRUDTree data={[treeData]} width={width} height={height} />);

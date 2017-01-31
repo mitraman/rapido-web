@@ -2,7 +2,7 @@ let implName = '';
 
 export default class {
   constructor(name) {
-    this.implName = name;
+    implName = name;
   }
 
   login(username, password) {
@@ -11,6 +11,10 @@ export default class {
         reject(new Error("Not Implemented"));
       }
     );
+  }
+
+  getName() {
+    return implName;
   }
 
   register(details) {

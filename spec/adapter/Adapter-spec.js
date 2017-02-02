@@ -1,5 +1,5 @@
-import Adapter from '../../src/js/Adapter/Adapter.js'
-import MockBackend from '../../src/js/Adapter/MockBackend.js'
+import Adapter from '../../src/js/adapter/Adapter.js'
+import MockBackend from '../../src/js/adapter/MockBackend.js'
 
 describe("Backend Adapter", function() {
 

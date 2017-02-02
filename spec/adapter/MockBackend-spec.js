@@ -1,4 +1,5 @@
 import MockBackend from '../../src/js/adapter/MockBackend.js';
+var Promise = require("bluebird");
 
 let adapter;
 

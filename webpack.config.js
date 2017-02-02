@@ -6,7 +6,7 @@ module.exports = {
      main: './src/index.jsx'
     },
     output: {
-        //path: './build',
+        path: './build',
         filename: 'rapido-web.js',
         //make sure port 8090 is used when launching webpack-dev-server
         publicPath: 'http://localhost:8090/assets'

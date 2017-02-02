@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test-local": "karma start",
+    "test:local": "karma start",
     "test": "karma start --single-run --browsers PhantomJS",
     "start": "npm run dev",
     "build": "webpack",

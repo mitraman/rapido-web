@@ -23,3 +23,6 @@ To install:
 
 To start:
 `npm start`
+
+To test with PhantomJS:
+'npm test'

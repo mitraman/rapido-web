@@ -1,3 +1,4 @@
+var Promise = require("bluebird");
 import Backend from './Backend';
 
 let loginProvider;

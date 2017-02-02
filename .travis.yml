@@ -8,5 +8,6 @@ deploy:
   api_key:
     secure: GGO2qhIoLPWcyPMhnKflLhkaBL9os4svGQr5faPZavOiuBRHpGJ9oA6dLdqZ19cL6xBelI51OwdHZdVnnXcNA179f1cwtsBXR9c7akaUZupKOGVm0FMl6zNq0J4dqpoBPh/+nZd+Ysp9Qul1m+al9Bx8TsaeuOQSoeP2zFE7ruNZxmDgN9/hMyKHqVo2QHtRqFrJ/uL5Xt15Bw+scSDU9MprhLP+YNtI3D7h3eXVDTVVt33AfMYbbA4f44ZdAPAw5x+j/XEYsLF4yemVyT99rYsK80+h1g8cLPPmEeIrUuq3hDsRvYOXrSObpr5kDbXoMyTLDrjgOlDrsPovJm5sBUZuXm5JFbbm/SEILJyDYPMbR1WmgmZwk653pNQMooa0NGUAxQMBlCF+ub/gUx33sNSNVN4SrEFiLLphDyejupjGpXZsdiAu1JE7i3ba33RQEYrw7qhOLPaUzioR1DmSazg7Zbr4KBFvp/Ud+lyuctD5vK82rbPjZsoCAx91HJxjYzLTaqq0IEykoef/uvI6AGAX+e6zBNrfmcnGA+au3NGy0ssL5GVtD5dWEpJ7HQ7PhAbry/9F/mSkZoQJO9/RFnOrFKe0BJ2QstMyc10MSGr78v1unjNp2EjutSYhulSp5W2DjcobImxQVNLfE6kUarFgnEMn5wYqgha4orhDEQQ=
   file: "./build/rapido-web.js"
+  skip_cleanup: true
   on:
     repo: apiacademy/rapido-web

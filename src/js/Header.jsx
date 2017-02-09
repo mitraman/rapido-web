@@ -8,7 +8,7 @@ export default React.createClass({
     return (
       <div className="row">
         <div className="col-md-4 pull-left">
-          <h4>Rapido</h4>
+          <h1 id="app-title">Rápido</h1>
           <h2>My API Project</h2>
           <h3>Iteration 3</h3>
         </div>

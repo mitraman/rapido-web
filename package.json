@@ -48,7 +48,8 @@
     "karma-babel-preprocessor": "~6.0.1",
     "enzyme": "~2.7.0",
     "karma-phantomjs-launcher": "~1.0.2",
-    "phantomjs-polyfill-object-assign": "0.0.2"
+    "phantomjs-polyfill-object-assign": "0.0.2",
+    "istanbul": "~0.4.5"
   },
   "keywords": [],
   "repository": "",

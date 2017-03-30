@@ -37,6 +37,10 @@ module.exports = {
               test: /\.(eot|ttf)$/,
               loader: 'file-loader',
             },
+            {
+              test: /\.scss$/,
+              loaders: ['style', 'css', 'sass']
+            }
         ]
     },
     resolve: {

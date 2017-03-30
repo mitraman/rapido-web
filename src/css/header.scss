@@ -1,0 +1,14 @@
+.app-title {
+  font-family: 'Cabin Sketch', cursive;
+  cursor: pointer;
+  padding-left: 15px;
+  a,a:hover {
+    text-decoration: none;
+    color: black;
+  }
+}
+
+/* Override the bootstrap colours for the logo link*/
+#logo h1 {
+  font-color: blue;
+}

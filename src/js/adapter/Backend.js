@@ -18,9 +18,12 @@ export default class {
           // Request finished. Do processing here.
           if( xhr.status === 200 ) {
             let responseBody = JSON.parse(xhr.response);
+            //console.log(responseBody);
             resolve(responseHandler(responseBody));
           } else {
-            if( xhr.getResponseHeader('Content-Type').endsWith('json')) {
+            //console.log(xhr.status);
+            let contentType = xhr.getResponseHeader('Content-Type');
+            if( contentType &&  contentType.endsWith('json')) {
               let responseBody = JSON.parse(xhr.response);
               let errorMessage = responseBody.error ? responseBody.error : repsonseBody;
               reject(errorMessage)
@@ -51,6 +54,19 @@ export default class {
       //console.log('translating body');
       return {
         id: responseBody.id
+      };
+    })
+  }
+
+  static login(user) {
+    const body = {
+        email: user.email,
+        password: user.password
+    }
+
+    return this._call("POST", "/api/login", body, function(responseBody) {
+      return {
+        token: responseBody.token
       };
     })
   }

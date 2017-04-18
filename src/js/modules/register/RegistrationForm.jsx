@@ -15,7 +15,14 @@ export default class extends React.Component{
         password: '',
         passwordConfirm: '',
         passwordConfig: PasswordConfig,
-        errorMessages: {}
+        errorMessages: {},
+        inputClassList: {
+          fullName: 'form-group',
+          email: 'form-group',
+          password: 'form-group',
+          passwordConfirm: 'form-group'
+        },
+        formStarted: false
       };
 
       this.labels = {
@@ -45,8 +52,8 @@ export default class extends React.Component{
 
   /* Method to show alert message */
   showAlert(message){
-    console.log('showAlert');
-    this.msg.error(message, {
+    // Let the parent specify the alert box implementation
+    this.props.alertBox.error(message, {
       time: 5000,
       type: 'error',
       icon: <span className=""></span>
@@ -58,6 +65,7 @@ export default class extends React.Component{
 
     e.target.classList.add('active');
 
+    this.setState({formStarted: 'true'});
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -97,8 +105,17 @@ export default class extends React.Component{
         console.warn('unexpected conformance validator problem: ', validityState);
         errorMessages[e.target.name] = `Invalid field value`;
       }
+
+      // add the bootstrap error class to the form input group
+      let inputClassList = this.state.inputClassList;
+      inputClassList[e.target.name] = 'form-group has-error';
+      this.setState(inputClassList: inputClassList);
+
     } else if( validityState.valid ) {
         errorMessages[e.target.name] = null;
+        let inputClassList = this.state.inputClassList;
+        inputClassList[e.target.name] = 'form-group';
+        this.setState(inputClassList: inputClassList);
     }
 
     this.setState({'errorMessages': errorMessages})
@@ -110,10 +127,16 @@ export default class extends React.Component{
     //console.log('handleSubmit for ', e);
     e.preventDefault();
     //console.log('component state', JSON.stringify(this.state));
-    if (!this.showFormErrors()) {
-      console.log('form is invalid: do not submit');
+    if( !this.state.formStarted ) {
+      this.showAlert('Please fill out registration form');
+    } else if (Object.keys(this.state.errorMessages).length !== 0) {
+      const thisForm = this;
+      // Remind the user know that there are problems with the form
+      Object.keys(this.state.errorMessages).forEach(function(key) {
+        thisForm.showAlert(thisForm.state.errorMessages[key]);
+      });
     } else {
-      console.log('calling backend');
+      //console.log('calling backend');
       Backend.register({
         "fullName": this.state.fullName,
         "nickName": "",
@@ -121,33 +144,14 @@ export default class extends React.Component{
         "password": this.state.password
       })
       .then((result)=> {
-        console.log('got result ', result);
+        //console.log('got result ', result);
         browserHistory.push('/mailVerification');
       })
       .catch((error)=> {
-        console.log('caught an error: ', error);
+        //console.log('caught an error: ', error);
         this.showAlert(error)
       })
-
     }
-  }
-
-  /* Method to show Form Errors */
-  showFormErrors() {
-    const inputs = document.querySelectorAll('input');
-    let isFormValid = true;
-
-    inputs.forEach(input => {
-      input.classList.add('active');
-
-      const isInputValid = this.showInputError(input.name);
-
-      if (!isInputValid) {
-        isFormValid = false;
-      }
-    });
-
-    return isFormValid;
   }
 
   /* Render Method */
@@ -161,7 +165,7 @@ export default class extends React.Component{
         <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
         <form id="registration" className="col-md-12 create-account-form" >
           {creationLabel}
-          <div className="form-group">
+          <div id="fullName" className={this.state.inputClassList.fullName}>
             <label id="fullName">{this.labels.fullName}</label>
             <input className="form-control"
               type="text"
@@ -173,7 +177,7 @@ export default class extends React.Component{
               required />
             <div className="error" id="fullNameError">{this.state.errorMessages.fullName}</div>
           </div>
-          <div className="form-group">
+          <div id="email" className={this.state.inputClassList.email}>
             <label id="emailLabel">{this.labels.email}</label>
             <input className="form-control"
               type="email"
@@ -185,7 +189,7 @@ export default class extends React.Component{
               required />
             <div className="error" id="emailError">{this.state.errorMessages.email}</div>
           </div>
-          <div className="form-group">
+          <div id="password" className={this.state.inputClassList.password} >
             <label id="passwordLabel">{this.labels.password}</label>
             <input className="form-control"
               type="password"
@@ -196,7 +200,7 @@ export default class extends React.Component{
               required />
             <div className="error" id="passwordError">{this.state.errorMessages.password}</div>
           </div>
-          <div className="form-group">
+          <div id="passwordConfirm" className={this.state.inputClassList.passwordConfirm}>
             <label id="passwordConfirmLabel">{this.labels.passwordConfirm}</label>
             <input className="form-control"
               type="password"

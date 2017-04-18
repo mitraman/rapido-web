@@ -2,6 +2,7 @@
 // Generated on Mon Jan 16 2017 10:40:31 GMT+0000 (STD)
 
 var path = require("path");
+const webpack = require('webpack');
 
 module.exports = function(config) {
   config.set({
@@ -70,6 +71,12 @@ module.exports = function(config) {
           ],
           extensions: ['', '.js', '.jsx']
       },
+      plugins: [
+         new webpack.ProvidePlugin({
+             $: "jquery",
+             jQuery: "jquery"
+         })
+     ],
       externals: {
         cheerio: 'window',
         'react/addons': true,

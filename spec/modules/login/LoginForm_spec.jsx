@@ -21,9 +21,22 @@ function createSimulatedElement(name, value, validState) {
 
 describe('LoginForm Component', function() {
 
+  // A mock alert box
+  const reactAlertMsg = {
+    error: function(message, callback) {}
+  }
+
+  beforeEach(function() {
+    // Make sure that the browser page doesn't change
+    //spyOn(browserHistory, 'push').and.callThrough()
+
+    // Setup a spy to make sure that an error allert is issued
+    //spyOn(LoginForm.prototype, "showAlert").and.callThrough()
+  });
+
   it('should render a login form', function() {
     const wrapper = shallow(<LoginForm/>);
-    expect(wrapper.find('form #login').length).toBe(1);
+    expect(wrapper.find('form #login-form').length).toBe(1);
   })
 
   it('should render an email field in a login form', function() {
@@ -47,131 +60,279 @@ describe('LoginForm Component', function() {
   })
 
   it('should render a submit button', function() {
-    const wrapper = shallow(<LoginForm/>);
-    expect(wrapper.find('button #login').length).toBe(1);
+    const wrapper = mount(<LoginForm/>);
+    expect(wrapper.find('button #login-button').length).toBe(1);
   })
 
-  fit('should reject an attempt to login without a username(email)', function() {
-    const wrapper = shallow(<LoginForm/>);
+  it('should reject an attempt to login before filling out form', function() {
 
-    wrapper.find('button #login').simulate('click', { preventDefault: () => undefined });
+    spyOn(browserHistory, 'push').and.callThrough()
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough()
 
-    fail("work on this tomorrow");
-    // What do we test for to make sure the for didn't submit?
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Please fill out login form fields');
+    expect(browserHistory.push).not.toHaveBeenCalled();
 
   })
 
-  it('should reject an attempt to login without a password', function() {
-    const wrapper = shallow(<RegistrationForm/>);
-    const inputField = wrapper.find('input[name="fullName"]');
-    let simulatedElement = createSimulatedElement('fullName', '', { valueMissing: true});
+  it('should reject an attempt to login with a missing email address', function() {
 
-    inputField.simulate('change',  simulatedElement);
-    expect(wrapper.state('errorMessages').fullName).not.toBeNull();
-    expect(wrapper.find('div #fullNameError').text().length).not.toBe(0);
+    spyOn(browserHistory, 'push').and.callThrough()
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough()
 
-    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
-    // What do we test for to make sure the for didn't submit?
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+
+    // Try resetting the state of LoginForm
+    wrapper.setState({formStarted: false});
+
+    const emailInputField = wrapper.find('input[name="userId"]');
+    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { valueMissing: true});
+    emailInputField.simulate('change',  simulatedEmailElement);
+
+    const passwordInputField = wrapper.find('input[name="password"]');
+    let passwordEmailElement = createSimulatedElement('password', 'some1password!', { valid: true});
+    passwordInputField.simulate('change',  passwordEmailElement);
+
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID is a required field');
+    expect(browserHistory.push).not.toHaveBeenCalled();
+  })
+
+  it('should reject an attempt to login with a missing password', function() {
+
+    spyOn(browserHistory, 'push').and.callThrough();
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+
+    // Try resetting the state of LoginForm
+    wrapper.setState({formStarted: false});
+
+    const emailInputField = wrapper.find('input[name="userId"]');
+    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { valid: true});
+    emailInputField.simulate('change',  simulatedEmailElement);
+
+    const passwordInputField = wrapper.find('input[name="password"]');
+    let passwordEmailElement = createSimulatedElement('password', 'some1password!', { valueMissing: true});
+    passwordInputField.simulate('change',  passwordEmailElement);
+
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Password is a required field');
+    expect(browserHistory.push).not.toHaveBeenCalled();
+
+  })
+
+  it('should reject an attempt to login with an invalid email address', function() {
+
+    spyOn(browserHistory, 'push').and.callThrough();
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+
+    const emailInputField = wrapper.find('input[name="userId"]');
+    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { typeMismatch: true});
+    emailInputField.simulate('change',  simulatedEmailElement);
+
+    const passwordInputField = wrapper.find('input[name="password"]');
+    let passwordEmailElement = createSimulatedElement('password', 'some1password!', { valid: true});
+    passwordInputField.simulate('change',  passwordEmailElement);
+
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID should be a valid email address');
+    expect(browserHistory.push).not.toHaveBeenCalled();
 
   })
 
   it('should login a user on successful entry of the form', function(done) {
 
-    let validRegistration = {
-      fullName: 'Test User',
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+
+    let validLogin = {
       password: 'MyPassword1',
-      email: 'testuser@email.com'
+      userId: 'testuser@email.com'
     }
 
     // Setup Sinon for mocking backend server
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/register", function(xhr) {
-      expect(xhr.requestBody.fullname).toBe(validRegistration.fullName);
-      expect(xhr.requestBody.email).toBe(validRegistration.email);
-      expect(xhr.requestBody.nickname).toBe('')
-      expect(xhr.requestBody.password).toBe(validRegistration.password);
+    this.server.respondWith("POST", "/api/login", function(xhr) {
+      expect(xhr.requestBody.email).toBe(validLogin.userId);
+      expect(xhr.requestBody.password).toBe(validLogin.password);
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
-           id: (Math.random() * (32767 - 1)) + 1,
-           fullName: xhr.requestBody.fullname,
-           nickName: xhr.requestBody.nickname,
-           email: xhr.requestBody.email
+           token: Math.random()
         }));
    });
 
 
-    const wrapper = mount(<RegistrationForm/>);
+    const wrapper = mount(<LoginForm/>);
 
-    // Set the field properties
-    wrapper.setState({fullName: validRegistration.fullName});
-    wrapper.setState({password: validRegistration.password});
-    wrapper.setState({email: validRegistration.email});
+    // Set the component state so that a form can be submitted
+    wrapper.setState({userId: validLogin.userId});
+    wrapper.setState({password: validLogin.password});
+    wrapper.setState({formStarted: true});
+
+    // Click submit
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
 
     // Watch for the browserHistory to change
     spyOn(browserHistory, 'push').and.callFake(function(newUrl){
-      expect(newUrl).toBe('/mailVerification');
+      expect(newUrl).toBe('/sketches');
       done();
     })
 
-    // Click submit
-    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
   })
 
   it( 'should store an auth token in permanent storage if remember me is ticked', function(done) {
+
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+
+    let validLogin = {
+      password: 'MyPassword1',
+      userId: 'testuser@email.com'
+    }
+
+    const token = Math.random();
+
+    // Setup Sinon for mocking backend server
+    this.server = sinon.fakeServer.create();
+    this.server.respondImmediately = true;
+
+    this.server.respondWith("POST", "/api/login", function(xhr) {
+      expect(xhr.requestBody.email).toBe(validLogin.userId);
+      expect(xhr.requestBody.password).toBe(validLogin.password);
+
+      xhr.respond(200, {"Content-Type": "application/json"},
+        JSON.stringify({
+           token: token
+        }));
+   });
+
+    const wrapper = mount(<LoginForm/>);
+
+    // Set the component state so that a form can be submitted
+    wrapper.setState({userId: validLogin.userId});
+    wrapper.setState({password: validLogin.password});
+    wrapper.setState({formStarted: true});
+    wrapper.setState({rememberMe: true});
+
+    // Click submit
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
+
+    var store = {};
+
+    spyOn(localStorage, 'setItem').and.callFake(function (key, value) {
+      expect(key).toBe('token');
+      expect(value).toBe(token);
+      done();
+      return store[key] = value + '';
+    });
+
 
   })
 
   it( 'should store an auth token in session storage if remember me is not ticked', function(done) {
 
-  })
+    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
 
-  it('should alert the user if the API call fails', function(done) {
-
-    let validRegistration = {
-      fullName: 'Test User',
+    let validLogin = {
       password: 'MyPassword1',
-      email: 'testuser@email.com'
+      userId: 'testuser@email.com'
     }
-    let serverError = 'some unexplained problem';
+
+    const token = Math.random();
 
     // Setup Sinon for mocking backend server
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/register", function(xhr) {
-      expect(xhr.requestBody.fullname).toBe(validRegistration.fullName);
-      expect(xhr.requestBody.email).toBe(validRegistration.email);
-      expect(xhr.requestBody.nickname).toBe('')
-      expect(xhr.requestBody.password).toBe(validRegistration.password);
+    this.server.respondWith("POST", "/api/login", function(xhr) {
+      expect(xhr.requestBody.email).toBe(validLogin.userId);
+      expect(xhr.requestBody.password).toBe(validLogin.password);
+
+      xhr.respond(200, {"Content-Type": "application/json"},
+        JSON.stringify({
+           token: token
+        }));
+    });
+
+    const wrapper = mount(<LoginForm/>);
+
+    // Set the component state so that a form can be submitted
+    wrapper.setState({userId: validLogin.userId});
+    wrapper.setState({password: validLogin.password});
+    wrapper.setState({formStarted: true});
+    wrapper.setState({rememberMe: false});
+
+    // Click submit
+    wrapper.find('button #login-button').get(0).click();
+
+    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
+
+    var store = {};
+
+    // spyOn(localStorage, 'getItem').and.callFake(function (key) {
+    //   return store[key];
+    // });
+    spyOn(sessionStorage, 'setItem').and.callFake(function (key, value) {
+      expect(key).toBe('token');
+      expect(value).toBe(token);
+      done();
+      return store[key] = value + '';
+    });
+  })
+
+  it('should alert the user if the API call fails', function(done) {
+    let validLogin = {
+      password: 'MyPassword1',
+      userId: 'testuser@email.com'
+    }
+
+    const token = Math.random();
+    const serverError = 'some unexplained problem';
+
+    // Setup Sinon for mocking backend server
+    this.server = sinon.fakeServer.create();
+    this.server.respondImmediately = true;
+
+    this.server.respondWith("POST", "/api/login", function(xhr) {
+      expect(xhr.requestBody.email).toBe(validLogin.userId);
+      expect(xhr.requestBody.password).toBe(validLogin.password);
 
       xhr.respond(401, {"Content-Type": "application/json"},
         JSON.stringify({
            error: serverError
         }));
-   });
+    });
 
-  // Setup a spy to make sure that an error allert is issued
-  spyOn(RegistrationForm.prototype, "showAlert").and.callFake(function(error){
-    console.log('got you', error);
-    expect(error).toBe(serverError);
-    done();
+    spyOn(LoginForm.prototype, 'showAlert').and.callFake(function (error) {
+      //console.log(error);
+      done();
+    });
+
+    const wrapper = mount(<LoginForm/>);
+
+    // Set the component state so that a form can be submitted
+    wrapper.setState({userId: validLogin.userId});
+    wrapper.setState({password: validLogin.password});
+    wrapper.setState({formStarted: true});
+    wrapper.setState({rememberMe: false});
+
+    // Click submit
+    wrapper.find('button #login-button').get(0).click();
+
   });
 
-  const wrapper = mount(<RegistrationForm/>);
-
-  // Set the field properties
-  wrapper.setState({fullName: validRegistration.fullName});
-  wrapper.setState({password: validRegistration.password});
-  wrapper.setState({email: validRegistration.email});
-
-
-  // Click submit
-  wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
-
-
-  })
 
 });

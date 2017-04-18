@@ -21,6 +21,11 @@ function createSimulatedElement(name, value, validState) {
 
 describe('RegistrationForm Component', function() {
 
+  // A mock alert box
+  const mockAlertContainer = {
+    error: function(message, callback) {}
+  }
+
   it('should render a registration form', function() {
     const wrapper = shallow(<RegistrationForm/>);
     expect(wrapper.find('form #registration').length).toBe(1);
@@ -51,6 +56,7 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.state('errorMessages').email).not.toBeNull();
     expect(wrapper.find('div #emailError').text()).not.toBeUndefined();
     expect(wrapper.find('div #emailError').text().length).not.toBe(0);
+    expect(wrapper.find('div#email').hasClass('has-error')).toBe(true);
   })
 
 
@@ -64,6 +70,7 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div #passwordError').length).not.toBe(0);
     expect(wrapper.find('div #passwordError').text()).not.toBeUndefined();
     expect(wrapper.find('div #passwordError').text().length).not.toBe(0);
+    expect(wrapper.find('div#password').hasClass('has-error')).toBe(true);
 
   })
 
@@ -82,6 +89,7 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div #passwordConfirmError').length).not.toBe(0);
     expect(wrapper.find('div #passwordConfirmError').text()).not.toBeUndefined();
     expect(wrapper.find('div #passwordConfirmError').text().length).not.toBe(0);
+    expect(wrapper.find('div#passwordConfirm').hasClass('has-error')).toBe(true);
   })
 
   it('should display an error when a name value fails the HTML required contraint', function() {
@@ -92,10 +100,13 @@ describe('RegistrationForm Component', function() {
     inputField.simulate('change',  simulatedElement);
     expect(wrapper.state('errorMessages').fullName).not.toBeNull();
     expect(wrapper.find('div #fullNameError').text().length).not.toBe(0);
+    expect(wrapper.find('div#fullName').hasClass('has-error')).toBe(true);
   })
 
   it('should reject an attempt to submit an invalid form', function() {
-    const wrapper = shallow(<RegistrationForm/>);
+    spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
+
+    const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
     const inputField = wrapper.find('input[name="fullName"]');
     let simulatedElement = createSimulatedElement('fullName', '', { valueMissing: true});
 
@@ -104,11 +115,32 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div #fullNameError').text().length).not.toBe(0);
 
     wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
-    // What do we test for to make sure the for didn't submit?
+
+    // Check to see if the alertbox gets populated
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Name is a required field');
+
+    // Check to see if the invalid fields have been visually flagged
+    //console.log(wrapper.find('div#fullName').debug());
+    expect(wrapper.find('div#fullName').hasClass('has-error')).toBe(true);
 
   })
 
+  it('should reject an attempt to submit an empty form', function() {
+    spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
+
+    const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
+    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+
+    // Check to see if the alertbox gets populated
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Please fill out registration form');
+  })
+
   it('should register a user on successful entry of the form', function(done) {
+
+    spyOn(RegistrationForm.prototype, "showAlert").and.callFake(function(message) {
+      console.log(message);
+      fail('resitration failed with errror');
+    });
 
     let validRegistration = {
       fullName: 'Test User',
@@ -136,12 +168,13 @@ describe('RegistrationForm Component', function() {
    });
 
 
-    const wrapper = mount(<RegistrationForm/>);
+    const wrapper = mount(<RegistrationForm alertBox={mockAlertContainer}/>);
 
     // Set the field properties
     wrapper.setState({fullName: validRegistration.fullName});
     wrapper.setState({password: validRegistration.password});
     wrapper.setState({email: validRegistration.email});
+    wrapper.setState({formStarted: true});
 
     // Watch for the browserHistory to change
     spyOn(browserHistory, 'push').and.callFake(function(newUrl){
@@ -151,6 +184,7 @@ describe('RegistrationForm Component', function() {
 
     // Click submit
     wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+    //expect(RegistrationForm.prototype.showAlert).not.toHaveBeenCalled();
   })
 
   it('should alert the user if the API call fails', function(done) {
@@ -180,7 +214,6 @@ describe('RegistrationForm Component', function() {
 
   // Setup a spy to make sure that an error allert is issued
   spyOn(RegistrationForm.prototype, "showAlert").and.callFake(function(error){
-    console.log('got you', error);
     expect(error).toBe(serverError);
     done();
   });
@@ -191,7 +224,7 @@ describe('RegistrationForm Component', function() {
   wrapper.setState({fullName: validRegistration.fullName});
   wrapper.setState({password: validRegistration.password});
   wrapper.setState({email: validRegistration.email});
-
+  wrapper.setState({formStarted: true});
 
   // Click submit
   wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });

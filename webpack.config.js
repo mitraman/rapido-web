@@ -1,4 +1,5 @@
 var path = require("path");
+const webpack = require('webpack');
 
 module.exports = {
     target: 'web',
@@ -43,6 +44,12 @@ module.exports = {
             }
         ]
     },
+    plugins: [
+       new webpack.ProvidePlugin({
+           $: "jquery",
+           jQuery: "jquery"
+       })
+   ],
     resolve: {
         root: [
           path.resolve('./src'),

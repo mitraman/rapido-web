@@ -98,6 +98,33 @@ describe('Backend client', function() {
 
   })
 
+  //TODO: in the future we should have a more graceful way for the server to indicate validation errors
+  // and have the client act accordingly
+  it('should return an error if 4xx error is returned', function(done) {
+    const userDetails = {
+      "fullName": "username",
+      "nickName": "",
+      "email": "email@email.com",
+      "password": "password"
+    }
+
+    // This endpoint will not be reached by the client.  The fake server will return a 404 instead.
+     this.server.respondWith("POST", "/unreachable", function(xhr) {
+
+       xhr.respond(401, {"Content-Type": "application/json"},
+         JSON.stringify({
+            vlaue: 'unreachable'
+         }));
+    });
+
+    Backend.register(userDetails)
+    .then((newUser)=> {
+      fail('an error was expected, but received a succesful response instead.')
+    }).catch((error)=> {
+      expect(error).not.toBeUndefined();
+      expect(error.startsWith('unexpected response from server')).toBe(true);
+    }).finally(done)
+  })
 
   it('should register a new user', function(done) {
     const userDetails = {
@@ -130,30 +157,27 @@ describe('Backend client', function() {
     }).finally(done)
   })
 
-  //TODO: in the future we should have a more graceful way for the server to indicate validation errors
-  // and have the client act accordingly
-  it('should return an error if 4xx error is returned', function(done) {
+  it('should login a registered user', function(done) {
     const userDetails = {
-      "fullName": "username",
-      "nickName": "",
       "email": "email@email.com",
       "password": "password"
     }
 
-     this.server.respondWith("POST", "/api/register", function(xhr) {
+     this.server.respondWith("POST", "/api/login", function(xhr) {
+       expect(xhr.requestBody.email).not.toBeNull();
+       expect(xhr.requestBody.password).not.toBeNull();
 
-       xhr.respond(401, {"Content-Type": "application/json"},
+       xhr.respond(200, {"Content-Type": "application/json"},
          JSON.stringify({
-            error: 'some server error'
+            token: (Math.random() * (32767 - 1)) + 1
          }));
     });
 
-    Backend.register(userDetails)
-    .then((newUser)=> {
-      fail('an error was expected, but received a succesful response instead.')
+    Backend.login(userDetails)
+    .then((result)=> {
+      expect(result.token).not.toBeUndefined();
     }).catch((error)=> {
-      expect(error).not.toBeUndefined();
-      expect(error).toBe('some server error');
+      fail(error);
     }).finally(done)
   })
 

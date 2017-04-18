@@ -57,8 +57,8 @@ export default class extends React.Component {
 
     // Setup the body
     if( authenticated ) {
-      bodyContent = <div id="app-body">Hi There.</div>;
-    }else if (!authenticated) {
+      bodyContent = <div id="app-body">{this.props.children}</div>;
+    }else if (!authenticated ) {
       bodyContent = <Landing/>
     }
 

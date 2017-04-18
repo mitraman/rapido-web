@@ -1,7 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router'
 
+import Modal from '../Modal.jsx'
+import LoginForm from '../login/LoginForm.jsx'
 import '../../../css/header.scss'
+import 'bootstrap/dist/js/bootstrap';
+
 
 
 export default React.createClass({
@@ -18,9 +22,7 @@ export default React.createClass({
         </div>
         <div className="col-md-4 pull-right">
           <h1>
-            <Link to="/login">
-              <button className="btn btn-default btn-lg" id="login">Log In</button>
-            </Link>
+            <button type="button" className="btn btn-default btn-lg" id="login" data-toggle="modal" data-target="#loginModal">Log In</button>
           </h1>
         </div>
       </div>
@@ -29,8 +31,11 @@ export default React.createClass({
         headerSection = <div>authenticated</div>
     }
 
+    let loginBody = <LoginForm/>
+    
     return (
       <div >
+        <Modal id="loginModal" title="login" body={loginBody}/>
         {headerSection}
       </div>
     )

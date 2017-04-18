@@ -7,6 +7,8 @@ import sinon from 'sinon';
 
 function createSimulatedElement(name, value, validState) {
 
+
+
   return {
     target: {
       name: name,
@@ -14,7 +16,10 @@ function createSimulatedElement(name, value, validState) {
       classList: { add: function(className) {} },
       validity: validState
     },
-    setCustomValidity: function(customState) { this.target.validity.customError = true; }
+    setCustomValidity: function(customState) {
+      this.target.validity.customError = true;
+      this.target.validity.valid = false;
+    }
   };
 
 }
@@ -57,6 +62,7 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div #emailError').text()).not.toBeUndefined();
     expect(wrapper.find('div #emailError').text().length).not.toBe(0);
     expect(wrapper.find('div#email').hasClass('has-error')).toBe(true);
+    expect(wrapper.find('input[name="email"]').prop('value')).toBe('someemail');
   })
 
 
@@ -71,10 +77,12 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div #passwordError').text()).not.toBeUndefined();
     expect(wrapper.find('div #passwordError').text().length).not.toBe(0);
     expect(wrapper.find('div#password').hasClass('has-error')).toBe(true);
+    expect(wrapper.find('input[name="password"]').prop('value')).toBe('bla');
 
   })
 
   it( 'should display an error when the password and confirmPassword fields do not match', function() {
+
     const wrapper = shallow(<RegistrationForm/>);
     const passwordConfirmField = wrapper.find('input[name="passwordConfirm"]');
     //let simulatedPasswordInputElement = createSimulatedElement('password', 'blablah', { valid: true });
@@ -85,11 +93,14 @@ describe('RegistrationForm Component', function() {
 
     // Simulate a change to the passwordConfirm field
     passwordConfirmField.simulate('change',  simulatedElement);
+
+    //console.log(wrapper.state('errorMessages'));
     expect(wrapper.state('errorMessages').passwordConfirm).not.toBeNull();
     expect(wrapper.find('div #passwordConfirmError').length).not.toBe(0);
     expect(wrapper.find('div #passwordConfirmError').text()).not.toBeUndefined();
     expect(wrapper.find('div #passwordConfirmError').text().length).not.toBe(0);
     expect(wrapper.find('div#passwordConfirm').hasClass('has-error')).toBe(true);
+
   })
 
   it('should display an error when a name value fails the HTML required contraint', function() {
@@ -103,7 +114,7 @@ describe('RegistrationForm Component', function() {
     expect(wrapper.find('div#fullName').hasClass('has-error')).toBe(true);
   })
 
-  it('should reject an attempt to submit an invalid form', function() {
+  it('should reject an attempt to submit an form with an invalid name', function() {
     spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
 
     const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
@@ -122,6 +133,62 @@ describe('RegistrationForm Component', function() {
     // Check to see if the invalid fields have been visually flagged
     //console.log(wrapper.find('div#fullName').debug());
     expect(wrapper.find('div#fullName').hasClass('has-error')).toBe(true);
+
+  })
+
+  it('should reject an attempt to submit an form with a missing name and email', function() {
+    spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
+
+    const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
+
+    const inputNameField = wrapper.find('input[name="fullName"]');
+    let simulatedNameElement = createSimulatedElement('fullName', '', { valueMissing: true});
+    inputNameField.simulate('change',  simulatedNameElement);
+
+    const inputEmailField = wrapper.find('input[name="email"]');
+    let simulatedEmailElement = createSimulatedElement('email', '', { valueMissing: true});
+    inputEmailField.simulate('change',  simulatedEmailElement);
+
+    expect(wrapper.state('errorMessages').fullName).not.toBeNull();
+    expect(wrapper.find('div #fullNameError').text().length).not.toBe(0);
+
+    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+
+    // Check to see if the alertbox gets populated
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Name is a required field');
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Email is a required field');
+
+    // Check to see if the invalid fields have been visually flagged
+    //console.log(wrapper.find('div#fullName').debug());
+    expect(wrapper.find('div#fullName').hasClass('has-error')).toBe(true);
+
+  })
+
+  it('should reject an attempt to submit an form with a password that does not match', function() {
+    spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
+
+    const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
+    const VALID_ELEMENT = {valid: true};
+
+    const inputPasswordField = wrapper.find('input[name="password"]');
+    let simulatedPasswordElement = createSimulatedElement('password', 'mypassword', VALID_ELEMENT);
+    inputPasswordField.simulate('change',  simulatedPasswordElement);
+
+    const inputPasswordConfirmField = wrapper.find('input[name="passwordConfirm"]');
+    let simulatedPasswordConfirmElement = createSimulatedElement('passwordConfirm', 'not-mypassword', VALID_ELEMENT);
+    inputPasswordConfirmField.simulate('change',  simulatedPasswordConfirmElement);
+
+    expect(wrapper.state('errorMessages').passwordConfirm).not.toBeNull();
+    expect(wrapper.find('div #passwordConfirmError').text().length).not.toBe(0);
+
+    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+
+    // Check to see if the alertbox gets populated
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Passwords do not match');
+
+    // Check to see if the invalid fields have been visually flagged
+    //console.log(wrapper.find('div#fullName').debug());
+    expect(wrapper.find('div#passwordConfirm').hasClass('has-error')).toBe(true);
 
   })
 
@@ -230,6 +297,28 @@ describe('RegistrationForm Component', function() {
   wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
 
 
+  })
+
+  fit( 'should not show an alert if an field error is corrected', function() {
+    spyOn(RegistrationForm.prototype, "showAlert").and.callThrough()
+
+    const wrapper = shallow(<RegistrationForm alertBox={mockAlertContainer}/>);
+
+    const inputField = wrapper.find('input[name="fullName"]');
+    let simulatedElement = createSimulatedElement('fullName', '', { valueMissing: true});
+    inputField.simulate('change',  simulatedElement);
+
+    // Click submit
+    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+
+    expect(RegistrationForm.prototype.showAlert).toHaveBeenCalledWith('Name is a required field');
+
+    simulatedElement = createSimulatedElement('fullName', 'a name', { valid: true});
+    inputField.simulate('change',  simulatedElement);
+    // Click submit
+    wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });
+
+    expect(RegistrationForm.prototype.showAlert.calls.count()).toEqual(1);
   })
 
 });

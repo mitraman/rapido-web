@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { browserHistory } from 'react-router'
 import PasswordConfig from '../passwordConfig.js'
-import AlertContainer from 'react-alert'
 import Backend from '../../adapter/Backend.js'
 
 export default class extends React.Component{
@@ -52,6 +51,7 @@ export default class extends React.Component{
 
   /* Method to show alert message */
   showAlert(message){
+    console.log(message);
     // Let the parent specify the alert box implementation
     this.props.alertBox.error(message, {
       time: 5000,
@@ -79,10 +79,13 @@ export default class extends React.Component{
     const isPasswordConfirm = (e.target.name === 'passwordConfirm');
 
     if (isPasswordConfirm) {
+      console.log(e);
       if( this.state.password !== e.target.value ) {
-        e.setCustomValidity('Passwords do not match');
+        this.refs.passwordConfirm.setCustomValidity('Passwords do not match');
+        //e.setCustomValidity('Passwords do not match');
       } else {
-        e.setCustomValidity('');
+        //e.setCustomValidity('');
+        this.refs.passwordConfirm.setCustomValidity('');
       }
     }
 
@@ -109,13 +112,13 @@ export default class extends React.Component{
       // add the bootstrap error class to the form input group
       let inputClassList = this.state.inputClassList;
       inputClassList[e.target.name] = 'form-group has-error';
-      this.setState(inputClassList: inputClassList);
+      this.setState({inputClassList: inputClassList});
 
     } else if( validityState.valid ) {
-        errorMessages[e.target.name] = null;
+        delete errorMessages[e.target.name];
         let inputClassList = this.state.inputClassList;
         inputClassList[e.target.name] = 'form-group';
-        this.setState(inputClassList: inputClassList);
+        this.setState({inputClassList: inputClassList});
     }
 
     this.setState({'errorMessages': errorMessages})
@@ -162,7 +165,6 @@ export default class extends React.Component{
     }
     return(
       <div className="col-md-12">
-        <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
         <form id="registration" className="col-md-12 create-account-form" >
           {creationLabel}
           <div id="fullName" className={this.state.inputClassList.fullName}>

@@ -1,6 +1,5 @@
 import React from 'react';
 import ProjectRow from '../../../src/js/modules/projects/ProjectRow.jsx';
-import { browserHistory } from 'react-router'
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
 

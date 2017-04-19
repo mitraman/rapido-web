@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { browserHistory } from 'react-router'
 import AlertContainer from 'react-alert'
 import Backend from '../../adapter/Backend.js'
 
@@ -80,7 +79,7 @@ export default class extends React.Component{
         }else {
           sessionStorage.setItem('token', result.token);
         }
-        browserHistory.push('/sketches');
+        this.props.loginSucceeded();
       })
       .catch((error)=> {
         this.showAlert(error)

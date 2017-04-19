@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { browserHistory } from 'react-router'
 import PasswordConfig from '../passwordConfig.js'
 import Backend from '../../adapter/Backend.js'
 
@@ -144,7 +143,7 @@ export default class extends React.Component{
         "password": this.state.password
       })
       .then((result)=> {
-        browserHistory.push('/mailVerification');
+        this.props.registrationSuceeded();
       })
       .catch((error)=> {
         //console.log('caught an error: ', error);

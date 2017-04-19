@@ -16,6 +16,7 @@
     "bootstrap": "^3.3.6",
     "brace": "~0.9.1",
     "d3": "^4.2.3",
+    "history": "^4.6.1",
     "jquery": "^2.2.3",
     "react": "^15.0.2",
     "react-ace": "~4.1.1",
@@ -23,7 +24,7 @@
     "react-alert": "^1.0.14",
     "react-d3-wrap": "^2.1.2",
     "react-dom": "^15.0.2",
-    "react-router": "^2.4.0"
+    "react-router-dom": "^4.1.1"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",

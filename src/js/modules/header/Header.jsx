@@ -1,8 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router'
-
-import Modal from '../Modal.jsx'
+import { Link } from 'react-router-dom'
 import LoginForm from '../login/LoginForm.jsx'
+import Modal from '../Modal.jsx'
 import '../../../css/header.scss'
 import 'bootstrap/dist/js/bootstrap';
 
@@ -32,7 +31,7 @@ export default React.createClass({
     }
 
     let loginBody = <LoginForm/>
-    
+
     return (
       <div >
         <Modal id="loginModal" title="login" body={loginBody}/>

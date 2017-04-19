@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { browserHistory } from 'react-router'
 import AlertContainer from 'react-alert'
+
 
 export default class extends React.Component{
 

@@ -1,9 +1,11 @@
 import React from 'react';
 import RegistrationForm from '../../../src/js/modules/register/RegistrationForm.jsx';
-import { browserHistory } from 'react-router'
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
 import sinon from 'sinon';
+import createHistory from 'history/createBrowserHistory'
+
+const history = createHistory();
 
 function createSimulatedElement(name, value, validState) {
 
@@ -243,19 +245,14 @@ describe('RegistrationForm Component', function() {
    });
 
 
-    const wrapper = mount(<RegistrationForm alertBox={mockAlertContainer}/>);
+
+    const wrapper = mount(<RegistrationForm alertBox={mockAlertContainer} registrationSuceeded={() => {done()}}/>);
 
     // Set the field properties
     wrapper.setState({fullName: validRegistration.fullName});
     wrapper.setState({password: validRegistration.password});
     wrapper.setState({email: validRegistration.email});
     wrapper.setState({formStarted: true});
-
-    // Watch for the browserHistory to change
-    spyOn(browserHistory, 'push').and.callFake(function(newUrl){
-      expect(newUrl).toBe('/mailVerification');
-      done();
-    })
 
     // Click submit
     wrapper.find('button #register').simulate('click', { preventDefault: () => undefined });

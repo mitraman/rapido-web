@@ -1,9 +1,9 @@
 import React from 'react';
 import LoginForm from '../../../src/js/modules/login/LoginForm.jsx';
-import { browserHistory } from 'react-router'
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
 import sinon from 'sinon';
+
 
 function createSimulatedElement(name, value, validState) {
 
@@ -27,11 +27,6 @@ describe('LoginForm Component', function() {
   }
 
   beforeEach(function() {
-    // Make sure that the browser page doesn't change
-    //spyOn(browserHistory, 'push').and.callThrough()
-
-    // Setup a spy to make sure that an error allert is issued
-    //spyOn(LoginForm.prototype, "showAlert").and.callThrough()
   });
 
   it('should render a login form', function() {
@@ -66,23 +61,23 @@ describe('LoginForm Component', function() {
 
   it('should reject an attempt to login before filling out form', function() {
 
-    spyOn(browserHistory, 'push').and.callThrough()
+    let loginSucceeded = jasmine.createSpy('loginSucceeded');
     spyOn(LoginForm.prototype, "showAlert").and.callThrough()
 
-    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg} loginSucceeded={loginSucceeded}/>);
     wrapper.find('button #login-button').get(0).click();
 
     expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Please fill out login form fields');
-    expect(browserHistory.push).not.toHaveBeenCalled();
+    expect(loginSucceeded).not.toHaveBeenCalled();
 
   })
 
   it('should reject an attempt to login with a missing email address', function() {
 
-    spyOn(browserHistory, 'push').and.callThrough()
     spyOn(LoginForm.prototype, "showAlert").and.callThrough()
+    let loginSucceeded = jasmine.createSpy('loginSucceeded');
 
-    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg} loginSucceeded={loginSucceeded}/>);
 
     // Try resetting the state of LoginForm
     wrapper.setState({formStarted: false});
@@ -98,15 +93,15 @@ describe('LoginForm Component', function() {
     wrapper.find('button #login-button').get(0).click();
 
     expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID is a required field');
-    expect(browserHistory.push).not.toHaveBeenCalled();
+    expect(loginSucceeded).not.toHaveBeenCalled();
   })
 
   it('should reject an attempt to login with a missing password', function() {
 
-    spyOn(browserHistory, 'push').and.callThrough();
+    let loginSucceeded = jasmine.createSpy('loginSucceeded');
     spyOn(LoginForm.prototype, "showAlert").and.callThrough();
 
-    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg} loginSucceeded={loginSucceeded}/>);
 
     // Try resetting the state of LoginForm
     wrapper.setState({formStarted: false});
@@ -122,16 +117,16 @@ describe('LoginForm Component', function() {
     wrapper.find('button #login-button').get(0).click();
 
     expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Password is a required field');
-    expect(browserHistory.push).not.toHaveBeenCalled();
+    expect(loginSucceeded).not.toHaveBeenCalled();
 
   })
 
   it('should reject an attempt to login with an invalid email address', function() {
 
-    spyOn(browserHistory, 'push').and.callThrough();
+    let loginSucceeded = jasmine.createSpy('loginSucceeded');
     spyOn(LoginForm.prototype, "showAlert").and.callThrough();
 
-    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg}/>);
+    const wrapper = mount(<LoginForm alertMsg={reactAlertMsg} loginSucceeded={loginSucceeded}/>);
 
     const emailInputField = wrapper.find('input[name="userId"]');
     let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { typeMismatch: true});
@@ -144,7 +139,7 @@ describe('LoginForm Component', function() {
     wrapper.find('button #login-button').get(0).click();
 
     expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID should be a valid email address');
-    expect(browserHistory.push).not.toHaveBeenCalled();
+    expect(loginSucceeded).not.toHaveBeenCalled();
 
   })
 
@@ -173,7 +168,8 @@ describe('LoginForm Component', function() {
    });
 
 
-    const wrapper = mount(<LoginForm/>);
+
+    const wrapper = mount(<LoginForm loginSucceeded={()=>{done()}}/>);
 
     // Set the component state so that a form can be submitted
     wrapper.setState({userId: validLogin.userId});
@@ -184,12 +180,6 @@ describe('LoginForm Component', function() {
     wrapper.find('button #login-button').get(0).click();
 
     expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
-
-    // Watch for the browserHistory to change
-    spyOn(browserHistory, 'push').and.callFake(function(newUrl){
-      expect(newUrl).toBe('/sketches');
-      done();
-    })
 
   })
 

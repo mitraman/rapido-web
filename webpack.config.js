@@ -50,7 +50,7 @@ module.exports = {
            jQuery: "jquery"
        }),
        new webpack.DefinePlugin({
-          __BACKEND: JSON.stringify("http://localhost:8090")
+          __BACKEND: JSON.stringify("http://localhost:9090")
       })
    ],
     resolve: {

@@ -2,6 +2,10 @@ import React from 'react';
 import App from '../../src/js/modules/App.jsx';
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
+import { MemoryRouter as Router } from 'react-router-dom';
+
+// Needed to support React-Router context requireents for Link and Route elements
+const mountWithRouter = node => mount(<Router>{node}</Router>);
 
 describe('Root App Component', function() {
 
@@ -18,7 +22,7 @@ describe('Root App Component', function() {
 
   it('should render a guest landing page if there is no auth token', function() {
     store.userInfo = null;
-    const wrapper = mount(<App/>);
+    const wrapper = mountWithRouter(<App/>);
     expect(wrapper.find('div #landing').length).toBe(1);
   })
 
@@ -30,7 +34,7 @@ describe('Root App Component', function() {
 
   it( 'should render a guest landing page if the auth token does not contain a user id', function() {
     store.userInfo = '{"_missing_userid": "143"}';
-    const wrapper = mount(<App/>);
+    const wrapper = mountWithRouter(<App/>);
     expect(wrapper.find('div #landing').length).toBe(1);
   })
 

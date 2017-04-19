@@ -1,6 +1,5 @@
 import React from 'react';
 import ProjectCell from '../../../src/js/modules/projects/ProjectCell.jsx';
-import { browserHistory } from 'react-router'
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
 

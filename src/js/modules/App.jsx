@@ -1,6 +1,8 @@
 import React from 'react';
+import { Route } from 'react-router-dom'
 import Header from './header/Header';
 import Landing from './Landing.jsx';
+import Projects from './Projects'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../../css/app.scss'
@@ -10,16 +12,12 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-
-    };
   }
 
 
   render() {
 
     let header, bodyContent, navDetails, githubBadge;
-
 
     // Set the default authentication state
     let authenticated = false;
@@ -70,7 +68,9 @@ export default class extends React.Component {
         <div className="col-md-12 main-content">
           {bodyContent}
         </div>
+    		<Route path="/projects" component={Projects} />
       </div>
+
     )
 
   }

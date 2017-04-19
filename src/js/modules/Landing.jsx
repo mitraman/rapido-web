@@ -1,6 +1,8 @@
 import React from 'react'
 import RegistrationForm from './register/RegistrationForm'
 import AlertContainer from 'react-alert';
+import createHistory from 'history/createBrowserHistory'
+const history = createHistory();
 
 export default class extends React.Component{
 
@@ -22,6 +24,11 @@ export default class extends React.Component{
     };
   }
 
+  registered() {
+    // Redirect to sketches page?
+    history.push('/sketches')
+  }
+
   /* Render Method */
   render() {
     return(
@@ -32,7 +39,7 @@ export default class extends React.Component{
         </div>
         <div className="col-md-3 registration-section">
 
-            <RegistrationForm alertBox={this.state.alertBox} />
+            <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={this.registered} />
         </div>
       </div>
     )

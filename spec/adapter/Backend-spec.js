@@ -18,12 +18,13 @@ describe('Backend client', function() {
   it('should throw an error if the response body is not JSON parseable', function(done) {
 
     // Setup the mock response
-    this.server.respondWith("GET", "/api/endpoint", function(xhr) {
+    const url = __BACKEND + '/api/endpoint';
+    this.server.respondWith("GET", url, function(xhr) {
       xhr.respond(200, {"Content-Type": "application/json"},'{badjson: 14');
     });
 
     // Make the call
-    Backend._call("GET", "/api/endpoint", { sample: 'value'}, ()=>{return null;})
+    Backend._call("GET", url, { sample: 'value'}, ()=>{return null;})
     .then(()=>{
       fail("The request should have thrown an error.")
     }).catch((error)=>{
@@ -36,7 +37,7 @@ describe('Backend client', function() {
     //TODO: figure out how to make the mock server delay long enough for the timeout test to be conducted
 
     // Setup the mock response
-    this.server.respondWith("GET", "/api/endpoint", function(xhr) {
+    this.server.respondWith("GET", __BACKEND + "/api/endpoint", function(xhr) {
       // Do not respond
       console.log('in response handler');
       jasmine.clock().tick(10000);
@@ -46,7 +47,7 @@ describe('Backend client', function() {
 
 
     // Make the call
-    Backend._call("GET", "/api/endpoint", { sample: 'value'}, ()=>{return null;})
+    Backend._call("GET", __BACKEND + "/api/endpoint", { sample: 'value'}, ()=>{return null;})
     .then(()=>{
       fail("The request should have thrown an error.")
     }).catch((error)=>{
@@ -59,18 +60,18 @@ describe('Backend client', function() {
 
     let redirectEndpointCalled = false;
     // Setup the mock response
-    this.server.respondWith("GET", "/api/endpoint", function(xhr) {
+    this.server.respondWith("GET", __BACKEND + "/api/endpoint", function(xhr) {
       xhr.respond(301, {"Location": "/api/newlocation"},'{}');
     });
 
-    this.server.respondWith("GET", "/api/newlocation", function(xhr) {
+    this.server.respondWith("GET", __BACKEND + "/api/newlocation", function(xhr) {
       console.log('called new endpoint');
       redirectEndpointCalled = true;
       xhr.respond(200, {"Content-Type": "application/json"},'{"json": "14"}');
     })
 
     // Make the call
-    Backend._call("GET", "/api/endpoint", { sample: 'value'}, ()=>{return null;})
+    Backend._call("GET", __BACKEND + "/api/endpoint", { sample: 'value'}, ()=>{return null;})
     .then(()=>{
       expect(redirectEndpointCalled).toBe(true);
       fail("The request should have thrown an error.")
@@ -84,12 +85,12 @@ describe('Backend client', function() {
   it('should throw an error if the server provides a non 200 status', function(done) {
 
     // Setup the mock response
-    this.server.respondWith("GET", "/api/endpoint", function(xhr) {
+    this.server.respondWith("GET", __BACKEND + "/api/endpoint", function(xhr) {
       xhr.respond(400, {"Content-Type": "application/json"},'{}');
     });
 
     // Make the call
-    Backend._call("GET", "/api/endpoint", { sample: 'value'}, ()=>{return null;})
+    Backend._call("GET", __BACKEND + "/api/endpoint", { sample: 'value'}, ()=>{return null;})
     .then(()=>{
       fail("The request should have thrown an error.")
     }).catch((error)=>{
@@ -109,7 +110,7 @@ describe('Backend client', function() {
     }
 
     // This endpoint will not be reached by the client.  The fake server will return a 404 instead.
-     this.server.respondWith("POST", "/unreachable", function(xhr) {
+     this.server.respondWith("POST", __BACKEND + "/unreachable", function(xhr) {
 
        xhr.respond(401, {"Content-Type": "application/json"},
          JSON.stringify({
@@ -134,7 +135,7 @@ describe('Backend client', function() {
       "password": "password"
     }
 
-     this.server.respondWith("POST", "/api/register", function(xhr) {
+     this.server.respondWith("POST", __BACKEND +  "/api/register", function(xhr) {
        expect(xhr.requestBody.fullname).not.toBeNull();
        expect(xhr.requestBody.email).not.toBeNull();
        expect(xhr.requestBody.nickname).not.toBeNull();
@@ -163,7 +164,8 @@ describe('Backend client', function() {
       "password": "password"
     }
 
-     this.server.respondWith("POST", "/api/login", function(xhr) {
+     const url = __BACKEND + '/api/login';
+     this.server.respondWith("POST", url, function(xhr) {
        expect(xhr.requestBody.email).not.toBeNull();
        expect(xhr.requestBody.password).not.toBeNull();
 
@@ -180,7 +182,5 @@ describe('Backend client', function() {
       fail(error);
     }).finally(done)
   })
-
-
 
 });

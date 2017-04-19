@@ -161,9 +161,10 @@ describe('LoginForm Component', function() {
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/login", function(xhr) {
-      expect(xhr.requestBody.email).toBe(validLogin.userId);
-      expect(xhr.requestBody.password).toBe(validLogin.password);
+    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
+      let jsonBody = JSON.parse(xhr.requestBody);
+      expect(jsonBody.email).toBe(validLogin.userId);
+      expect(jsonBody.password).toBe(validLogin.password);
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
@@ -207,9 +208,10 @@ describe('LoginForm Component', function() {
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/login", function(xhr) {
-      expect(xhr.requestBody.email).toBe(validLogin.userId);
-      expect(xhr.requestBody.password).toBe(validLogin.password);
+    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
+      let jsonBody = JSON.parse(xhr.requestBody);
+      expect(jsonBody.email).toBe(validLogin.userId);
+      expect(jsonBody.password).toBe(validLogin.password);
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
@@ -257,9 +259,10 @@ describe('LoginForm Component', function() {
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/login", function(xhr) {
-      expect(xhr.requestBody.email).toBe(validLogin.userId);
-      expect(xhr.requestBody.password).toBe(validLogin.password);
+    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
+      let jsonBody = JSON.parse(xhr.requestBody);
+      expect(jsonBody.email).toBe(validLogin.userId);
+      expect(jsonBody.password).toBe(validLogin.password);
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
@@ -306,9 +309,10 @@ describe('LoginForm Component', function() {
     this.server = sinon.fakeServer.create();
     this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", "/api/login", function(xhr) {
-      expect(xhr.requestBody.email).toBe(validLogin.userId);
-      expect(xhr.requestBody.password).toBe(validLogin.password);
+    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
+      let jsonBody = JSON.parse(xhr.requestBody);
+      expect(jsonBody.email).toBe(validLogin.userId);
+      expect(jsonBody.password).toBe(validLogin.password);
 
       xhr.respond(401, {"Content-Type": "application/json"},
         JSON.stringify({

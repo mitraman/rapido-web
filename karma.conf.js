@@ -75,7 +75,10 @@ module.exports = function(config) {
          new webpack.ProvidePlugin({
              $: "jquery",
              jQuery: "jquery"
-         })
+         }),
+         new webpack.DefinePlugin({
+            __BACKEND: JSON.stringify("http://localhost:8090")
+        })
      ],
       externals: {
         cheerio: 'window',

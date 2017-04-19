@@ -4,9 +4,11 @@ var Promise = require("bluebird");
 export default class {
 
   static _call(method, url, body, responseHandler) {
+    const baseUrl = __BACKEND;
+    let path = baseUrl + url;
     return new Promise( function(resolve, reject ) {
       var xhr = new XMLHttpRequest();
-      xhr.open(method, url);
+      xhr.open(method, path);
       xhr.setRequestHeader('Content-Type', 'application/json');
 
       // Set a timeout of 3 seconds
@@ -21,7 +23,6 @@ export default class {
             //console.log(responseBody);
             resolve(responseHandler(responseBody));
           } else {
-            //console.log(xhr.status);
             let contentType = xhr.getResponseHeader('Content-Type');
             if( contentType &&  contentType.endsWith('json')) {
               let responseBody = JSON.parse(xhr.response);
@@ -36,8 +37,7 @@ export default class {
         }
       }
 
-      //console.log('making call');
-      xhr.send(body);
+      xhr.send(JSON.stringify(body));
     });
   }
 

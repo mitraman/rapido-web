@@ -48,7 +48,10 @@ module.exports = {
        new webpack.ProvidePlugin({
            $: "jquery",
            jQuery: "jquery"
-       })
+       }),
+       new webpack.DefinePlugin({
+          __BACKEND: JSON.stringify("http://localhost:8090")
+      })
    ],
     resolve: {
         root: [

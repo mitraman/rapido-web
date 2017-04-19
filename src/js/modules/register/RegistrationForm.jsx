@@ -51,7 +51,7 @@ export default class extends React.Component{
 
   /* Method to show alert message */
   showAlert(message){
-    console.log(message);
+    //console.log(message);
     // Let the parent specify the alert box implementation
     this.props.alertBox.error(message, {
       time: 5000,
@@ -79,13 +79,10 @@ export default class extends React.Component{
     const isPasswordConfirm = (e.target.name === 'passwordConfirm');
 
     if (isPasswordConfirm) {
-      console.log(e);
       if( this.state.password !== e.target.value ) {
-        this.refs.passwordConfirm.setCustomValidity('Passwords do not match');
-        //e.setCustomValidity('Passwords do not match');
+        this.passwordConfirmElement.setCustomValidity('Passwords do not match');
       } else {
-        //e.setCustomValidity('');
-        this.refs.passwordConfirm.setCustomValidity('');
+        this.passwordConfirmElement.setCustomValidity('');
       }
     }
 
@@ -147,11 +144,11 @@ export default class extends React.Component{
         "password": this.state.password
       })
       .then((result)=> {
-        //console.log('got result ', result);
         browserHistory.push('/mailVerification');
       })
       .catch((error)=> {
         //console.log('caught an error: ', error);
+        // If the user account already exists, re-route user to a login page with an error message
         this.showAlert(error)
       })
     }
@@ -207,7 +204,7 @@ export default class extends React.Component{
             <input className="form-control"
               type="password"
               name="passwordConfirm"
-              ref="passwordConfirm"
+              ref={(e) => { this.passwordConfirmElement = e; }}
               value={ this.state.passwordConfirm }
               onChange={ this.handleChange }
               required />

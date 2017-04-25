@@ -164,6 +164,11 @@ describe('Backend client', function() {
       "password": "password"
     }
 
+    let userId = 14;
+    let fullName = "Test User";
+    let nickName = "Test";
+
+
      const url = __BACKEND + '/api/login';
      this.server.respondWith("POST", url, function(xhr) {
        expect(xhr.requestBody.email).not.toBeNull();
@@ -171,13 +176,21 @@ describe('Backend client', function() {
 
        xhr.respond(200, {"Content-Type": "application/json"},
          JSON.stringify({
-            token: (Math.random() * (32767 - 1)) + 1
+            token: (Math.random() * (32767 - 1)) + 1,
+            email: userDetails.email,
+            fullName: fullName,
+            nickName: nickName,
+            userId: userId
          }));
     });
 
     Backend.login(userDetails)
     .then((result)=> {
       expect(result.token).not.toBeUndefined();
+      expect(result.userId).toBe(userId);
+      expect(result.fullName).toBe(fullName);
+      expect(result.email).toBe(userDetails.email);
+      expect(result.nickName).toBe(nickName);
     }).catch((error)=> {
       fail(error);
     }).finally(done)

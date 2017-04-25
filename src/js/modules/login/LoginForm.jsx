@@ -8,7 +8,7 @@ export default class extends React.Component{
   constructor(props) {
       super(props);
       this.state = {
-        userId: '',
+        email: '',
         password: '',
         rememberMe: false,
         errorMessages: {},
@@ -18,7 +18,7 @@ export default class extends React.Component{
 
       // Keep the labels out of the state parameter becuase they aren't changed after being rendered.
       this.labels = {
-        userId: 'User ID',
+        email: 'User ID',
         password: 'Password',
       }
 
@@ -69,22 +69,25 @@ export default class extends React.Component{
       });
     } else {
       Backend.login({
-        "email": this.state.userId,
+        "email": this.state.email,
         "password": this.state.password
       })
       .then((result)=> {
-        console.log('got result');
+        //console.log(result);
         // Store the token based on the login parameters
         let userInfo = JSON.stringify({
-          email: this.state.userId,
-          token: result.token
-        })
+          userId: result.userId,
+          email: this.state.email,
+          fullName: result.fullName,
+          token: result.token,
+          nickName: result.nickName
+        });
+
         if( this.state.rememberMe ) {
           localStorage.setItem('userInfo', userInfo );
         }else {
           sessionStorage.setItem('userInfo', userInfo );
         }
-        console.log('calling success fnction');
         this.props.loginSucceeded();
       })
       .catch((error)=> {
@@ -126,18 +129,18 @@ export default class extends React.Component{
         <form id="login-form" className="login-form" noValidate onSubmit={this.handleSubmit}>
 
           <div className="form-group">
-            <label htmlFor="InputUserID" id="userIdLabel">{this.labels.userId}</label>
+            <label htmlFor="InputEmail" id="userEmailLabel">{this.labels.email}</label>
             <input
               type="email"
-              value={this.state.userId}
+              value={this.state.email}
               onChange={this.handleChange}
               className="form-control"
-              id="InputUserID"
-              name="userId"
-              ref="userId"
+              id="InputEmail"
+              name="email"
+              ref="email"
               placeholder="email address" required
               required />
-            <div className="error" id="userIdError">{this.state.errorMessages.userId}</div>
+            <div className="error" id="userIdError">{this.state.errorMessages.email}</div>
           </div>
 
           <div className="form-group">

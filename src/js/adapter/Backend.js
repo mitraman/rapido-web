@@ -77,7 +77,11 @@ export default class {
 
     return this._call("POST", "/api/login", body, function(responseBody) {
       return {
-        token: responseBody.token
+        token: responseBody.token,
+        userId: responseBody.userId,
+        fullName: responseBody.fullName,
+        email: responseBody.email,
+        nickName: responseBody.nickName
       };
     })
   }

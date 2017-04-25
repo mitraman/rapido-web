@@ -15,7 +15,8 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showNavButtons : false
+      showNavButtons : false,
+      activeProject : 0
     }
   }
 
@@ -69,7 +70,8 @@ export default class extends React.Component {
       // pass properties to children
       bodyContent = <div id="app">
         <Route path="/projects" render={() => {return <Projects userObject={userObject}/>}} />
-        <Route path="/project/:projectId/sketch/:sketchId" render={() => {return <Sketch userObject={userObject}/>}} />
+        <Route path="/project/:projectId/sketch/:sketchId" render={() => {
+            return <Sketch userObject={userObject} displayNavigationButtons={(state)=>{this.setState({showNavButtons: state})}}/>}} />
       </div>;
 
     }else if (!authenticated ) {

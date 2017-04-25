@@ -10,6 +10,7 @@ let height = 800;
   beforeEach(function(){
 
   })
+
   it('can render an empty tree with a single root node', function() {
     const treeData =  {
       "id": 0,
@@ -39,8 +40,6 @@ let height = 800;
     // We need to use baseVal because this is an SVG element
     expect(gNodeEl.className.baseVal).toContain('node');
     // Make sure the node looks the way we expect
-
-
 /*
     const wrapper = mount(<CRUDTree data={[treeData]} width={width} height={height} />);
     console.log(wrapper.children().length);
@@ -50,4 +49,12 @@ let height = 800;
     expect(wrapper.find('svg.d3-wrap').length).toEqual(1);
 **/
   });
+
+  it('renders a tree with a single child', function() {
+    const treeData =  {
+      "id": 0,
+      "url": "API",
+      "children": []
+    }
+  })
 })

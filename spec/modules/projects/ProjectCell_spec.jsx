@@ -15,7 +15,7 @@ describe('ProjectCell Component', function() {
   it('should display the name of the project', function() {
     const wrapper = shallow(<ProjectCell project={project}/>);
     expect(wrapper.find('div.projectCell').length).toBe(1);
-    expect(wrapper.find('div.projectName').text()).toBe(project.name);
+    expect(wrapper.find('h3.projectName').text()).toBe(project.name);
   })
 
   it('should display the description of the project', function() {

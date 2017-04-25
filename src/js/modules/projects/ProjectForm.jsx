@@ -17,8 +17,8 @@ export default class extends React.Component{
 
       // Keep the labels out of the state parameter becuase they aren't changed after being rendered.
       this.labels = {
-        name: 'User ID',
-        description: 'Password',
+        projectName: 'Project Name',
+        projectDescription: 'Description',
       }
 
       this.alertOptions = {
@@ -59,17 +59,48 @@ export default class extends React.Component{
   /* Method to handle form submission */
   handleSubmit(e) {
     e.preventDefault();
-    Backend.createProject(this.props.userObject.token,
-    {
-      name: this.state.projectName,
-      description: this.state.projectDescription,
-      style: this.state.style
-    }).then( (result) => {
-      this.props.projectCreated(result.id)
-    })
+    if( !this.state.formStarted ) {
+      // Project name is the only required field, so set an error message jsut for that field
+      this.setState({errorMessages: {projectName: 'Please provide a name for the new project.'}});
+    }else if (Object.keys(this.state.errorMessages).length !== 0  ) {
+      const thisForm = this;
+      // Remind the user know that there are problems with the form
+      Object.keys(this.state.errorMessages).forEach(function(key) {
+        thisForm.showAlert(thisForm.state.errorMessages[key]);
+      });
+    } else {
+      Backend.createProject(this.props.userObject.token,
+      {
+        name: this.state.projectName,
+        description: this.state.projectDescription,
+        style: this.state.style
+      }).then( (result) => {
+        this.props.projectCreated(result.id)
+      }).catch( (error) => {
+        this.showAlert(error);
+      })
+    }
   }
 
   showInputError(input) {
+    let validityState = input.validity;
+
+    let errorMessages = this.state.errorMessages;
+    let label = this.labels[input.name];
+
+    if( !validityState.valid ) {
+      if (validityState.valueMissing) {
+        errorMessages[input.name] = `${label} is a required field`;
+      } else if (validityState.typeMismatch) {
+        errorMessages[input.name] =  `${label} should be a valid email address`;
+      } else {
+        console.warn('unexpected conformance validator problem: ', validityState);
+        errorMessages[input.name] = `Invalid field value`;
+      }
+    } else if( validityState.valid ) {
+        delete errorMessages[input.name];
+    }
+    this.setState({'errorMessages': errorMessages})
   }
 
   /* Render Method */
@@ -90,7 +121,7 @@ export default class extends React.Component{
               ref={(input)=>{ this.projectNameInput = input}}
               placeholder="Project Name"
               required />
-            <div className="error" id="nameError">{this.state.errorMessages.name}</div>
+            <div className="error" id="projectNameError">{this.state.errorMessages.projectName}</div>
           </div>
 
           <div className="form-group">

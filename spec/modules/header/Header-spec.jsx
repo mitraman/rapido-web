@@ -9,15 +9,8 @@ describe('Header Component', function() {
   })
 
   it('should render a login button for guests', function() {
-    const wrapper = shallow(<Header authenticated={false} />);
+    const wrapper = shallow(<Header />);
     expect(wrapper.find('button #login').length).toBe(1);
   })
-
-  it('should not render a login button in authenticated mode', function() {
-    const wrapper = shallow(<Header authenticated={true} />);
-    expect(wrapper.find('button #login').length).toBe(0);
-  })
-
-
 
 });

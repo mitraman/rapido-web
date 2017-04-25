@@ -1,8 +1,9 @@
 import React from 'react';
 import LoginForm from '../../../src/js/modules/login/LoginForm.jsx';
+import Backend from '../../../src/js/adapter/Backend.js';
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
-import sinon from 'sinon';
+import Promise from 'bluebird';
 
 
 function createSimulatedElement(name, value, validState) {
@@ -36,7 +37,7 @@ describe('LoginForm Component', function() {
 
   it('should render an email field in a login form', function() {
     const wrapper = shallow(<LoginForm/>);
-    expect(wrapper.find('input[name="userId"]').length).toBe(1);
+    expect(wrapper.find('input[name="email"]').length).toBe(1);
   })
 
   it('should render a password field in a login form', function() {
@@ -82,8 +83,8 @@ describe('LoginForm Component', function() {
     // Try resetting the state of LoginForm
     wrapper.setState({formStarted: false});
 
-    const emailInputField = wrapper.find('input[name="userId"]');
-    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { valueMissing: true});
+    const emailInputField = wrapper.find('input[name="email"]');
+    let simulatedEmailElement = createSimulatedElement('email', 'email value', { valueMissing: true});
     emailInputField.simulate('change',  simulatedEmailElement);
 
     const passwordInputField = wrapper.find('input[name="password"]');
@@ -106,8 +107,8 @@ describe('LoginForm Component', function() {
     // Try resetting the state of LoginForm
     wrapper.setState({formStarted: false});
 
-    const emailInputField = wrapper.find('input[name="userId"]');
-    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { valid: true});
+    const emailInputField = wrapper.find('input[name="email"]');
+    let simulatedEmailElement = createSimulatedElement('email', 'email value', { valid: true});
     emailInputField.simulate('change',  simulatedEmailElement);
 
     const passwordInputField = wrapper.find('input[name="password"]');
@@ -128,8 +129,8 @@ describe('LoginForm Component', function() {
 
     const wrapper = mount(<LoginForm alertMsg={reactAlertMsg} loginSucceeded={loginSucceeded}/>);
 
-    const emailInputField = wrapper.find('input[name="userId"]');
-    let simulatedEmailElement = createSimulatedElement('userId', 'userid value', { typeMismatch: true});
+    const emailInputField = wrapper.find('input[name="email"]');
+    let simulatedEmailElement = createSimulatedElement('email', 'email value', { typeMismatch: true});
     emailInputField.simulate('change',  simulatedEmailElement);
 
     const passwordInputField = wrapper.find('input[name="password"]');
@@ -145,88 +146,83 @@ describe('LoginForm Component', function() {
 
   it('should login a user on successful entry of the form', function(done) {
 
-    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+    const password = 'MyPassword1';
+    const email = 'testuser@email.com';
+    const fullName = 'first last';
+    const nickName = 'nick';
+    const userID = 14;
+    const token ='llsakdflk1j32lf32'
 
-    let validLogin = {
-      password: 'MyPassword1',
-      userId: 'testuser@email.com'
-    }
-
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
-
-    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.email).toBe(validLogin.userId);
-      expect(jsonBody.password).toBe(validLogin.password);
-
-      xhr.respond(200, {"Content-Type": "application/json"},
-        JSON.stringify({
-           token: Math.random()
-        }));
-   });
-
-
+    spyOn(Backend, "login").and.callFake(function(userInfo) {
+       expect(userInfo.email).toBe(email);
+       expect(userInfo.password).toBe(password);
+       return new Promise( (resolve,reject)=> {
+         resolve({
+           token: token,
+           userId: userID,
+           fullName: fullName,
+           email: email,
+           nickName: nickName
+         });
+       })
+    })
 
     const wrapper = mount(<LoginForm loginSucceeded={()=>{done()}}/>);
 
     // Set the component state so that a form can be submitted
-    wrapper.setState({userId: validLogin.userId});
-    wrapper.setState({password: validLogin.password});
+    wrapper.setState({email: email});
+    wrapper.setState({password: password});
     wrapper.setState({formStarted: true});
 
     // Click submit
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
-
   })
 
-  it( 'should store an auth token in permanent storage if remember me is ticked', function(done) {
+  it( 'should store an auth token in permanent storage if "remember me" is ticked', function(done) {
 
-    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+    const password = 'MyPassword1';
+    const email = 'testuser@email.com';
+    const fullName = 'first last';
+    const nickName = 'nick';
+    const userID = 14;
+    const token ='llsakdflk1j32lf32'
 
-    let validLogin = {
-      password: 'MyPassword1',
-      userId: 'testuser@email.com'
-    }
-
-    const token = Math.random();
-
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
-
-    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.email).toBe(validLogin.userId);
-      expect(jsonBody.password).toBe(validLogin.password);
-
-      xhr.respond(200, {"Content-Type": "application/json"},
-        JSON.stringify({
-           token: token
-        }));
-   });
+    spyOn(Backend, "login").and.callFake(function(userInfo) {
+       expect(userInfo.email).toBe(email);
+       expect(userInfo.password).toBe(password);
+       return new Promise( (resolve,reject)=> {
+         resolve({
+           token: token,
+           userId: userID,
+           fullName: fullName,
+           email: email,
+           nickName: nickName
+         });
+       })
+     })
 
     const wrapper = mount(<LoginForm/>);
 
     // Set the component state so that a form can be submitted
-    wrapper.setState({userId: validLogin.userId});
-    wrapper.setState({password: validLogin.password});
+    wrapper.setState({email: email});
+    wrapper.setState({password: password});
     wrapper.setState({formStarted: true});
     wrapper.setState({rememberMe: true});
 
     // Click submit
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
-
     var store = {};
 
     spyOn(localStorage, 'setItem').and.callFake(function (key, value) {
-      expect(key).toBe('token');
-      expect(value).toBe(token);
+      expect(key).toBe('userInfo');
+      let userInfo = JSON.parse(value);
+      expect(userInfo.token).toBe(token);
+      expect(userInfo.userId).toBe(userID);
+      expect(userInfo.email).toBe(email);
+      expect(userInfo.nickName).toBe(nickName);
+      expect(userInfo.fullName).toBe(fullName);
       done();
       return store[key] = value + '';
     });
@@ -236,90 +232,83 @@ describe('LoginForm Component', function() {
 
   it( 'should store an auth token in session storage if remember me is not ticked', function(done) {
 
-    spyOn(LoginForm.prototype, "showAlert").and.callThrough();
+    const password = 'MyPassword1';
+    const email = 'testuser@email.com';
+    const fullName = 'first last';
+    const nickName = 'nick';
+    const userID = 14;
+    const token ='llsakdflk1j32lf32'
 
-    let validLogin = {
-      password: 'MyPassword1',
-      userId: 'testuser@email.com'
-    }
-
-    const token = Math.random();
-
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
-
-    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.email).toBe(validLogin.userId);
-      expect(jsonBody.password).toBe(validLogin.password);
-
-      xhr.respond(200, {"Content-Type": "application/json"},
-        JSON.stringify({
-           token: token
-        }));
-    });
+    spyOn(Backend, "login").and.callFake(function(userInfo) {
+       expect(userInfo.email).toBe(email);
+       expect(userInfo.password).toBe(password);
+       return new Promise( (resolve,reject)=> {
+         resolve({
+           token: token,
+           userId: userID,
+           fullName: fullName,
+           email: email,
+           nickName: nickName
+         });
+       })
+     })
 
     const wrapper = mount(<LoginForm/>);
 
     // Set the component state so that a form can be submitted
-    wrapper.setState({userId: validLogin.userId});
-    wrapper.setState({password: validLogin.password});
+    wrapper.setState({email: email});
+    wrapper.setState({password: password});
     wrapper.setState({formStarted: true});
     wrapper.setState({rememberMe: false});
 
     // Click submit
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).not.toHaveBeenCalled();
-
     var store = {};
 
-    // spyOn(localStorage, 'getItem').and.callFake(function (key) {
-    //   return store[key];
-    // });
     spyOn(sessionStorage, 'setItem').and.callFake(function (key, value) {
-      expect(key).toBe('token');
-      expect(value).toBe(token);
+      expect(key).toBe('userInfo');
+      let userInfo = JSON.parse(value);
+      expect(userInfo.token).toBe(token);
+      expect(userInfo.userId).toBe(userID);
+      expect(userInfo.email).toBe(email);
+      expect(userInfo.nickName).toBe(nickName);
+      expect(userInfo.fullName).toBe(fullName);
       done();
       return store[key] = value + '';
     });
   })
 
   it('should alert the user if the API call fails', function(done) {
-    let validLogin = {
-      password: 'MyPassword1',
-      userId: 'testuser@email.com'
-    }
 
-    const token = Math.random();
+    const password = 'MyPassword1';
+    const email = 'testuser@email.com';
+    const fullName = 'first last';
+    const nickName = 'nick';
+    const userID = 14;
+    const token ='llsakdflk1j32lf32'
+
     const serverError = 'some unexplained problem';
 
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
+    spyOn(Backend, "login").and.callFake(function(userInfo) {
+       expect(userInfo.email).toBe(email);
+       expect(userInfo.password).toBe(password);
+       return new Promise( (resolve,reject)=> {
+         reject(serverError);
+       })
+     })
 
-    this.server.respondWith("POST", __BACKEND + "/api/login", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.email).toBe(validLogin.userId);
-      expect(jsonBody.password).toBe(validLogin.password);
+     spyOn(LoginForm.prototype, 'showAlert').and.callFake(function (error) {
+       expect(error).toBe(serverError);
+       done();
+     });
 
-      xhr.respond(401, {"Content-Type": "application/json"},
-        JSON.stringify({
-           error: serverError
-        }));
-    });
-
-    spyOn(LoginForm.prototype, 'showAlert').and.callFake(function (error) {
-      //console.log(error);
-      done();
-    });
 
     const wrapper = mount(<LoginForm/>);
 
     // Set the component state so that a form can be submitted
-    wrapper.setState({userId: validLogin.userId});
-    wrapper.setState({password: validLogin.password});
+    wrapper.setState({email: email});
+    wrapper.setState({password: password});
     wrapper.setState({formStarted: true});
     wrapper.setState({rememberMe: false});
 

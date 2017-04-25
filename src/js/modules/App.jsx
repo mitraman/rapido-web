@@ -1,8 +1,10 @@
 import React from 'react';
 import { Route } from 'react-router-dom'
 import Header from './header/Header';
+import AuthenticatedHeader from './header/AuthenticatedHeader';
 import Landing from './Landing.jsx';
-import Projects from './Projects'
+import Projects from './Projects';
+import Sketch from './Sketch';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '../../css/app.scss'
@@ -12,8 +14,10 @@ export default class extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      showNavButtons : false
+    }
   }
-
 
   render() {
 
@@ -23,23 +27,28 @@ export default class extends React.Component {
     let authenticated = false;
 
     // Check in local storage for the auth token (this happens if the user clicks 'remember me')
-    let userObject = JSON.parse(localStorage.getItem('userInfo'));
-    if( !userObject ) {
-      // Otherwise, check if the token is in session storage
-       userObject = JSON.parse(sessionStorage.getItem('userInfo'));
+    let userObject;
+
+    try {
+      userObject = JSON.parse(localStorage.getItem('userInfo'));
+      if( !userObject ) {
+        // Otherwise, check if the token is in session storage
+         userObject = JSON.parse(sessionStorage.getItem('userInfo'));
+      }
+      // If there is no userObject, make it empty
+      userObject = (userObject) ? userObject : {};
+    } catch( e ) {
+      console.error('Unable to parse login information:', e);
     }
 
     // If we have an auth token, change the auth state and header
-    if(userObject && userObject.userid) {
+    if(userObject.token) {
       // Use an authenticated header if we have an auth token
-      header = <Header
-        authenticated={true}
-        location={this.props.location}
-        userInfo = {userObject}/>
+      header = <AuthenticatedHeader userInfo={userObject} showNavButtons={this.state.showNavButtons}/>;
       authenticated = true;
-    }else if( !userObject || !userObject.userid) {
+    }else if( !userObject.token ){
         // Define the unauthenticated header
-      header =  <Header authenticated={false}/>
+      header =  <Header/>;
 
       // Link to the github repo for the frontend code, displayed as a badge in the top, right corner on the landing page
       githubBadge =   <div className="github-corner-badge">
@@ -55,7 +64,14 @@ export default class extends React.Component {
 
     // Setup the body
     if( authenticated ) {
-      bodyContent = <div id="app-body">{this.props.children}</div>;
+
+      // This odd way of rendering a child element is required because React and React-Router make it very difficult to
+      // pass properties to children
+      bodyContent = <div id="app">
+        <Route path="/projects" render={() => {return <Projects userObject={userObject}/>}} />
+        <Route path="/project/:projectId/sketch/:sketchId" render={() => {return <Sketch userObject={userObject}/>}} />
+      </div>;
+
     }else if (!authenticated ) {
       bodyContent = <Landing/>
     }
@@ -68,11 +84,7 @@ export default class extends React.Component {
         <div className="col-md-12 main-content">
           {bodyContent}
         </div>
-    		<Route path="/projects" component={Projects} />
       </div>
-
     )
-
   }
-
 }

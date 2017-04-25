@@ -38,7 +38,6 @@ export default class extends React.Component{
           <h3>Sketch your way to a great API.</h3>
         </div>
         <div className="col-md-3 registration-section">
-
             <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={this.registered} />
         </div>
       </div>

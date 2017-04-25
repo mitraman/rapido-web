@@ -73,12 +73,18 @@ export default class extends React.Component{
         "password": this.state.password
       })
       .then((result)=> {
+        console.log('got result');
         // Store the token based on the login parameters
+        let userInfo = JSON.stringify({
+          email: this.state.userId,
+          token: result.token
+        })
         if( this.state.rememberMe ) {
-          localStorage.setItem('token', result.token);
+          localStorage.setItem('userInfo', userInfo );
         }else {
-          sessionStorage.setItem('token', result.token);
+          sessionStorage.setItem('userInfo', userInfo );
         }
+        console.log('calling success fnction');
         this.props.loginSucceeded();
       })
       .catch((error)=> {

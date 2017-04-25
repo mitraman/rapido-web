@@ -20,8 +20,12 @@ export default class extends React.Component{
     return (
       <div className="col-md-4 projectCell">
         <a id={linkId} href="#" onClick={(e) => {this.handleClick(e)} }>
-        <div className="projectName">{this.props.project.name}</div>
-        <div className="projectDescription">{this.props.project.description}</div>
+          <div className="item">
+            <div className="well">
+              <h3>{this.props.project.name}</h3>
+              {this.props.project.description}
+            </div>
+          </div>
         </a>
       </div>
     )

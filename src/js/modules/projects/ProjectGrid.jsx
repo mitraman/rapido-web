@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import ProjectRow from './ProjectRow'
+import '../../../css/grid.scss'
 
 export default class extends React.Component{
 
@@ -16,7 +17,7 @@ export default class extends React.Component{
     const maxRowSize = 3;
 
     // Organize the data into row of maxsize
-    this.props.projects.forEach((project, index) => {    
+    this.props.projects.forEach((project, index) => {
       if( rows[rowIndex].length >= maxRowSize ) {
         // Start a new row
         rows.push([]);

@@ -12,7 +12,6 @@ export default class extends React.Component{
   }
 
   componentDidMount() {
-    console.log('sketch mounted');
     if( this.props.displayNavigationButtons ) {
       this.props.displayNavigationButtons(true);
     }
@@ -21,19 +20,9 @@ export default class extends React.Component{
   /* Render Method */
   render() {
 
-    let treeData = {
-      "id": 0,
-      "url": "API",
-      "children": [
-        {
-          "id": 1,
-          "url": "child",
-          "children": []
-        }
-      ]
-    }
+    let treeData = [];
 
-    let clickHandler = {}
+    let clickHandler = {};
 
     let width = 1000;
     let height = 800;

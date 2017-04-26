@@ -20,13 +20,28 @@ export default React.createClass({
     </div>;
     }
 
+    let userName = this.props.userInfo.fullName;
+    if( this.props.userInfo.nickName && this.props.userInfo.nickName.length > 0 ) {
+      userName = this.props.userInfo.nickName;
+    }
+
     return (
       <div className="row header-login">
         <div className="col-md-4 pull-left">
           <h1 id="logo" className="app-title"><Link to="/home" id="logo" >Rápido</Link></h1>
         </div>
         {navButtons}
-        <div className="col-md-4 pull-right">
+        <div className="col-md-4 pull-right profilemenu">
+          <div className="dropdown">
+            <a  id="userProfileMenu"
+              className="userProfile"
+               data-target="#"
+               data-toggle="dropdown"
+               role="button" aria-haspopup="true" aria-expanded="false">{userName} <span className="caret"></span></a>
+              <ul className="dropdown-menu" aria-labelledby="userProfileMenu">
+                <li id="signout"><a href="#">Sign Out</a></li>
+              </ul>
+          </div>
         </div>
       </div>
     )

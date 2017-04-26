@@ -13,9 +13,13 @@ const CRUDTreeElement = d3Wrap ({
       .attr('ref', 'sketch')
       .attr('transform', `translate(${options.margin.left}, ${options.margin.top})`);
 
-      //TODO: why 300 and 600?
+      var levelWidth = [1];
+      var levelDepth = [1];
+      var treeWidth = ((d3.max(levelDepth) + 1) * CRUDTree.resourceBoxWidth());
+      var treeHeight = ((d3.max(levelWidth) * 2) * CRUDTree.resourceBoxHeight() ) + 100;
+
     var tree = d3.tree()
-      .size([300,600]);
+      .size([treeHeight,treeWidth]);
 
     this.state = {
       g: g,
@@ -32,15 +36,24 @@ const CRUDTreeElement = d3Wrap ({
 
     // setup the container, root svg element passed in along with data and options
     const g = this.state.g;
-    const treeData = data[0];
+    const rootNodes = data[0];
     const handler = data[1];
-    const root = d3.hierarchy(treeData);
+    console.log('rootNodes:',rootNodes);
+
+    // Create a default root node for the nodes
+    let treeRoot = {
+      name: "ROOT",
+      isRoot: true,
+      children: rootNodes
+    };
+
+    const root = d3.hierarchy(treeRoot);
     var nodes = this.state.tree(root);
 
     // draw link paths between the nodes in the tree
     var link = g.selectAll(".tree-link")
     .data( nodes.descendants().slice(1), function(d) { return d.data.id; })
-  .enter().append("path")
+    .enter().append("path")
     .attr("class", "tree-link")
     .attr("d", function(d) {
         return "M" + (d.y) + "," + (d.x + CRUDTree.halfBoxHeight())
@@ -48,6 +61,7 @@ const CRUDTreeElement = d3Wrap ({
       });
 
     // draw the tree nodes
+    console.log(nodes);
     let node = CRUDTree.drawNodes(g, nodes, handler);
     node.exit().remove();
 

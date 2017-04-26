@@ -33,7 +33,7 @@ export default React.createClass({
     let loginBody = <LoginForm loginSucceeded={loginSucceeded}/>
 
     return (
-      <div >
+      <div className="topnav">
         <Modal id="loginModal" title="login" body={loginBody}/>
         {headerSection}
       </div>

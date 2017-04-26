@@ -1,0 +1,65 @@
+.tree-link {
+  fill:none;
+  stroke:gray;
+  stroke-width: 2px;
+}
+
+.root-node {
+  fill:black;
+}
+
+.node-uri {
+  fill:white;
+  stroke:gray;
+  stroke-width: 2px;
+}
+
+.node-uri-activated {
+  fill:yellow;
+  stroke:gray;
+  stroke-width: 2px;
+}
+.node-internal-border {
+  stroke: gray;
+  stroke-width: 1px;
+}
+
+.connector-out {
+  cursor: pointer;
+  fill: white;
+  stroke:black;
+  stroke-width: 2px;
+}
+.connector-out-disabled {
+  pointer-events: none;
+  fill: white;
+  stroke:black;
+  stroke-width: 2px;
+}
+
+.connector-in {
+  fill: black;
+}
+
+.badges {
+  font-weight: bold;
+  text-shadow: 2px -1px 2 gray;
+  .get {
+    fill: green;
+  }
+  .post {
+    fill: blue;
+  }
+  .put {
+    fill: orange;
+  }
+  .delete {
+    fill: red;
+  }
+  .patch {
+    fill: brown;
+  }
+  text {
+    fill: white;
+  }
+}

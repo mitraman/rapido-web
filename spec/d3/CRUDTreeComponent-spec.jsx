@@ -12,12 +12,7 @@ let height = 800;
   })
 
   it('can render an empty tree with a single root node', function() {
-    const treeData =  {
-      "id": 0,
-      "url": "API",
-      "children": []
-    }
-
+    const treeData = [];
     let clickHandler = {};
 
     let crudTree = ReactTestUtils.renderIntoDocument(<CRUDTree
@@ -32,6 +27,8 @@ let height = 800;
     expect(svgElement.childNodes.length).toBe(1);
     let gElement = svgElement.firstChild;
     expect(gElement.tagName).toBe('g');
+
+    console.log(gElement.firstChild);
 
     // There should be a single API root element
     expect(gElement.childNodes.length).toBe(1);

@@ -1,6 +1,7 @@
 
 const resourceBoxWidth = 250;
 const resourceBoxHeight = 90;
+const rootBoxWidth = 50;
 const halfBoxWidth = resourceBoxWidth / 2;
 const halfBoxHeight = resourceBoxHeight / 2;
 const urlLeftMargin = 10;
@@ -23,13 +24,15 @@ export default class {
         return d.data.id;
       })
     .enter().append("g")
-      .attr("class", function(d) { return "node" +
-          (d.children ? " node--internal" : " node--leaf"); })
+      .attr("class", function(d) {
+        if( d.data.isRoot ) {
+          return "root-node";
+        }else {
+          return "node" + (d.children ? " node--internal" : " node--leaf");
+        }})
       .attr("id", function(d) { return d.data.id })
       .attr("transform", function(d) {
         return "translate(" + d.y + "," + d.x + ")"; });
-
-
 
   // inbound connector
   node.append("circle")
@@ -42,7 +45,7 @@ export default class {
 
   // CRUD Node
   node.append("rect")
-          .attr("width", resourceBoxWidth)
+          .attr("width", (d) => { return (d.data.isRoot ? rootBoxWidth : resourceBoxWidth) })
           .attr("height", resourceBoxHeight)
           .attr("rx", 10)
           .attr("ry", 10)
@@ -63,39 +66,43 @@ export default class {
       return "translate(" + urlLeftMargin + "," + ((resourceBoxHeight / 2)+ urlFontSize/2) + ")"
     })
     .style("pointer-events",  "none")
-    .text(function(d) { return d.data.url; })
+    .text(function(d) {  return (d.data.isRoot ? "/" : d.data.url); })
 
     // top separator
     node.append("path")
       .attr("class", "node-internal-border")
       .attr("d", function(d) {
-          return "M0,20," + resourceBoxWidth + ",20"
+        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
+        return "M0,20," + boxWidth + ",20"
       });
 
     // bottom separator
     node.append("path")
         .attr("class", "node-internal-border")
         .attr("d", function(d) {
-            return "M0," + (resourceBoxHeight - 20) + "," + resourceBoxWidth + "," + (resourceBoxHeight - 20);
+          let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
+          return "M0," + (resourceBoxHeight - 20) + "," + boxWidth + "," + (resourceBoxHeight - 20);
       });
 
     // outbound node
     node.append("circle")
       .attr("r", "15")
       .attr("class", "connector-out")
-      .attr("transform", function() {
-        return "translate(" + resourceBoxWidth + "," + resourceBoxHeight / 2 +")";
+      .attr("transform", function(d) {
+        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
+        return "translate(" + boxWidth + "," + resourceBoxHeight / 2 +")";
       })
       .on("click", function(d) {
-        console.log("out connector clicked");
+        //console.log("out connector clicked");
         handler("add", d.data.id)
       });
 
     node.append("text")
       .attr("font-size", "18")
       .text("+")
-      .attr("transform", function() {
-        return "translate(" + (resourceBoxWidth - 5) + "," + (resourceBoxHeight / 2  + 5)+ ")";
+      .attr("transform", function(d) {
+        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
+        return "translate(" + (boxWidth - 5) + "," + (resourceBoxHeight / 2  + 5)+ ")";
       })
       .style("pointer-events",  "none")
 

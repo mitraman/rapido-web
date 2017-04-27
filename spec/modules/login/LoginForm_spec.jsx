@@ -202,7 +202,7 @@ describe('LoginForm Component', function() {
        })
      })
 
-    const wrapper = mount(<LoginForm/>);
+    const wrapper = mount(<LoginForm loginSucceeded={done}/>);
 
     // Set the component state so that a form can be submitted
     wrapper.setState({email: email});
@@ -223,7 +223,6 @@ describe('LoginForm Component', function() {
       expect(userInfo.email).toBe(email);
       expect(userInfo.nickName).toBe(nickName);
       expect(userInfo.fullName).toBe(fullName);
-      done();
       return store[key] = value + '';
     });
 
@@ -253,7 +252,8 @@ describe('LoginForm Component', function() {
        })
      })
 
-    const wrapper = mount(<LoginForm/>);
+
+    const wrapper = mount(<LoginForm loginSucceeded={done}/>);
 
     // Set the component state so that a form can be submitted
     wrapper.setState({email: email});
@@ -274,7 +274,6 @@ describe('LoginForm Component', function() {
       expect(userInfo.email).toBe(email);
       expect(userInfo.nickName).toBe(nickName);
       expect(userInfo.fullName).toBe(fullName);
-      done();
       return store[key] = value + '';
     });
   })
@@ -304,7 +303,7 @@ describe('LoginForm Component', function() {
      });
 
 
-    const wrapper = mount(<LoginForm/>);
+    const wrapper = mount(<LoginForm loginSucceeded={function() {fail('login should have failed.') } }/>);
 
     // Set the component state so that a form can be submitted
     wrapper.setState({email: email});

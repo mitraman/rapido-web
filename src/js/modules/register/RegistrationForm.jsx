@@ -143,7 +143,11 @@ export default class extends React.Component{
         "password": this.state.password
       })
       .then((result)=> {
-        this.props.registrationSuceeded();
+        this.props.registrationSuceeded({
+          id: result.id,
+          email: this.state.email,
+          password: this.state.password,
+        });
       })
       .catch((error)=> {
         //console.log('caught an error: ', error);

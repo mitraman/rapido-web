@@ -34,7 +34,7 @@ describe('Root App Component', function() {
 
   it('should render an authenticated body if there is a valid auth token', function() {
     store.userInfo = '{"token": "blah"}';
-    const wrapper = shallow(<App/>);
+    const wrapper = mountWithRouter(<App/>);
     expect(wrapper.find('div#app').length).toBe(1);
   })
 

@@ -28,8 +28,8 @@ describe('Header Component', function() {
 
   it('should render a user dropdown menu with a nickName', function() {
     const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} showNavButtons={true}/>);
-    expect(wrapper.find('div.userProfile').length).toBe(1);
-    expect(wrapper.find('div.userProfile').text()).toBe(userObject.nickName);
+    expect(wrapper.find('a.userProfile').length).toBe(1);
+    expect(wrapper.find('a.userProfile').text().startsWith(userObject.nickName)).toBe(true);
   })
 
   it('should render a user dropdown menu with the fullName if nickName is blank', function() {
@@ -41,8 +41,8 @@ describe('Header Component', function() {
       userId: 12
     }
     const wrapper = shallow(<AuthenticatedHeader userInfo={noNickName} showNavButtons={true}/>);
-    expect(wrapper.find('div.userProfile').length).toBe(1);
-    expect(wrapper.find('div.userProfile').text()).toBe(noNickName.fullName);
+    expect(wrapper.find('a.userProfile').length).toBe(1);
+    expect(wrapper.find('a.userProfile').text().startsWith(noNickName.fullName)).toBe(true);
   })
 
   it('should render a logout menu item', function() {

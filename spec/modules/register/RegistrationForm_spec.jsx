@@ -218,6 +218,7 @@ describe('RegistrationForm Component', function() {
       fail('resitration failed with errror');
     });
 
+    const userId = 14141;
     let validRegistration = {
       fullName: 'Test User',
       password: 'MyPassword1',
@@ -237,7 +238,7 @@ describe('RegistrationForm Component', function() {
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
-           id: (Math.random() * (32767 - 1)) + 1,
+           id: userId,
            fullName: xhr.requestBody.fullname,
            nickName: xhr.requestBody.nickname,
            email: xhr.requestBody.email
@@ -245,8 +246,13 @@ describe('RegistrationForm Component', function() {
    });
 
 
-
-    const wrapper = mount(<RegistrationForm alertBox={mockAlertContainer} registrationSuceeded={() => {done()}}/>);
+   let registrationSuceeded = function(registeredUser) {
+     expect(registeredUser.password).toBe(validRegistration.password);
+     expect(registeredUser.id).toBe(userId);
+     expect(registeredUser.email).toBe(validRegistration.email);
+     done();
+   }
+    const wrapper = mount(<RegistrationForm alertBox={mockAlertContainer} registrationSuceeded={registrationSuceeded}/>);
 
     // Set the field properties
     wrapper.setState({fullName: validRegistration.fullName});
@@ -266,7 +272,7 @@ describe('RegistrationForm Component', function() {
       password: 'MyPassword1',
       email: 'testuser@email.com'
     }
-    let serverError = 'some unexplained problem';
+    let serverError = '"a user with this email address already exists';
 
     // Setup Sinon for mocking backend server
     this.server = sinon.fakeServer.create();
@@ -279,7 +285,7 @@ describe('RegistrationForm Component', function() {
       expect(jsonBody.nickname).toBe('')
       expect(jsonBody.password).toBe(validRegistration.password);
 
-      xhr.respond(401, {"Content-Type": "application/json"},
+      xhr.respond(400, {"Content-Type": "application/json"},
         JSON.stringify({
            error: serverError
         }));

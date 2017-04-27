@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom'
+import { Route, Redirect } from 'react-router-dom'
 import Header from './header/Header';
 import AuthenticatedHeader from './header/AuthenticatedHeader';
 import Landing from './Landing.jsx';
@@ -15,21 +15,15 @@ export default class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userObject : {},
       showNavButtons : false,
       activeProject : 0
     }
   }
 
-  render() {
-
-    let header, bodyContent, navDetails, githubBadge;
-
-    // Set the default authentication state
-    let authenticated = false;
-
+  parseAuthToken() {
     // Check in local storage for the auth token (this happens if the user clicks 'remember me')
-    let userObject;
-
+    let userObject = {};
     try {
       userObject = JSON.parse(localStorage.getItem('userInfo'));
       if( !userObject ) {
@@ -42,12 +36,26 @@ export default class extends React.Component {
       console.error('Unable to parse login information:', e);
     }
 
+    this.setState({userObject: userObject});
+  }
+
+  componentDidMount() {
+    this.parseAuthToken();
+  }
+
+  render() {
+
+    let header, bodyContent, navDetails, githubBadge;
+
+    // Set the default authentication state
+    let authenticated = false;
+
     // If we have an auth token, change the auth state and header
-    if(userObject.token) {
+    if(this.state.userObject.token) {
       // Use an authenticated header if we have an auth token
-      header = <AuthenticatedHeader userInfo={userObject} showNavButtons={this.state.showNavButtons}/>;
+      header = <AuthenticatedHeader userInfo={this.state.userObject} showNavButtons={this.state.showNavButtons}/>;
       authenticated = true;
-    }else if( !userObject.token ){
+    }else if( !this.state.userObject.token ){
         // Define the unauthenticated header
       header =  <Header/>;
 
@@ -69,13 +77,16 @@ export default class extends React.Component {
       // This odd way of rendering a child element is required because React and React-Router make it very difficult to
       // pass properties to children
       bodyContent = <div id="app">
-        <Route path="/projects" render={() => {return <Projects userObject={userObject}/>}} />
+        <Route path="/"><Redirect to="/projects"/></Route>
+        <Route path="/projects" render={() => {return <Projects userObject={this.state.userObject}/>}} />
         <Route path="/project/:projectId/sketch/:sketchId" render={() => {
-            return <Sketch userObject={userObject} displayNavigationButtons={(state)=>{this.setState({showNavButtons: state})}}/>}} />
+            return <Sketch userObject={this.state.userObject} displayNavigationButtons={(state)=>{this.setState({showNavButtons: state})}}/>}} />
       </div>;
 
     }else if (!authenticated ) {
-      bodyContent = <Landing/>
+      bodyContent = <Landing loggedIn={()=>{
+          this.parseAuthToken();
+        }}/>
     }
 
     return (

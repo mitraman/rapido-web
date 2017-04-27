@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import AlertContainer from 'react-alert'
-import Backend from '../../adapter/Backend.js'
+import LoginService from './LoginService.js';
 
 export default class extends React.Component{
 
@@ -68,32 +68,12 @@ export default class extends React.Component{
         thisForm.showAlert(thisForm.state.errorMessages[key]);
       });
     } else {
-      Backend.login({
-        "email": this.state.email,
-        "password": this.state.password
-      })
-      .then((result)=> {
-        //console.log(result);
-        // Store the token based on the login parameters
-        let userInfo = JSON.stringify({
-          userId: result.userId,
-          email: this.state.email,
-          fullName: result.fullName,
-          token: result.token,
-          nickName: result.nickName
-        });
-
-        if( this.state.rememberMe ) {
-          localStorage.setItem('userInfo', userInfo );
-        }else {
-          sessionStorage.setItem('userInfo', userInfo );
-        }
-        this.props.loginSucceeded();
-      })
-      .catch((error)=> {
+      LoginService.login(this.state.email, this.state.password, this.state.rememberMe)
+      .then( () => {
+          this.props.loginSucceeded();
+      }).catch( (error) => {
         this.showAlert(error)
       })
-
     }
   }
 

@@ -101,7 +101,7 @@ describe('CRUDNodeTree', function() {
     }
   })
 
-  fit('can render a tree with 100 nodes', function() {
+  it('can render a tree with 100 nodes', function() {
 
 
     const siblings = 3;
@@ -149,5 +149,62 @@ describe('CRUDNodeTree', function() {
 
     // make sure that the name, url, full path and methods are rendered
   });
+
+
+  xit('TODO: calls the event handler on a RECT click', function(done) {
+
+    // TODO: Need to figure out why click simulation isn't working.
+    
+    let treeRoot = {
+      name: "ROOT",
+      isRoot: true,
+      children: []
+    };
+
+    addTreeNode(treeRoot, 1, "root1", "/root1", ["get"]);
+    addTreeNode(treeRoot, 12, "root2", "/root2", ["get"]);
+    addTreeNode(treeRoot, 32, "root3", "/root3", ["get"]);
+
+    let root = d3.hierarchy(treeRoot);
+    let tree = d3.tree().size([300,600]);
+    let nodes = tree = tree(root);
+
+    let eventHandler = function() {
+      console.log('here');
+      done();
+    }
+
+    // draw the tree in the target SVG <g> container
+    CRUDTree.drawNodes(g, tree);
+
+    expect(svgElement.childNodes.length).toBe(1);
+    let gElement = svgElement.firstChild;
+    expect(gElement.tagName).toBe('g');
+
+    // Make sure all of the nodes are drawn
+    expect(gElement.childNodes.length).toBe(4);
+
+    // Find the first node
+    let targetNode = null;
+    let i = 0;
+    while(!targetNode && i < gElement.children.length) {
+
+      let node = gElement.children.item(i);
+      if( node.classList.contains('node') ) {
+        targetNode = node;
+      }else {
+        i++;
+      }
+    }
+
+    expect(targetNode).not.toBeNull();
+    console.log(targetNode);
+
+    // Get the RECT for the target node
+    let rect = targetNode.children.item(1);
+    console.log(rect);
+    ReactTestUtils.Simulate.click(rect);
+
+  })
 
 })

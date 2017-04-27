@@ -2,6 +2,7 @@ import React from 'react'
 import RegistrationForm from './register/RegistrationForm'
 import AlertContainer from 'react-alert';
 import createHistory from 'history/createBrowserHistory'
+import LoginService from './login/LoginService';
 const history = createHistory();
 
 export default class extends React.Component{
@@ -24,13 +25,21 @@ export default class extends React.Component{
     };
   }
 
-  registered() {
-    // Redirect to sketches page?
-    history.push('/sketches')
-  }
-
   /* Render Method */
   render() {
+    let registered =  (registeredUser) => {
+      // The user has been succesfully registered, try to automatically login
+      //let loginService = new LoginService();
+      LoginService.login(registeredUser.email, registeredUser.password)
+      .then( () => {
+        this.props.loggedIn();
+      } )
+      .catch( (error) => {
+        console.error('error:' + error);
+        //TODO: what do we do if registration suceeded, but login failed?
+      })
+    }
+
     return(
       <div id="landing">
         <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
@@ -38,7 +47,7 @@ export default class extends React.Component{
           <h3>Sketch your way to a great API.</h3>
         </div>
         <div className="col-md-3 registration-section">
-            <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={this.registered} />
+            <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={registered} />
         </div>
       </div>
     )

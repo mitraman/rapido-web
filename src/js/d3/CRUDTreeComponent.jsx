@@ -38,7 +38,6 @@ const CRUDTreeElement = d3Wrap ({
     const g = this.state.g;
     const rootNodes = data[0];
     const handler = data[1];
-    console.log('rootNodes:',rootNodes);
 
     // Create a default root node for the nodes
     let treeRoot = {
@@ -61,7 +60,6 @@ const CRUDTreeElement = d3Wrap ({
       });
 
     // draw the tree nodes
-    console.log(nodes);
     let node = CRUDTree.drawNodes(g, nodes, handler);
     node.exit().remove();
 

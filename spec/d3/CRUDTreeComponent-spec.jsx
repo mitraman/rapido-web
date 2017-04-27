@@ -4,8 +4,8 @@ import ReactTestUtils from 'react-addons-test-utils';
 
 describe('CRUDTree', function() {
 
-let width = 1000;
-let height = 800;
+  let width = 1000;
+  let height = 800;
 
   beforeEach(function(){
 
@@ -47,11 +47,4 @@ let height = 800;
 **/
   });
 
-  it('renders a tree with a single child', function() {
-    const treeData =  {
-      "id": 0,
-      "url": "API",
-      "children": []
-    }
-  })
 })

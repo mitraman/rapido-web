@@ -4,6 +4,8 @@ import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
 import sinon from 'sinon';
 
+import TypeAheadTextInput from '../../../src/js/modules/form/TypeAheadTextInput.jsx';
+
 function createSimulatedElement(name, value, validState) {
 
   return {
@@ -33,9 +35,9 @@ describe('ProjectForm Component', function() {
     expect(wrapper.find('form #project-form').length).toBe(1);
   })
 
-  it('should render an name field in the form', function() {
+  it('should render a typeahead project name field in the form', function() {
     const wrapper = shallow(<ProjectForm/>);
-    expect(wrapper.find('input[name="projectName"]').length).toBe(1);
+    expect(wrapper.find('input[name="projectName"]').length).toBe(1)
   })
 
   it('should render a description textarea in the form', function() {

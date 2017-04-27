@@ -33,7 +33,8 @@ export default class extends React.Component{
   }
 
   componentDidMount() {
-    this.projectNameInput.focus();
+    //TODO: Focus on the first input element when the modal is loaded.
+    //this.projectNameInput.focus();
   }
 
   /* Method to show alert message */
@@ -115,7 +116,6 @@ export default class extends React.Component{
               type="text"
               value={this.state.projectName}
               onChange={this.handleChange}
-              className="form-control"
               id="InputProjectName"
               name="projectName"
               ref={(input)=>{ this.projectNameInput = input}}

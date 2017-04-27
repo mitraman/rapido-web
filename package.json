@@ -24,7 +24,8 @@
     "react-alert": "^1.0.14",
     "react-d3-wrap": "^2.1.2",
     "react-dom": "^15.0.2",
-    "react-router-dom": "^4.1.1"
+    "react-router-dom": "^4.1.1",
+    "typeahead.js": "^0.11.1"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",

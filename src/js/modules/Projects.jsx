@@ -21,7 +21,6 @@ export default class extends React.Component{
   }
 
   componentDidMount() {
-    console.log('project component mounted.');
     // Retrieve projects from the Backend
     Backend.getProjects(this.props.userObject.token)
     .then( (result) => {

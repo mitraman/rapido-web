@@ -73,9 +73,10 @@ describe('Vocabulary Component', function() {
       for(let i = 0; i < words.length; i++ ) {
         expect((words.get(i).textContent)).toBe(vocabList[i].word);
       }
-
-
     })
+
+    //TODO: Should we allow the user to edit words?  What about dependencies - should we edit all occurances of the word in sketches?
+
   })
 
 });

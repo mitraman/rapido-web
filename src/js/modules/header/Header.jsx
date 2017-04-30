@@ -8,8 +8,6 @@ import Modal from '../Modal.jsx'
 import '../../../css/header.scss'
 import 'bootstrap/dist/js/bootstrap';
 
-
-
 export default React.createClass({
   render() {
     let authenticated = this.props.authenticated;

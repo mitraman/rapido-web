@@ -7,6 +7,7 @@ import '../../css/tree.css'
 const CRUDTreeElement = d3Wrap ({
 
   initialize (svg, data, options) {
+
     // initialize method called once when component mounts
     const g = d3.select(svg)
       .append('g')
@@ -18,8 +19,12 @@ const CRUDTreeElement = d3Wrap ({
       var treeWidth = ((d3.max(levelDepth) + 1) * CRUDTree.resourceBoxWidth());
       var treeHeight = ((d3.max(levelWidth) * 2) * CRUDTree.resourceBoxHeight() ) + 100;
 
+    // var tree = d3.tree()
+    //   .size([treeHeight,treeWidth])
+    //   .nodeSize([CRUDTree.resourceBoxHeight(), CRUDTree.resourceBoxWidth()]);
+
     var tree = d3.tree()
-      .size([treeHeight,treeWidth]);
+      .nodeSize([CRUDTree.resourceBoxHeight() + 100, CRUDTree.resourceBoxWidth() + 100]);
 
     this.state = {
       g: g,
@@ -33,6 +38,22 @@ const CRUDTreeElement = d3Wrap ({
     // Cleanup any existing graphs
     var svg = d3.select("svg > g");
     svg.selectAll("*").remove();
+
+    // Zoom and pan support
+    let zoomed = function () {
+      g.attr("transform", d3.event.transform);
+    }
+
+    let svgWidth = ($("svg").width());
+    let svgHeight = ($("svg").height());
+    let viewPort = svg.append("rect")
+    .attr("width", svgWidth)
+    .attr("height", svgHeight)
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .call(d3.zoom()
+        .scaleExtent([1 / 2, 4])
+        .on("zoom", zoomed));
 
     // setup the container, root svg element passed in along with data and options
     const g = this.state.g;
@@ -51,22 +72,29 @@ const CRUDTreeElement = d3Wrap ({
 
     // draw link paths between the nodes in the tree
     var link = g.selectAll(".tree-link")
-    .data( nodes.descendants().slice(1), function(d) { return d.data.id; })
-    .enter().append("path")
-    .attr("class", "tree-link")
-    .attr("d", function(d) {
-        return "M" + (d.y) + "," + (d.x + CRUDTree.halfBoxHeight())
-            + " " + (d.parent.y + CRUDTree.resourceBoxWidth()) + "," + (d.parent.x + CRUDTree.halfBoxHeight());
-      });
+      .data( nodes.descendants().slice(1), function(d) { return d.data.id; })
+      .enter().append("path")
+      .attr("class", "tree-link")
+      .attr("d", function(d) {
+          return "M" + (d.y) + "," + (d.x + CRUDTree.halfBoxHeight())
+              + " " + (d.parent.y + CRUDTree.resourceBoxWidth()) + "," + (d.parent.x + CRUDTree.halfBoxHeight());
+        });
 
     // draw the tree nodes
-    let node = CRUDTree.drawNodes(g, nodes, handler);
+    let drawNodesResult = CRUDTree.drawNodes(g, nodes, handler);
+    let node = drawNodesResult.node;
     node.exit().remove();
 
-    // Move the position of the tree graph based on x and y parameters
-    let offsetX = data[2].x;
-    let offsetY = data[2].y;
-    g.attr("transform", "translate(" + offsetX + "," + offsetY + ")");
+    //TODO: reposition on each node selection
+    // Move the position of the tree graph based on a selected node
+    let offsetX = (0 - drawNodesResult.translations['root'].y);
+    let offsetY = ( 0 - drawNodesResult.translations['root'].x);
+    // Use less of an x offset for the initial root node
+    //const xPadding = svgWidth / 2;
+    const xPadding = 100;
+    const yPadding = svgHeight / 2;
+    g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
+
   },
 
   destroy () {

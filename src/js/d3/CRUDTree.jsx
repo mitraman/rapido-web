@@ -1,7 +1,7 @@
 
 const resourceBoxWidth = 250;
 const resourceBoxHeight = 90;
-const rootBoxWidth = 50;
+const rootBoxWidth = 250;
 const halfBoxWidth = resourceBoxWidth / 2;
 const halfBoxHeight = resourceBoxHeight / 2;
 const urlLeftMargin = 10;
@@ -16,6 +16,7 @@ export default class {
   static halfBoxWidth() { return halfBoxWidth; }
 
   static drawNodes(g, rootTreeNode, handler) {
+    let translations = {};
 
     // Create a new <g> for every object in the nodeList
     let node = g.selectAll(".node")
@@ -32,6 +33,9 @@ export default class {
         }})
       .attr("id", function(d) { return d.data.id })
       .attr("transform", function(d) {
+        // Store the translation coordinates for easier lookups
+        let id = (d.data.isRoot) ? 'root' : d.data.id;
+        translations[id] = {x: d.x, y: d.y};
         return "translate(" + d.y + "," + d.x + ")"; });
 
   // inbound connector
@@ -66,7 +70,7 @@ export default class {
       return "translate(" + urlLeftMargin + "," + ((resourceBoxHeight / 2)+ urlFontSize/2) + ")"
     })
     .style("pointer-events",  "none")
-    .text(function(d) {  return (d.data.isRoot ? "/" : d.data.url); })
+    .text(function(d) {  return (d.data.isRoot ? "/" : d.data.name); })
 
     // top separator
     node.append("path")
@@ -94,7 +98,9 @@ export default class {
       })
       .on("click", function(d) {
         //console.log("out connector clicked");
-        handler("add", d.data.id)
+        if( !d.data.isRoot) {
+          handler("add", d.data.id)
+        }
       });
 
     node.append("text")
@@ -129,32 +135,10 @@ export default class {
       .attr("transform", "translate(8,4)")
       .attr("class", "get")
 
-  return node;
-
-/*
-  <g transform="translate(120,150)">
-    <circle class="connector-in" transform="translate(0,45)" r="10"></circle>
-    <rect class="node" width="250" height="90" rx="10" ry="10"></rect>
-    <text font-size="20" transform="translate(10,52)">/users</text>
-    <text font-size="10" transform="translate(10,84)">/users</text>
-    <path style="stroke:gray;strok-width:1px" class="node" d="M0,20,250,20"></path>
-    <path style="stroke:gray;strok-width:1px" class="node" d="M0,70,250,70"></path>
-    <g class="badges">
-      <rect transform="translate(8,4)" class="get" width="33" height="12" rx="3" ry="2"></rect>
-      <text transform="translate(14,14)" font-size="9">GET</text>
-      <rect transform="translate(47,4)" class="post" width="35" height="12" rx="3" ry="2"></rect>
-      <text transform="translate(51,14)" font-size="9" style="font-weight:bold">POST</text>
-      <rect transform="translate(88,4)" class="put" width="32" height="12" rx="3" ry="2"></rect>
-      <text transform="translate(93,14)" font-size="9">PUT</text>
-      <rect transform="translate(126,4)" class="delete" width="48" height="12" rx="3" ry="2"></rect>
-      <text transform="translate(131,14)" font-size="9">DELETE</text>
-      <rect transform="translate(181,4)" class="patch" width="40" height="12" rx="3" ry="2"></rect>
-      <text transform="translate(185,14)" font-size="9">PATCH</text>
-    </g>
-    <circle class="connector-out" transform="translate(250,45)" r="15"></circle>
-    <text transform="translate(245,52)" font-size="18">+</text>
-  </g>
-*/
+  return {
+    translations: translations,
+    node: node
+  };
 
   }
 

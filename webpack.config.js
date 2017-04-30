@@ -18,10 +18,14 @@ module.exports = {
               //tell webpack to use jsx-loader for all *.jsx files
               test: /\.jsx$/,
               exclude: /node_modules/,
-              loader: 'babel-loader?presets[]=es2015&presets[]=react'
+              loader: 'babel-loader?presets[]=es2015&presets[]=react',
+              options: {
+                plugins: [
+                  "transform-object-rest-spread"
+                ]
+              }
             },
             {
-              //tell webpack to use jsx-loader for all *.jsx files
               test: /\.js$/,
               exclude: /node_modules/,
               loader: 'babel-loader?presets[]=es2015'

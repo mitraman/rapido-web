@@ -6,6 +6,8 @@ import Landing from './Landing.jsx';
 import Projects from './Projects';
 import Sketch from './Sketch';
 
+import ResponseEditor from './sketch/tree/ResponseEditor.jsx';
+
 import 'bootstrap/dist/css/bootstrap.css';
 import '../../css/app.scss'
 import '../../css/github-corners.scss'
@@ -76,8 +78,11 @@ export default class extends React.Component {
 
       // This odd way of rendering a child element is required because React and React-Router make it very difficult to
       // pass properties to children
+
+      // <Route path="/"><Redirect to="/projects"/></Route>
+
       bodyContent = <div id="app">
-        <Route path="/"><Redirect to="/projects"/></Route>
+        <Route path="/editor" render={() => {return <ResponseEditor/>}} />
         <Route path="/projects" render={() => {return <Projects userObject={this.state.userObject}/>}} />
         <Route path="/project/:projectId/sketch/:sketchId" render={() => {
             return <Sketch userObject={this.state.userObject} displayNavigationButtons={(state)=>{this.setState({showNavButtons: state})}}/>}} />
@@ -89,13 +94,15 @@ export default class extends React.Component {
         }}/>
     }
 
+
     return (
       <div id="root" className ="container-fluid">
         {githubBadge}
-        {header}
-        {navDetails}
-        <div className="col-md-12 main-content">
-          {bodyContent}
+        <div className="row">
+          {header}
+        </div>
+        <div className="row">
+                  {bodyContent}
         </div>
       </div>
     )

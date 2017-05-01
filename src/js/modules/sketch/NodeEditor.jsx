@@ -13,8 +13,10 @@ export default class extends React.Component{
   }
 
   responseDataUpdated(responseData) {
+    console.log('responseDataUpdated');
     // persist the changes to the backend
     // notify the user
+
   }
 
   /* Render Method */

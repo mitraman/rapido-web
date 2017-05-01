@@ -50,10 +50,15 @@ const CRUDTreeElement = d3Wrap ({
     .attr("width", svgWidth)
     .attr("height", svgHeight)
     .style("fill", "none")
-    .style("pointer-events", "all")
+    .style("pointer-events", "all");
+
+    /*
+    The mouse based zoom and pan is jerky and unpredictable.  Need to figure out why before
+    re-enabling this.
     .call(d3.zoom()
         .scaleExtent([1 / 2, 4])
         .on("zoom", zoomed));
+        */
 
     // setup the container, root svg element passed in along with data and options
     const g = this.state.g;

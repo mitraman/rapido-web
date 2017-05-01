@@ -15,7 +15,7 @@ export default class extends React.Component{
     super(props);
     this.state = {
       sideNavHidden: true,
-      selectedNode: { name: ''},
+      selectedNode: null,
       canvasWidth: 0,
       canvasHeight: 0
     }
@@ -46,12 +46,16 @@ export default class extends React.Component{
         name: '/blah',
         url: '/blah',
         fullpath: '/api/blah',
+        responseData: {
+          'put': '{}'
+        },
         children: [
           {
             id: '2',
             name: '/bleh',
             url: '/bleh',
             fullpath: '/api/blah/bleh',
+            responseData: {},
             children: [
 
             ]
@@ -60,11 +64,15 @@ export default class extends React.Component{
             id: '92',
             name: '/yiyi',
             fullpath: '/api/blah/yiyi',
+            responseData: {},
             children: [
               {
                 id: '232',
                 name: '/authors',
                 fullpath: '/api/blah/yiyi/authors',
+                responseData: {
+                  'get': '{ "id": "9923" }'
+                },
                 children: [
 
                 ]
@@ -109,6 +117,8 @@ export default class extends React.Component{
       {word: 'word 4', sketches: []}
     ]
 
+    let EditPane =  this.state.selectedNode ? <NodeEditor node={this.state.selectedNode}/> : <div/>;
+
     return(
 
       <div id="slide-wrapper" className={this.state.navState} ref={(input) => {this.slideWrapper = input;}}>
@@ -137,7 +147,7 @@ export default class extends React.Component{
                </div>
                 <div className="property-pane">
                   <div>
-                   <NodeEditor node={this.state.selectedNode}/>
+                   {EditPane}
                  </div>
                 </div>
               </SplitPane>

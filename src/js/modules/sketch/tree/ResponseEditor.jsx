@@ -19,13 +19,15 @@ export default class extends React.Component{
     }
   }
 
-  componentDidMount() {
+  resetView() {
+    this.manipulatingBuffer = true;
+    this.editor.setValue(this.state.data.get);
+    this.manipulatingBuffer = false;
+    this.setState({tabClasses: {get: 'active'}});
+    this.setState({activeTab: 'get'});
+  }
 
-    // Setup state based on the node values
-    let node = this.props.node;
-    if( !node ) {
-      throw new Error('No node passed to <ResponseEditor/>');
-    }
+  loadResponseData(node) {
 
     let getValue = node.responseData.get ? node.responseData.get : '';
     let putValue = node.responseData.put ? node.responseData.put : '';
@@ -41,6 +43,28 @@ export default class extends React.Component{
       'delete': deleteValue
     }
 
+    // Store the response data and set the editor tab to 'get'
+    this.setState({data: responseData}, () => {this.resetView()});
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return true;
+  }
+
+  componentWillReceiveProps(nextProps){
+    // If there has been a change in props, update the editor state
+    if( this.props.node !== nextProps.node ) {
+      let node = nextProps.node;
+      if( !node ) {
+        throw new Error('No node passed to <ResponseEditor/>');
+      }
+
+      this.loadResponseData(node);
+    }
+  }
+
+  componentDidMount() {
+
     // Setup the editor
     this.editor = ace.edit(this.editDiv);
     this.editor.setTheme("ace/theme/github");
@@ -48,13 +72,12 @@ export default class extends React.Component{
     this.editor.on("change", (e) => {this.onChange(e)});
     this.editor.$blockScrolling = Infinity;
 
-    // Set the editor value to GET by default
-    this.setState({data: responseData}, () => {
-      this.manipulatingBuffer = true;
-      this.editor.setValue(responseData.get);
-      this.manipulatingBuffer = false;
-    });
+    let node = this.props.node;
+    if( !node ) {
+      throw new Error('No node passed to <ResponseEditor/>');
+    }
 
+    this.loadResponseData(node);
   }
 
   onChange(e) {
@@ -92,21 +115,23 @@ export default class extends React.Component{
   }
 
   render() {
+
     let editorStyle = {
       width: '100%',
       height: '100%'
     }
-  return (
-      <div className="response-edit">
-        <ul className="nav nav-tabs">
-          <li role="presentation" className={this.state.tabClasses.get}><a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}>GET</a></li>
-          <li role="presentation" className={this.state.tabClasses.put}><a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}>PUT</a></li>
-          <li role="presentation" className={this.state.tabClasses.post}><a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}>POST</a></li>
-          <li role="presentation" className={this.state.tabClasses.patch}><a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}>PATCH</a></li>
-          <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}>DELETE</a></li>
-        </ul>
-        <div id="editorpane" style={editorStyle} ref={(e) => { this.editDiv = e} }></div>
-      </div>
-    );
-  }
+
+    return (
+        <div className="response-edit">
+          <ul className="nav nav-tabs">
+            <li role="presentation" className={this.state.tabClasses.get}><a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}>GET</a></li>
+            <li role="presentation" className={this.state.tabClasses.put}><a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}>PUT</a></li>
+            <li role="presentation" className={this.state.tabClasses.post}><a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}>POST</a></li>
+            <li role="presentation" className={this.state.tabClasses.patch}><a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}>PATCH</a></li>
+            <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}>DELETE</a></li>
+          </ul>
+          <div id="editorpane" style={editorStyle} ref={(e) => { this.editDiv = e} }></div>
+        </div>
+      );
+    }
 }

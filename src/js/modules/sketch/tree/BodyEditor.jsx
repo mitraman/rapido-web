@@ -66,7 +66,7 @@ export default class extends React.Component{
   componentDidMount() {
 
     // Setup the editor
-    this.editor = ace.edit(this.editDiv);
+    this.editor = ace.edit(this.responseEditDiv);
     this.editor.setTheme("ace/theme/github");
     this.editor.getSession().setMode("ace/mode/javascript");
     this.editor.on("change", (e) => {this.onChange(e)});
@@ -117,8 +117,8 @@ export default class extends React.Component{
   render() {
 
     let editorStyle = {
-      width: '100%',
-      height: '100%'
+      width: '300px',
+      height: '50px'
     }
 
     return (
@@ -130,7 +130,10 @@ export default class extends React.Component{
             <li role="presentation" className={this.state.tabClasses.patch}><a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}>PATCH</a></li>
             <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}>DELETE</a></li>
           </ul>
-          <div id="editorpane" style={editorStyle} ref={(e) => { this.editDiv = e} }></div>
+          <div id="enabled"><input type="checkbox" value=""></input><label>Enabled</label></div>
+          <div><input className="form-control" name="requestParams" type="text" value={this.state.requestParams}/></div>
+          <div id="requestEditorPane" style={editorStyle} ref={(e) => { this.requestEditDiv = e} }></div>
+          <div id="responseEditorPane" style={editorStyle} ref={(e) => { this.responseEditDiv = e} }></div>
         </div>
       );
     }

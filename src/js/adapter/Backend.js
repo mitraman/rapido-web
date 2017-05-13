@@ -26,7 +26,8 @@ export default class {
             resolve(responseHandler(responseBody));
           } else {
             let contentType = xhr.getResponseHeader('Content-Type');
-            if( contentType &&  contentType.endsWith('json')) {
+            //console.log(contentType);
+            if( contentType && contentType.startsWith('application/json')) {
               let responseBody = JSON.parse(xhr.response);
               let errorMessage = responseBody.error ? responseBody.error : repsonseBody;
               reject(errorMessage)
@@ -60,9 +61,7 @@ export default class {
       email: user.email
     }
 
-    //console.log('calling _call');
     return this._call("POST", "/api/register", body, function(responseBody){
-      //console.log('translating body');
       return {
         id: responseBody.id
       };
@@ -106,6 +105,47 @@ export default class {
         id: responseBody.id
       };
     })
+  }
+
+
+  static getProject(token, projectId) {
+    let projectUrl = '/api/projects/' + projectId;
+
+    return this._authenticatedCall(token, "GET", projectUrl, null, function(responseBody) {
+      return {
+        project: responseBody.project
+      };
+    })
+  }
+
+  static addChildNode(token, sketchId, parentId) {
+    let url = '/api/sketches/' + sketchId + '/nodes'
+    if( parentId ) {
+        url = url + '/' + parentId;
+    }
+
+    return this._authenticatedCall(token, "POST", url, null, function(responseBody) {
+      return {
+        node: responseBody.node,
+        tree: responseBody.tree
+      }
+    });
+  }
+
+  static updateNode(token, sketchId, node) {
+    let url = '/api/sketches/' + sketchId + '/nodes/' + node.id;
+
+    let updateObject = {
+      name: node.name,
+      fullpath: node.fullpath
+    }
+
+    return this._authenticatedCall(token, "PATCH", url, updateObject, function(responseBody) {
+      return {
+        node: responseBody.node,
+        tree: responseBody.tree
+      }
+    });
   }
 
 

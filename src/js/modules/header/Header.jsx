@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import createHistory from 'history/createBrowserHistory'
 const history = createHistory()
 
@@ -8,7 +8,20 @@ import Modal from '../Modal.jsx'
 import '../../../css/header.scss'
 import 'bootstrap/dist/js/bootstrap';
 
-export default React.createClass({
+export default class extends React.Component{
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedIn: false
+    };
+  }
+
+  loginSucceeded() {
+    $('#loginModal').modal('hide');
+    this.setState({loggedIn: true});
+  }
+
   render() {
     let authenticated = this.props.authenticated;
 
@@ -25,16 +38,20 @@ export default React.createClass({
       </div>
     </div>
 
-    let loginSucceeded = function() {
-      history.push('/projects');
+    let loginBody = <LoginForm loginSucceeded={ () => { this.loginSucceeded();} }  />
+
+
+    if(this.state.loggedIn) {
+      return (
+        <Redirect push to="/projects"/>
+      );
     }
-    let loginBody = <LoginForm loginSucceeded={loginSucceeded}/>
 
     return (
       <div className="topnav">
-        <Modal id="loginModal" title="login" body={loginBody}/>
+        <Modal id="loginModal" title="Sign in" body={loginBody}/>
         {headerSection}
       </div>
     )
   }
-})
+}

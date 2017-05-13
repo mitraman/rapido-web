@@ -18,8 +18,8 @@ export default class extends React.Component{
 
       // Keep the labels out of the state parameter becuase they aren't changed after being rendered.
       this.labels = {
-        email: 'User ID',
-        password: 'Password',
+        email: 'email address',
+        password: 'password',
       }
 
       this.alertOptions = {
@@ -72,6 +72,7 @@ export default class extends React.Component{
       .then( () => {
           this.props.loginSucceeded();
       }).catch( (error) => {
+        console.log('ERROR:', error);
         this.showAlert(error)
       })
     }
@@ -85,9 +86,9 @@ export default class extends React.Component{
 
     if( !validityState.valid ) {
       if (validityState.valueMissing) {
-        errorMessages[input.name] = `${label} is a required field`;
+        errorMessages[input.name] = `Please enter your ${label}`;
       } else if (validityState.typeMismatch) {
-        errorMessages[input.name] =  `${label} should be a valid email address`;
+        errorMessages[input.name] =  `Your ${label} doesn't look right.`;
       } else {
         console.warn('unexpected conformance validator problem: ', validityState);
         errorMessages[input.name] = `Invalid field value`;
@@ -118,7 +119,7 @@ export default class extends React.Component{
               id="InputEmail"
               name="email"
               ref="email"
-              placeholder="email address" required
+              placeholder="Email" required
               required />
             <div className="error" id="userIdError">{this.state.errorMessages.email}</div>
           </div>
@@ -133,7 +134,6 @@ export default class extends React.Component{
                 id="InputPassword"
                 name="password"
                 ref="password"
-                pattern=".{5,}"
                 placeholder="Password" required/>
               <div className="error" id="passwordError">{this.state.errorMessages.password}</div>
           </div>
@@ -145,13 +145,9 @@ export default class extends React.Component{
             </label>
           </div>
 
-          <div className="form-group forgot-password">
-              <a id="forgotPassword" onClick={this.resetPassword}>Forgot Password?</a>
-          </div>
-
-          <div className="form-group account-options">
-              <button type="submit" id="login-button" className="btn btn-default pull-left">Login</button>
-              <a className="create-label pull-right" onClick={this.register}>Create an account</a>
+          <div className="input-group">
+            <button type="submit" id="login-button" className="btn btn-primary pull-left">Sign In</button>
+            <a id="forgotPassword" onClick={this.resetPassword}>Forgot Password?</a>
           </div>
 
         </form>

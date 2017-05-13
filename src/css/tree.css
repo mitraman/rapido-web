@@ -10,6 +10,13 @@
   stroke-width: 2px;
 }
 
+.selected.node-uri {
+  fill:yellow;
+  stroke:gray;
+  stroke-width: 2px;
+}
+
+
 .node-internal-border {
   stroke: gray;
   stroke-width: 1px;

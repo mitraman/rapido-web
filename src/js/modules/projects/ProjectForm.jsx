@@ -114,6 +114,7 @@ export default class extends React.Component{
             <label htmlFor="InputProjectName" id="projectNameLabel">Project Name:</label>
             <input
               type="text"
+              className="form-control"
               value={this.state.projectName}
               onChange={this.handleChange}
               id="InputProjectName"

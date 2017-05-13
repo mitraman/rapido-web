@@ -196,4 +196,56 @@ describe('Backend client', function() {
     }).finally(done)
   })
 
+  describe('Get Project', function() {
+
+  })
+
+  describe('Add Child Node', function() {
+    let token = 'atoken';
+    let parentId = 'dkks-8328832';
+
+    fit('should return details of a child node  and updated tree on success', function(done) {
+      // Setup the mock response
+      let mockResponseBody = {
+        node: {
+          id: '2009ds-asldkfj',
+          name: '',
+          fullPath: '',
+          children: [],
+          responseData: {}
+        },
+        tree: [
+          {
+            id: parentId,
+            name: 'test',
+            fuillPath: '',
+            responseData: {},
+            children: [
+              {
+                id: '2009ds-asldkfj',
+                name: '',
+                fullPath: '',
+                children: [],
+                responseData: {}
+              }
+            ]
+          }
+        ]
+      }
+      const url = __BACKEND + '/api/nodes/' + parentId;
+      this.server.respondWith("POST", url, function(xhr) {
+        xhr.respond(201, {"Content-Type": "application/json"},JSON.stringify(mockResponseBody));
+      });
+
+      Backend.addChildNode(token, parentId)
+      .then((result) => {
+        expect(result.node).not.toBeUndefined();
+        expect(result.node.id).not.toBeUndefined();
+        expect(result.tree).not.toBeUndefined();
+        done();
+      })
+    })
+
+  })
+
 });

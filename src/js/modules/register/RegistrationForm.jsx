@@ -150,7 +150,6 @@ export default class extends React.Component{
         });
       })
       .catch((error)=> {
-        //console.log('caught an error: ', error);
         // If the user account already exists, re-route user to a login page with an error message
         this.showAlert(error)
       })

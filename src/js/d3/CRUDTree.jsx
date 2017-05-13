@@ -15,7 +15,7 @@ export default class {
   static halfBoxHeight() { return halfBoxHeight; }
   static halfBoxWidth() { return halfBoxWidth; }
 
-  static drawNodes(g, rootTreeNode, handler) {
+  static drawNodes(g, rootTreeNode, handler, selectedNode) {
     let translations = {};
 
     // Create a new <g> for every object in the nodeList
@@ -53,14 +53,22 @@ export default class {
           .attr("height", resourceBoxHeight)
           .attr("rx", 10)
           .attr("ry", 10)
-  		    .attr("class", "node-uri")
+  		    .attr("class", function(d) {
+            if (selectedNode && d.data.id === selectedNode.id ){
+              return "selected-node-uri";
+            }else {
+              return "node-uri";
+            }
+          })
           .on("click", function(d) {
-            handler({
-              name: "detail",
-              source: d.data.id,
-              x: d.y,
-              y: d.x
-            })
+            if( !d.data.isRoot) {
+              handler({
+                name: "detail",
+                source: d.data.id,
+                x: d.y,
+                y: d.x
+              })
+            }
           });
 
   // CRUD Node URI (not the full path)
@@ -98,9 +106,10 @@ export default class {
       })
       .on("click", function(d) {
         //console.log("out connector clicked");
-        if( !d.data.isRoot) {
-          handler("add", d.data.id)
-        }
+          handler({
+            name: "add",
+            source: d.data.id
+          })
       });
 
     node.append("text")

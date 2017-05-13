@@ -1,10 +1,37 @@
-import d3Wrap from 'react-d3-wrap'
+import React from 'react'
+import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 import CRUDTree from './CRUDTree'
 
-import '../../css/tree.css'
+import '../../css/tree.scss'
 
-const CRUDTreeElement = d3Wrap ({
+export default class extends React.Component{
+
+  constructor(props) {
+    super(props);
+    this.margin = {
+      left: 0,
+      top: 0
+    }
+  }
+
+  componentDidMount () {
+    this.initialize(this.svgElement);
+    this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
+  }
+
+  componentDidUpdate () {
+    this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
+  }
+
+  componentWillUnmount () {
+    this.destroy();
+  }
+
+  render() {
+    const { width, height } = this.props
+    return <svg ref={(e) => {this.svgElement = e;}} className='CRUDTreeSVG' width={ width } height={ height } />
+  }
 
   initialize (svg, data, options) {
 
@@ -12,16 +39,12 @@ const CRUDTreeElement = d3Wrap ({
     const g = d3.select(svg)
       .append('g')
       .attr('ref', 'sketch')
-      .attr('transform', `translate(${options.margin.left}, ${options.margin.top})`);
+      .attr('transform', `translate(${this.margin.left}, ${this.margin.top})`);
 
       var levelWidth = [1];
       var levelDepth = [1];
       var treeWidth = ((d3.max(levelDepth) + 1) * CRUDTree.resourceBoxWidth());
       var treeHeight = ((d3.max(levelWidth) * 2) * CRUDTree.resourceBoxHeight() ) + 100;
-
-    // var tree = d3.tree()
-    //   .size([treeHeight,treeWidth])
-    //   .nodeSize([CRUDTree.resourceBoxHeight(), CRUDTree.resourceBoxWidth()]);
 
     var tree = d3.tree()
       .nodeSize([CRUDTree.resourceBoxHeight() + 100, CRUDTree.resourceBoxWidth() + 100]);
@@ -30,40 +53,20 @@ const CRUDTreeElement = d3Wrap ({
       g: g,
       tree: tree
     };
+  }
 
-  },
+  update (svgElement, rootNodes, handler, selectedNode) {
 
-  update (svg, data, options) {
+    //console.log(selectedNode);
 
     // Cleanup any existing graphs
-    var svg = d3.select("svg > g");
-    svg.selectAll("*").remove();
-
-    // Zoom and pan support
-    let zoomed = function () {
-      g.attr("transform", d3.event.transform);
-    }
+    let svg = d3.select(svgElement);
+    const g = this.state.g;
+    g.selectAll("*").remove();
 
     let svgWidth = ($("svg").width());
     let svgHeight = ($("svg").height());
-    let viewPort = svg.append("rect")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight)
-    .style("fill", "none")
-    .style("pointer-events", "all");
 
-    /*
-    The mouse based zoom and pan is jerky and unpredictable.  Need to figure out why before
-    re-enabling this.
-    .call(d3.zoom()
-        .scaleExtent([1 / 2, 4])
-        .on("zoom", zoomed));
-        */
-
-    // setup the container, root svg element passed in along with data and options
-    const g = this.state.g;
-    const rootNodes = data[0];
-    const handler = data[1];
 
     // Create a default root node for the nodes
     let treeRoot = {
@@ -74,6 +77,7 @@ const CRUDTreeElement = d3Wrap ({
 
     const root = d3.hierarchy(treeRoot);
     var nodes = this.state.tree(root);
+
 
     // draw link paths between the nodes in the tree
     var link = g.selectAll(".tree-link")
@@ -86,7 +90,7 @@ const CRUDTreeElement = d3Wrap ({
         });
 
     // draw the tree nodes
-    let drawNodesResult = CRUDTree.drawNodes(g, nodes, handler);
+    let drawNodesResult = CRUDTree.drawNodes(g, nodes, handler, selectedNode);
     let node = drawNodesResult.node;
     node.exit().remove();
 
@@ -94,18 +98,31 @@ const CRUDTreeElement = d3Wrap ({
     // Move the position of the tree graph based on a selected node
     let offsetX = (0 - drawNodesResult.translations['root'].y);
     let offsetY = ( 0 - drawNodesResult.translations['root'].x);
+    if( selectedNode ) {
+      // Move the position of the tree to the selected node
+      offsetX = (0 - drawNodesResult.translations[selectedNode.id].y) + 300;
+      offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
+    }
+
     // Use less of an x offset for the initial root node
     //const xPadding = svgWidth / 2;
     const xPadding = 100;
     const yPadding = svgHeight / 2;
-    g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
+    //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
 
-  },
+    //TODO: Set a pan extent so that the user can't lose the sketch by panning it away
+
+    svg.call(d3.zoom()
+      .on("zoom", () => {
+        //console.log('zoom called');
+        //node.attr("transform", d3.event.transform);
+        g.attr("transform", d3.event.transform);
+    }));
+
+  }
 
   destroy () {
     // Optional clean up when a component is being unmounted...
   }
 
-});
-
-export default CRUDTreeElement;
+}

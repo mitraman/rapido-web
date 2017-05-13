@@ -25,7 +25,7 @@ export default class extends React.Component{
     }
 
     return (
-    <div id={this.props.id} className="modal fade" tabIndex="-1" role="dialog">
+    <div id={this.props.id} className="modal" tabIndex="-1" role="dialog">
       <div className="modal-dialog" role="document">
         <div className="modal-content">
           <div className="modal-header">

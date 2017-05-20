@@ -135,14 +135,101 @@ export default class {
     node.append("g")
       .attr("class", "badges");
 
+    // GET Badge
     badges.append("rect")
-      .filter(function(d) { return d.data.get })
-      .attr("width", 33)
+      .filter(function(d) {
+        if( d.data.isRoot ) return;
+        if( d.data.data.get  ){
+          return d.data.data.get.enabled;
+        }else {
+          return false;
+        }
+      })
+      .attr("width", 30)
       .attr("height", 12)
       .attr("rx", 3)
       .attr("ry", 2)
       .attr("transform", "translate(8,4)")
       .attr("class", "get")
+    .append('svg:title')
+      .text('GET');
+
+
+    // PUT badge
+    badges.append("rect")
+      .filter(function(d) {
+        if( d.data.isRoot ) return;
+        if( d.data.data.put  ){
+          return d.data.data.put.enabled;
+        }else {
+          return false;
+        }
+      })
+      .attr("width", 30)
+      .attr("height", 12)
+      .attr("rx", 3)
+      .attr("ry", 2)
+      .attr("transform", "translate(46,4)")
+      .attr("class", "put")
+    .append('svg:title')
+      .text('PUT');
+
+    // POST badge
+    badges.append("rect")
+      .filter(function(d) {
+        if( d.data.isRoot ) return;
+        if( d.data.data.post  ){
+          return d.data.data.post.enabled;
+        }else {
+          return false;
+        }
+      })
+      .attr("width", 30)
+      .attr("height", 12)
+      .attr("rx", 3)
+      .attr("ry", 2)
+      .attr("transform", "translate(84,4)")
+      .attr("class", "post")
+    .append('svg:title')
+      .text('POST');
+
+      // DELETE badge
+      badges.append("rect")
+        .filter(function(d) {
+          if( d.data.isRoot ) return;
+          if( d.data.data.delete  ){
+            return d.data.data.delete.enabled;
+          }else {
+            return false;
+          }
+        })
+        .attr("width", 30)
+        .attr("height", 12)
+        .attr("rx", 3)
+        .attr("ry", 2)
+        .attr("transform", "translate(122,4)")
+        .attr("class", "delete")
+      .append('svg:title')
+        .text('DELETE');
+
+      // PATCH badge
+      badges.append("rect")
+        .filter(function(d) {
+          if( d.data.isRoot ) return;
+          if( d.data.data.patch  ){
+            return d.data.data.patch.enabled;
+          }else {
+            return false;
+          }
+        })
+        .attr("width", 30)
+        .attr("height", 12)
+        .attr("rx", 3)
+        .attr("ry", 2)
+        .attr("transform", "translate(160,4)")
+        .attr("class", "patch")
+      .append('svg:title')
+        .text('PATCH');
 
   return {
     translations: translations,

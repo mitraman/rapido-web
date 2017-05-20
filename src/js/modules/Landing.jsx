@@ -4,12 +4,15 @@ import AlertContainer from 'react-alert';
 import createHistory from 'history/createBrowserHistory'
 import LoginService from './login/LoginService';
 import Header from './header/Header';
+import { Route, Redirect } from 'react-router-dom'
+
 
 export default class extends React.Component{
 
   constructor(props) {
     super(props);
     this.state = {
+      loggedIn: false,
       alertBox: {
         error: (message) => {
           this.msg.error(message);
@@ -32,7 +35,9 @@ export default class extends React.Component{
       //let loginService = new LoginService();
       LoginService.login(registeredUser.email, registeredUser.password)
       .then( () => {
-        this.props.loggedIn();
+        // Redirect to the projects page
+        //this.props.loggedIn();
+        this.setState({loggedIn: true});
       } )
       .catch( (error) => {
         console.error('error:' + error);
@@ -50,6 +55,12 @@ export default class extends React.Component{
       </svg>
       </a>
     </div>
+
+    if(this.state.loggedIn) {
+      return(
+          <Redirect push to="/projects"/>
+      )
+    }
 
     return(
       <div id="landing">

@@ -132,13 +132,15 @@ export default class {
     });
   }
 
-  static updateNode(token, sketchId, node) {
-    let url = '/api/sketches/' + sketchId + '/nodes/' + node.id;
+  static updateNode(token, sketchId, nodeId, updateObject) {
+    let url = '/api/sketches/' + sketchId + '/nodes/' + nodeId;
 
-    let updateObject = {
-      name: node.name,
-      fullpath: node.fullpath
-    }
+    // let updateObject = {
+    //   name: node.name,
+    //   fullpath: node.fullpath
+    // }
+
+    console.log('updateObject:', updateObject);
 
     return this._authenticatedCall(token, "PATCH", url, updateObject, function(responseBody) {
       return {

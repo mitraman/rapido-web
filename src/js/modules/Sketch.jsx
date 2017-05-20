@@ -20,18 +20,15 @@ export default class extends React.Component{
       selectedIteration: 0,
       sketchId: 0
     }
-    this.nodeHash = {};
-
     this.toggleSideNav = this.toggleSideNav.bind(this);
   }
 
   componentDidMount() {
-    console.log('sketches:', this.props.sketches);
     let sketch = this.props.sketches[this.props.sketchIteration-1];
     this.setState({sketchId: sketch.id});
 
     sketch.tree.forEach( root => {
-      this.updatePath(root, '/');
+      this.updatePath(root, '');
     })
 
     this.setState({tree: sketch.tree});
@@ -48,9 +45,7 @@ export default class extends React.Component{
   }
 
   //Recursive function to walk through tree
-  // If findNode needs to be called often, we can use a hash to speed it up
   findNode(id, nodeList) {
-    console.log('TODO: cache the tree with a hash to make lookups faster')
     for( let i = 0; i < nodeList.length; i++ ) {
       if( nodeList[i].id === id ) {
         return nodeList[i];
@@ -71,38 +66,124 @@ export default class extends React.Component{
     });
   }
 
+  scheduleUpdate(nodeId, updateObject) {
 
-  uriChanged(nodeId, value) {
-    // Update the tree node
-    let node = this.findNode(nodeId, this.state.tree);
+    const intervalTime = 2000;
 
-    // Determine the parentpath based on the name of the node
-    let re = new RegExp(node.name + '$');
-    console.log(re);
-    let pathIndex = node.fullpath.search(re);
-    let parentPath = node.fullpath.split(0, pathIndex);
-    console.log(parentPath);
-    //update the fullpath for this node and its children
-    //updatePath(node)
-
-    //TODO: Should the frontend write the path changes? or should the backend do it automatically?
-
-    //update state so that the page renders again
-    this.forceUpdate();
-
-    node.name = value;
-
-    // Start a timer to save the changes
-    const intervalTime = 3000;
+    // check if a timeout is already scheduled
     if(this.timeoutID) {
       // Cancel the last timeout
-      window.clearTimeout(this.timeoutID);    }
-    this.timeoutID = window.setTimeout(() => {
-      //TODO: update a set of nodes so that the entire subtree can be updated (because of the fullpath change);
-      Backend.updateNode(this.props.userObject.token, this.state.sketchId, node);
+      window.clearTimeout(this.timeoutID);
 
-      // alert with a toast
+      if( this.pendingUpdate.id === nodeId) {
+        // This is another update for the same node, so merge the updateObjects
+        if( updateObject.name ) {
+          this.pendingUpdate.updateObject.name = updateObject.name;
+        }
+        if( updateObject.fullpath ) {
+          this.pendingUpdate.updateObject.fullpath = updateObject.fullpath;
+        }
+        if( updateObject.data ) {
+          this.pendingUpdate.updateObject.data = updateObject.data;
+        }
+      }else {
+        // This is an update for a new node, so fire off the old one immediately
+        Backend.updateNode(this.props.userObject.token,
+          this.state.sketchId,
+          this.pendingUpdate.id,
+          this.pendingUpdate.updateObject);
+      }
+    }
+
+    // Save the update details
+    this.pendingUpdate = {
+      id: nodeId,
+      updateObject: updateObject
+    }
+
+    // Scheudle the new update
+    this.timeoutID = window.setTimeout(() => {
+      Backend.updateNode(this.props.userObject.token,
+        this.state.sketchId,
+        this.pendingUpdate.id,
+        this.pendingUpdate.updateObject);
+
+        // TODO: alert with a toast
+
     }, intervalTime)
+  }
+
+  uriChanged(nodeId, value) {
+    // fullpath: (parentPath) + / + name
+
+    // Update the tree node
+
+    // Find the node in the tree
+    let node = this.findNode(nodeId, this.state.tree);
+
+    // Determine the parentpath based on the original name of the node
+    let re = new RegExp(node.name + '$');
+    let pathIndex = node.fullpath.search(re);
+    let parentPath = '';
+    if( pathIndex > 0) {
+      parentPath = node.fullpath.slice(0, pathIndex);
+    }
+
+    // Update the name of the node
+    node.name = value;
+
+    //update the fullpath for this node and its children
+    this.updatePath(node, parentPath);
+
+    //redraw the page
+    this.forceUpdate();
+
+    // Schedule the update
+    this.scheduleUpdate(node.id, { name: node.name, fullpath: node.fullpath});
+  }
+
+  dataChanged(id,key,fieldMap) {
+    let updateObject = {
+      data: {}
+    };
+    updateObject.data[key] = fieldMap;
+
+    if( fieldMap.hasOwnProperty('enabled') ) {
+      // This type of change will impact the badges visible on the node
+      // Update the node in the tree
+      let node = this.findNode(id, this.state.tree);
+      if(!node.data[key]) {
+        node.data[key] = {
+          enabled: true
+        }
+      }else {
+        node.data[key].enabled = fieldMap.enabled;
+      }
+
+      // Redraw the tree
+      this.forceUpdate();
+    }
+
+    //TODO: schedule this update
+    Backend.updateNode(this.props.userObject.token,
+      this.state.sketchId,
+      this.state.selectedNode.id,
+      updateObject);
+  }
+
+  addChild(parent) {
+    let parentId = parent ? parent.id : null;
+    Backend.addChildNode(this.props.userObject.token, this.state.sketchId, parentId)
+    .then( (result) => {
+      // The backend returns an updated version of the tree with the new node
+      this.setState({tree: result.tree});
+      let nodeId = result.node.id;
+
+      let newNode = this.findNode(nodeId, result.tree);
+      let parentPath = parent ? parent.fullpath : '';
+      newNode.fullpath = parentPath;
+      this.setState({selectedNode: newNode});
+    })
   }
 
   clickHandler(event) {
@@ -114,36 +195,28 @@ export default class extends React.Component{
       let parent = null;
       if( event.source ) {
         // If the source is not null, the new node will be a child of an existing node
-        parent = this.findNode(event.source, tree).id;
+        parent = this.findNode(event.source, tree);
       }
 
-      Backend.addChildNode(this.props.userObject.token, this.state.sketchId, parent)
-      .then( (result) => {
-        console.log('result:',result);
-        // The backend returns an updated version of the tree with the new node
-        this.setState({tree: result.tree});
-        let nodeId = result.node.id;
-
-        console.log(nodeId);
-        let newNode = this.findNode(nodeId, result.tree);
-        this.setState({selectedNode: newNode});
-      })
-
+      // If there is a pending change, trigger it first.
+      if(this.timeoutID) {
+        Backend.updateNode(this.props.userObject.token,
+          this.state.sketchId,
+          this.pendingUpdate.id,
+          this.pendingUpdate.updateObject)
+        .then( () => {
+          this.addChild(parent);
+        })
+        // Cancel the existing timeout
+        window.clearTimeout(this.timeoutID);
+      }else {
+        this.addChild(parent);
+      }
     }else if( eventType === 'detail') {
-      console.log('detail');
-      console.log(event.source);
       let node = this.findNode(event.source, this.state.tree);
-      console.log(node);
       this.setState({selectedNode: node});
     }
   }
-
-  zoomHandler(magnification) {
-    console.log('zoomHandler');
-
-    // Update the render based on the new magnification
-  }
-
 
   /* Render Method */
   render() {
@@ -158,7 +231,11 @@ export default class extends React.Component{
     let EditPane =  this.state.selectedNode ?
       <NodeEditor
         node={this.state.selectedNode}
-        uriChangeHandler={(id,val)=>{this.uriChanged(id,val)}}/> : <div/>;
+        uriChangeHandler={(id,val)=>{this.uriChanged(id,val)}}
+        dataChangeHandler={(id,key,fields)=>{this.dataChanged(id,key,fields)}}
+        /> : <div/>;
+
+
 
     return(
 
@@ -167,12 +244,10 @@ export default class extends React.Component{
         ref={(input) => {this.slideWrapper = input;}}
         >
         <div id="slide-canvas">
-
-          <div>This should be a child element</div>
           <div id="side-nav">
             <button className="btn btn-sm side-nav-tab"
               onClick={this.toggleSideNav}>
-              <i className="fa fa-book fa-3x" aria-hidden="true"></i>
+              <i className="fa fa-book fa-2x" aria-hidden="true"></i>
             </button>
             <h2>Vocabulary</h2>
 
@@ -182,7 +257,7 @@ export default class extends React.Component{
 
           <div className="main-content">
             <div className="sketch-canvas">
-              <SplitPane split="horizontal" minSize={100} defaultSize={400}>
+              <SplitPane split="horizontal" size={this.state.splitPaneSize} minSize={100} defaultSize={400}>
                 <div className="svg-wrapper">
                   <CRUDTree
                     rootNodes={this.state.tree}
@@ -199,9 +274,7 @@ export default class extends React.Component{
               </SplitPane>
            </div>
           </div>
-          <div className="zoom-controls">
-            <ZoomComponent zoomHandler={(magnification) => {this.zoomHandler(magnification)}}/>
-          </div>
+
         </div>
       </div>
 

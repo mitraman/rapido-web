@@ -17,7 +17,6 @@ export default class extends React.Component{
   }
 
   setProject(project) {
-    console.log('project selected:', project);
     this.setState({project: project});
   }
 

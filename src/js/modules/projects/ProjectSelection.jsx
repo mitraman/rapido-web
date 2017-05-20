@@ -33,7 +33,7 @@ export default class extends React.Component{
 
   projectCreated(projectId) {
     // Close the modal and redirect to the new project
-    ('#projectModal').modal('hide');
+    $('#projectModal').modal('hide');
     this.selectionHandler(projectId);
   }
 

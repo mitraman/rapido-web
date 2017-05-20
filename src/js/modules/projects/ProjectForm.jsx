@@ -18,7 +18,7 @@ export default class extends React.Component{
       // Keep the labels out of the state parameter becuase they aren't changed after being rendered.
       this.labels = {
         projectName: 'Project Name',
-        projectDescription: 'Description',
+        projectDescription: 'Description'
       }
 
       this.alertOptions = {
@@ -78,6 +78,7 @@ export default class extends React.Component{
       }).then( (result) => {
         this.props.projectCreated(result.id)
       }).catch( (error) => {
+        //console.log('Error occurred while creating project:', error);
         this.showAlert(error);
       })
     }

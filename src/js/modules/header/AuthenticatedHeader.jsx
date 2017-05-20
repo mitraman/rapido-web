@@ -12,8 +12,6 @@ export default class extends React.Component{
   }
 
   render() {
-    console.log('project:', this.props.project);
-
     let userName = this.props.userInfo.fullName;
     if( this.props.userInfo.nickName && this.props.userInfo.nickName.length > 0 ) {
       userName = this.props.userInfo.nickName;
@@ -22,9 +20,9 @@ export default class extends React.Component{
     return (
       <div className="navbar navbar-default navbar-static-top">
         <div className="container-fluid">
-          <div className="navbar-header">
+
             <Link className="navbar-left navbar-brand app-title" to="/home" id="logo" >Rápido</Link>
-            <p className="navbar-text">{this.props.project.title}</p>
+            <h3 className="navbar-text"><span className="label label-default">{this.props.project.name}</span></h3>
             <ul className="nav navbar-nav navbar-right">
               <li className="dropdown">
             <a id="userProfileMenu"
@@ -37,7 +35,7 @@ export default class extends React.Component{
               </ul>
               </li>
             </ul>
-          </div>
+          
         </div>
       </div>
     )

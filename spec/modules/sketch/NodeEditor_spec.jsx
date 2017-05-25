@@ -13,7 +13,7 @@ describe('Node Editor', function() {
     children: []
   }
 
-  it('should render the name of the selected node', function() {
+  xit('should render the name of the selected node', function() {
     const wrapper = shallow(<NodeEditor node={selectedNode}/>);
     expect(wrapper.find('div.nodeName').length).toBe(1);
     expect(wrapper.find('div.nodeName').text()).toBe(selectedNode.name);

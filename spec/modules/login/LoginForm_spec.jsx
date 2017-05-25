@@ -93,7 +93,7 @@ describe('LoginForm Component', function() {
 
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID is a required field');
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Please enter your email address');
     expect(loginSucceeded).not.toHaveBeenCalled();
   })
 
@@ -117,7 +117,7 @@ describe('LoginForm Component', function() {
 
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Password is a required field');
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Please enter your password');
     expect(loginSucceeded).not.toHaveBeenCalled();
 
   })
@@ -139,7 +139,7 @@ describe('LoginForm Component', function() {
 
     wrapper.find('button #login-button').get(0).click();
 
-    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('User ID should be a valid email address');
+    expect(LoginForm.prototype.showAlert).toHaveBeenCalledWith('Your email address doesn\'t look right.');
     expect(loginSucceeded).not.toHaveBeenCalled();
 
   })

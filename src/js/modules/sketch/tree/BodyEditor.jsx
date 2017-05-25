@@ -100,6 +100,7 @@ export default class extends React.Component{
   }
 
   onEditorChange(e, editorName) {
+    console.log('onEditorChange');
     // Don't do anything if the change is a result of our code.
     if( this.manipulatingBuffer) return;
 
@@ -107,6 +108,7 @@ export default class extends React.Component{
     //data[this.state.activeTab] = this.responseEditor.getValue();
     if( editorName === 'responseBody') {
       // If the response body was empty, automatically enable this method
+      console.log(data[this.state.activeTab]);
       if( data[this.state.activeTab].responseBody.length === 0  ) {
         this.setState({isMethodEnabled: true});
         data[this.state.activeTab].enabled = true;
@@ -127,6 +129,7 @@ export default class extends React.Component{
       // Cancel the last timeout
       window.clearTimeout(this.timeoutID);    }
     this.timeoutID = window.setTimeout(() => {
+      console.log('calling updateHabndler with body');
       this.props.updateHandler(this.state.activeTab, this.state.data[this.state.activeTab] );
     }, intervalTime)
   }

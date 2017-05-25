@@ -15,6 +15,10 @@ let fullpath = url;
     "name" : name,
     "url": url,
     "fullpath": fullpath,
+    "data": {
+      get: { enabled: true },
+      put: { enabled: false }
+    }
   }
 
   if( root ) {
@@ -154,7 +158,7 @@ describe('CRUDNodeTree', function() {
   xit('TODO: calls the event handler on a RECT click', function(done) {
 
     // TODO: Need to figure out why click simulation isn't working.
-    
+
     let treeRoot = {
       name: "ROOT",
       isRoot: true,

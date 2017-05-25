@@ -140,7 +140,7 @@ export default class {
     //   fullpath: node.fullpath
     // }
 
-    console.log('updateObject:', updateObject);
+    //console.log('updateObject:', updateObject);
 
     return this._authenticatedCall(token, "PATCH", url, updateObject, function(responseBody) {
       return {

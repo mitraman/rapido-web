@@ -13,21 +13,15 @@ describe('Header Component', function() {
     userId: 12
   }
 
+  const project = {
+    name: 'sample project'
+  }
+
   beforeEach(function(){
   })
 
-  it('should render navigation buttons if the showNavButtons property is true ', function() {
-    const wrapper = shallow(<AuthenticatedHeader showNavButtons={true} userInfo={userObject}/>);
-    expect(wrapper.find('div.navigationButtons').length).toBe(1);
-  })
-
-  it('should not render navigation buttons if the showNavButtons property is false', function() {
-    const wrapper = shallow(<AuthenticatedHeader showNavButtons={false} userInfo={userObject}/>);
-    expect(wrapper.find('div.navigationButtons').length).toBe(0);
-  })
-
   it('should render a user dropdown menu with a nickName', function() {
-    const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} showNavButtons={true}/>);
+    const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} project={project} />);
     expect(wrapper.find('a.userProfile').length).toBe(1);
     expect(wrapper.find('a.userProfile').text().startsWith(userObject.nickName)).toBe(true);
   })
@@ -40,16 +34,20 @@ describe('Header Component', function() {
       nickName: '',
       userId: 12
     }
-    const wrapper = shallow(<AuthenticatedHeader userInfo={noNickName} showNavButtons={true}/>);
+    const wrapper = shallow(<AuthenticatedHeader userInfo={noNickName} project={project}/>);
     expect(wrapper.find('a.userProfile').length).toBe(1);
     expect(wrapper.find('a.userProfile').text().startsWith(noNickName.fullName)).toBe(true);
   })
 
   it('should render a logout menu item', function() {
-    const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} showNavButtons={true}/>);
+    const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} project={project}/>);
     let userProfileMenu = wrapper.find('ul[aria-labelledby="userProfileMenu"]');
     expect(userProfileMenu.length).toBe(1);
     expect(userProfileMenu.children('li#signout').length).toBe(1);
+  })
+
+  it('should logout the user when logout is selected', function() {
+      fail('to be implemented');
   })
 
 

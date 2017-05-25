@@ -30,12 +30,12 @@ export default class extends React.Component{
               data-target="#"
               data-toggle="dropdown"
               role="button" aria-haspopup="true" aria-expanded="false">{userName} <span className="caret"></span></a>
-              <ul className="dropdown-menu" aria-labelledby="userProfileMenu">
+            <ul className="dropdown-menu" aria-labelledby="userProfileMenu">
                 <li id="signout"><a href="#">Sign Out</a></li>
               </ul>
               </li>
             </ul>
-          
+
         </div>
       </div>
     )

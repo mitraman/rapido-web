@@ -1,0 +1,170 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-javascript.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/theme-monokai.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ext-language_tools.js" type="text/javascript"></script>
+  <style type="text/css" media="screen">
+      #editor {
+          position: absolute;
+          top: 10;
+          left: 10;
+          bottom: 10;
+          right: 10;
+      }
+
+      #editor-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+      }
+
+      #editor-container.dirty {
+        background-color: red
+      }
+
+      #editor-container.clean {
+        background-color: green
+      }
+
+  </style>
+</head>
+<body>
+<div id="editor-container" class="clean">
+<div id="editor">{
+  "drag": "drag highlighted text into the panel on the left to create a new block",
+  "test" : true,
+  "anotherone": {
+      "blah" : true
+  },
+  "arrayTest" : []
+}</div>
+</div>
+<script>
+
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/javascript");
+
+  editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: false,
+        enableLiveAutocompletion: true
+  });
+
+  let editorState = 'clean';
+  let timeoutID = null;
+
+  let autoWords = [
+    {value: 'external_word', refs: 1},
+    {value: 'from_another_node', refs: 2},
+    {value: 'test', refs: 1}
+  ];
+
+  let bodyWords = [];
+
+  let applyWordList = function(newWords) {
+    // Word lists are stored in alpha order
+    bodyWords.forEach(word => {
+
+    });
+  }
+
+  let buildWordList = function(jsonDoc) {
+
+    // Store the previous list of bodyWords for comparison
+    let newWords = [];
+
+    //console.log(jsonDoc);
+    // parse the document, saving keywords to the autoCompleteList
+    let parseKeys = function(name, jsonObj) {
+      let keys = [name];
+      if( jsonObj instanceof Object ) {
+        //console.log(name + 'is an object');
+        let childKeys = Object.keys(jsonObj);
+        childKeys.forEach( key => {
+          let childWords = parseKeys(key, jsonObj[key]);
+          Array.prototype.push.apply(keys, childWords);
+        })
+        // Parse the children of this Object
+      }
+      // else if( jsonObj instanceof Array ) {
+      //   console.log(name + 'is an array');
+      // }else {
+      //   console.log(name + 'is a property');
+      // }
+      // console.log(name + ' keys:', keys);
+      return keys;
+    }
+
+    let rootKeys = Object.keys(jsonDoc);
+
+    rootKeys.forEach( rootKey => {
+      let words = parseKeys(rootKey, jsonDoc[rootKey]);
+      Array.prototype.push.apply(newWords, words);
+    })
+
+    // apply vocabulary changes to the autocomplete list for this project
+    applyWordList(newWords);
+
+  }
+
+  let saveChanges = function() {
+    console.log('saveChanges');
+    editorState = 'clean';
+    document.querySelector('#editor-container').setAttribute('class', editorState);
+    window.clearTimeout(timeoutID);
+
+    try{
+      let jsonDoc = JSON.parse(editor.session.getValue());
+      buildWordList(jsonDoc)
+    }catch( e ) {
+      if(e instanceof SyntaxError) {
+        // This is a JSON Parsing error, so don't do anything with this text for now.
+      }else {
+        throw e;
+      }
+    }
+
+  }
+
+  editor.session.on("change", e => {
+    // Start a timer and indicate that the editor is now dirty
+    // Reset the timer if it already exists
+    if(editorState === 'dirty') {
+      window.clearTimeout(timeoutID);
+    }else {
+      editorState = 'dirty';
+    }
+    document.querySelector('#editor-container').setAttribute('class', editorState);
+    timeoutID = window.setTimeout(saveChanges, 1000);
+
+  })
+
+  const langTools = ace.require("ace/ext/language_tools");
+
+  let myCompleter = {
+    getCompletions : function ( editor, session, pos, prefix, callback) {
+      //console.log(prefix);
+
+      callback(null, autoWords.map(function(word) {
+        return {
+          caption: word.value,
+          value: word.value,
+          score: 1,
+          meta: "vocabulary"
+        }
+      }))
+    }
+  };
+
+  langTools.setCompleters([myCompleter]);
+
+  console.log('keywordCompleter: ', langTools.keywordCompleter);
+</script>
+
+</body>
+</html>

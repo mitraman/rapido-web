@@ -1,3 +1,4 @@
+import * as d3 from 'd3'
 
 const resourceBoxWidth = 250;
 const resourceBoxHeight = 90;
@@ -15,7 +16,7 @@ export default class {
   static halfBoxHeight() { return halfBoxHeight; }
   static halfBoxWidth() { return halfBoxWidth; }
 
-  static drawNodes(g, rootTreeNode, handler, selectedNode) {
+  static drawNodes(svg, g, rootTreeNode, handler, selectedNode) {
     let translations = {};
 
     // Create a new <g> for every object in the nodeList
@@ -62,6 +63,13 @@ export default class {
           })
           .on("click", function(d) {
             if( !d.data.isRoot) {
+              //console.log('node clicked');
+              //TODO: Calculate the transform to position this node
+              // Move the view so that the node is centered
+              let transform = d3.zoomTransform(g);
+              console.log(transform);
+              //svg.call(zoom.transform, d3.zoomIdentity);
+              g.attr("transform", "translate(" + d.y + "," + d.x + ")");
               handler({
                 name: "detail",
                 source: d.data.id,
@@ -105,7 +113,7 @@ export default class {
         return "translate(" + boxWidth + "," + resourceBoxHeight / 2 +")";
       })
       .on("click", function(d) {
-        //console.log("out connector clicked");
+          //console.log("out connector clicked");
           handler({
             name: "add",
             source: d.data.id

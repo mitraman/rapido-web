@@ -67,6 +67,11 @@ export default class extends React.Component{
     let svgWidth = ($("svg").width());
     let svgHeight = ($("svg").height());
 
+    svg.on('click', function() {
+      console.log('svg clicked');
+      console.log('TODO: deselect nodes if svg is clicked');
+      console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
+    })
 
     // Create a default root node for the nodes
     let treeRoot = {
@@ -90,7 +95,7 @@ export default class extends React.Component{
         });
 
     // draw the tree nodes
-    let drawNodesResult = CRUDTree.drawNodes(g, nodes, handler, selectedNode);
+    let drawNodesResult = CRUDTree.drawNodes(svg, g, nodes, handler, selectedNode);
     let node = drawNodesResult.node;
     node.exit().remove();
 

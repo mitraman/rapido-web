@@ -1,0 +1,117 @@
+<html>
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/mode-javascript.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/theme-monokai.js" type="text/javascript"></script>
+  <style type="text/css" media="screen">
+      #editor {
+          position: absolute;
+          top: 15px;
+          left: 625px;
+          bottom: 0;
+          right: 0;
+          height: 465px;
+          width: 600px;
+      }
+
+      #vocab-panel {
+        height: 150px;
+        width: 600px;
+        padding: 15px;
+        border: 1.0px black solid;
+        margin-left: 15px;
+        margin-top: 15px;
+      }
+
+      #vocab-panel span {
+        margin-left: 5px;
+      }
+
+      #preview-panel {
+        margin-top: 15px;
+        margin-left: 15px;
+        height: 300px;
+        width: 600px;
+        border: 1.0px black dotted;
+        padding-left: 5px;
+        padding-top: 5px;
+      }
+  </style>
+</head>
+<body>
+<div id="vocab-panel">
+  <div style="padding-bottom: 5px; margin-left: 5px;">Drag a block into the text editor to paste it in.</div>
+  <span id='0' draggable="true" class="label label-default">block 0</span>
+</div>
+<div id="preview-panel">Hover over a block to see it's contents in this pane.</div>
+
+<div id="editor">{
+  "drag": "drag highlighted text into the panel on the left to create a new block"
+}</div>
+<script>
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/monokai");
+  editor.getSession().setMode("ace/mode/javascript");
+</script>
+
+<script>
+
+  let blockIndex = 1;
+  let blockData = ['{"name": "block1"}'];
+
+  let blockDragHandler =  (e) => {
+    let blockId = e.target.getAttribute('id')
+    e.dataTransfer.setData('text/plain', blockData[blockId]);
+  };
+
+  let showBlockText = (e) => {
+    document.querySelector('#preview-panel').innerHTML = blockData[e.target.id];
+  }
+
+  let clearBlockText = (e) => {
+    document.querySelector('#preview-panel').innerHTML = "Hover over a block to see it's contents in this pane.";
+  }
+
+  document.querySelector('.label').addEventListener("mouseenter", showBlockText, false);
+  document.querySelector('.label').addEventListener("mouseleave", clearBlockText, false);
+
+  // New text range dropped on panel
+  document.querySelector('#vocab-panel').addEventListener("drop", (e) => {
+    let blockContent = e.dataTransfer.getData('text/plain');
+    if( blockContent ) {
+      blockData.push(blockContent);
+    }
+    let newBlockSpan = document.createElement("span");
+    newBlockSpan.setAttribute('draggable', 'true');
+    newBlockSpan.setAttribute('id', blockIndex);
+    newBlockSpan.setAttribute('class', 'label label-default');
+    newBlockSpan.innerHTML = 'block ' + blockIndex;
+    newBlockSpan.addEventListener("dragstart", blockDragHandler, false);
+    newBlockSpan.addEventListener("mouseenter", showBlockText, false);
+    newBlockSpan.addEventListener("mouseleave", clearBlockText, false);
+    blockIndex++;
+    document.querySelector('#vocab-panel').appendChild(newBlockSpan);
+  })
+
+  // override default dragover beahviour to allow drop event to work
+  document.querySelector('#vocab-panel').addEventListener("dragover", (e) => {
+    e.preventDefault();
+    return false;
+  })
+
+  document.querySelector('.label').addEventListener("dragstart", blockDragHandler, false);
+
+  // Editor drag and drop special handling
+  document.querySelector('#editor').addEventListener("dragstart", (e) => {
+    // Setting the editor to read only mode tells Ace to do a copy instead of move
+    editor.setReadOnly(true);
+  })
+
+  document.querySelector('#editor').addEventListener("dragend", (e) => {
+    editor.setReadOnly(false);
+  })
+
+</script>
+</body>
+</html>

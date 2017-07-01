@@ -28,12 +28,13 @@ export default class extends React.Component{
     this.setState({tabClasses: tabClasses});
     this.setState({activeTab: methodName});
     this.setState({isMethodEnabled: this.state.data[methodName].enabled});
-    this.setState({requestParams: this.state.data[methodName].queryParams})
+    this.setState({requestParams: this.state.data[methodName].request.queryParams})
+    this.setState({statusCode: this.state.data[methodName].response.status})
 
     this.manipulatingBuffer = true;
     if( this.state.data[methodName] ) {
-      this.responseEditor.setValue(this.state.data[methodName].responseBody);
-      this.requestEditor.setValue(this.state.data[methodName].requestBody);
+      this.responseEditor.setValue(this.state.data[methodName].response.body);
+      this.requestEditor.setValue(this.state.data[methodName].request.body);
     }else {
       this.responseEditor.setValue('');
       this.responseEditor.setValue('');
@@ -47,8 +48,16 @@ export default class extends React.Component{
     let buildMethodData = function(methodName, data) {
       return {
         enabled: (data[methodName] ? data[methodName].enabled : false),
-        requestBody : ( data[methodName] ? data[methodName].requestBody : '' ),
-        responseBody : ( data[methodName] ? data[methodName].responseBody : '' )
+        request: {
+          contentType : ( data[methodName] ? data[methodName].request.contentType : 'application/json'),
+          queryParams : ( data[methodName] ? data[methodName].request.queryParams : ''),
+          body : ( data[methodName] ? data[methodName].request.body : '' )
+        },
+        response: {
+          contentType : ( data[methodName] ? data[methodName].response.contentType : 'application/json'),
+          status : ( data[methodName] ? data[methodName].response.status : '' ),
+          body : ( data[methodName] ? data[methodName].response.body : '' )
+        }
       };
     }
 
@@ -100,7 +109,6 @@ export default class extends React.Component{
   }
 
   onEditorChange(e, editorName) {
-    console.log('onEditorChange');
     // Don't do anything if the change is a result of our code.
     if( this.manipulatingBuffer) return;
 
@@ -108,15 +116,14 @@ export default class extends React.Component{
     //data[this.state.activeTab] = this.responseEditor.getValue();
     if( editorName === 'responseBody') {
       // If the response body was empty, automatically enable this method
-      console.log(data[this.state.activeTab]);
-      if( data[this.state.activeTab].responseBody.length === 0  ) {
+      if( data[this.state.activeTab].response.body.length === 0  ) {
         this.setState({isMethodEnabled: true});
         data[this.state.activeTab].enabled = true;
         this.props.updateHandler(this.state.activeTab, {enabled: true});
       }
-      data[this.state.activeTab].responseBody = this.responseEditor.getValue();
+      data[this.state.activeTab].response.body = this.responseEditor.getValue();
     }else if( editorName === 'requestBody' ) {
-      data[this.state.activeTab].requestBody = this.requestEditor.getValue();
+      data[this.state.activeTab].request.body = this.requestEditor.getValue();
     }
 
     // Store the changes in state
@@ -129,7 +136,6 @@ export default class extends React.Component{
       // Cancel the last timeout
       window.clearTimeout(this.timeoutID);    }
     this.timeoutID = window.setTimeout(() => {
-      console.log('calling updateHabndler with body');
       this.props.updateHandler(this.state.activeTab, this.state.data[this.state.activeTab] );
     }, intervalTime)
   }
@@ -205,22 +211,37 @@ export default class extends React.Component{
                 <div className="form-group">
                   <label>Request Parameters: </label>
                   <input
-                    className="form-control"
+                    className="form-control input-sm"
                     name="requestParams"
                     placeholder="?[key]=[value]&"
                     type="text"
                     value={this.state.requestParams}/>
                 </div>
+                <label>Content Type:</label>
+                <select className="form-control input-sm" readOnly>
+                  <option>application/json</option>
+                </select>
+
               </form>
               <div id="requestEditorPane" style={requestEditorStyle} ref={(e) => { this.requestEditDiv = e} }></div>
               </div>
             <div>
               <h4>Response</h4>
               <form className="form">
+              <div className="form-group">
+                <label>Status Code:</label>
+                <input
+                  className="form-control input-sm"
+                  name="statusCode"
+                  placeholder="Default Status Code"
+                  type="text"
+                  value={this.state.statusCode}/>
+              </div>
               <label>Content Type:</label>
-              <select className="form-control" readOnly>
+              <select className="form-control input-sm" readOnly>
                 <option>application/json</option>
               </select>
+
               </form>
               <div id="responseEditorPane" style={editorStyle} ref={(e) => { this.responseEditDiv = e} }></div>
 

@@ -41,6 +41,7 @@ export default class extends React.Component{
 
       <div>
         <h4>{this.props.node.fullpath}</h4>
+        <button className="btn btn-danger pull-right">delete</button>
         <form className="form-horizontal">
           <div className="form-group">
             <label className="col-md-1 control-label pull-left">URI:</label>

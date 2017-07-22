@@ -68,9 +68,11 @@ export default class extends React.Component{
     let svgHeight = ($("svg").height());
 
     svg.on('click', function() {
+      /*
       console.log('svg clicked');
       console.log('TODO: deselect nodes if svg is clicked');
       console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
+      */
     })
 
     // Create a default root node for the nodes
@@ -99,30 +101,41 @@ export default class extends React.Component{
     let node = drawNodesResult.node;
     node.exit().remove();
 
-    //TODO: reposition on each node selection
-    // Move the position of the tree graph based on a selected node
-    let offsetX = (0 - drawNodesResult.translations['root'].y);
-    let offsetY = ( 0 - drawNodesResult.translations['root'].x);
-    if( selectedNode ) {
+    //TODO: Set a pan extent so that the user can't lose the sketch by panning it away
+    let zoom = d3.zoom();
+    svg.call(zoom.on("zoom", () => {
+      g.attr("transform", d3.event.transform);
+    }));
+
+    if( selectedNode === '/') {
+      // Zoom out and center the graph
+      let offsetX = 400;
+      let offsetY = 200;
+
+      let scale = 0.5;
+      let translate = [offsetX, offsetY];
+      svg.transition().duration(75)
+      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
+    }
+    else {
       // Move the position of the tree to the selected node
-      offsetX = (0 - drawNodesResult.translations[selectedNode.id].y) + 300;
-      offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
+      //console.log(drawNodesResult.translations[selectedNode.id]);
+      let offsetX = (0 - drawNodesResult.translations[selectedNode.id].y);
+      let offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
+      const xPadding = 20;
+      const yPadding = 20;
+      //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
+      //zoom.translate([offsetX,offsetY]);
+      let scale = 1;
+      let translate = [offsetX + xPadding, offsetY + yPadding];
+      svg.transition().duration(200)
+      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
     }
 
     // Use less of an x offset for the initial root node
     //const xPadding = svgWidth / 2;
-    const xPadding = 100;
-    const yPadding = svgHeight / 2;
-    //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
 
-    //TODO: Set a pan extent so that the user can't lose the sketch by panning it away
 
-    svg.call(d3.zoom()
-      .on("zoom", () => {
-        //console.log('zoom called');
-        //node.attr("transform", d3.event.transform);
-        g.attr("transform", d3.event.transform);
-    }));
 
   }
 

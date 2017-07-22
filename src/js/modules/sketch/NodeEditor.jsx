@@ -7,13 +7,15 @@ export default class extends React.Component{
     super(props);
     this.state = {
       url: this.props.node.name,
+      prePath : this.props.node.prePath + '/',
       requestParams: '?'
     }
   }
 
   componentWillReceiveProps(nextProps){
     if(nextProps.node.id  != this.props.node.id) {
-      this.setState({url: nextProps.node.name})
+      this.setState({url: nextProps.node.name});
+      this.setState({prePath: nextProps.node.prePath});
     }
   }
 
@@ -37,26 +39,29 @@ export default class extends React.Component{
 
   /* Render Method */
   render() {
+
+    let bodyEditor = <div/>
+    if( this.props.node != '/') {
+      bodyEditor = <BodyEditor node={this.props.node} updateHandler={(key,fields)=>this.nodeDataUpdated(key,fields)}/>
+    }
     return(
 
       <div>
-        <h4>{this.props.node.fullpath}</h4>
         <button className="btn btn-danger pull-right">delete</button>
-        <form className="form-horizontal">
-          <div className="form-group">
-            <label className="col-md-1 control-label pull-left">URI:</label>
-            <div className="col-md-11">
-              <input
-                className="form-control"
-                name="nodeUrl"
-                type="text"
-                placeholder="The URI of this endpoint"
-                value={this.state.url}
-                onChange={(e) => this.onChange(e)}/>
-            </div>
+        <form>
+          <div className="input-group form-group-sm">
+            <span className="input-group-addon" id="basic-addon1">{this.state.prePath}</span>
+            <input
+              className="form-control"
+              type="text"
+              name="nodeUrl"
+              id="formInputURI"
+              placeholder="enter path segment here"
+              value={this.state.url}
+              onChange={(e) => this.onChange(e)}/>
           </div>
-      </form>
-        <BodyEditor node={this.props.node} updateHandler={(key,fields)=>this.nodeDataUpdated(key,fields)}/>
+        </form>
+        {bodyEditor}
       </div>
     );
   }

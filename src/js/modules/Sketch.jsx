@@ -15,7 +15,7 @@ export default class extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      selectedNode: null,
+      selectedNode: '/',
       tree: [],
       selectedIteration: 0,
       sketchId: 0
@@ -27,13 +27,15 @@ export default class extends React.Component{
     let sketch = this.props.sketches[this.props.sketchIteration-1];
     this.setState({sketchId: sketch.id});
 
-    sketch.tree.forEach( root => {
-      this.updatePath(root, '');
-    })
-
+    this.parseTree(sketch.tree);
     this.setState({tree: sketch.tree});
-  }
 
+    // Remove the detail pane because no node has been selected yet.
+    this.setState({splitPaneSize: "100%"});
+
+    document.addEventListener('keydown', (e) => this.handleKeyPress(e), false);
+
+  }
 
   toggleSideNav() {
       if( this.state.navState === 'show-nav') {
@@ -59,11 +61,26 @@ export default class extends React.Component{
     return null;
   }
 
-  updatePath(node, parentPath) {
-    node.fullpath = parentPath + node.name;
-    node.children.forEach( child => {
-      this.updatePath(child, node.fullpath);
-    });
+  // Add helper properties to the tree structure for the GUI and processing
+  parseTree(tree) {
+    let parseNode = function(node, parentNode) {
+      node.parent = parentNode;
+      if( !parentNode ) {
+        node.prePath = '/';
+      }else {
+        node.prePath = parentNode.fullpath + '/';
+      }
+      node.fullpath = node.prePath + node.name;
+
+
+      node.children.forEach( child => {
+        parseNode(child, node);
+      });
+    }
+
+    tree.forEach(root => {
+      parseNode(root);
+    })
   }
 
   scheduleUpdate(nodeId, updateObject) {
@@ -118,27 +135,30 @@ export default class extends React.Component{
 
     // Update the tree node
 
-    // Find the node in the tree
-    let node = this.findNode(nodeId, this.state.tree);
-
-    // Determine the parentpath based on the original name of the node
-    let re = new RegExp(node.name + '$');
-    let pathIndex = node.fullpath.search(re);
-    let parentPath = '';
-    if( pathIndex > 0) {
-      parentPath = node.fullpath.slice(0, pathIndex);
+    let node = this.state.selectedNode;
+    if(nodeId != this.state.selectedNode.id) {
+      node = this.findNode(nodeId, this.state.tree);
     }
 
     // Update the name of the node
     node.name = value;
+    node.fullpath = node.prePath + node.name;
 
     //update the fullpath for this node and its children
-    this.updatePath(node, parentPath);
+    let updateChildPaths = function(node) {
+      for(let i =0; i < node.children.length; i++) {
+        let childNode = node.children[i];
+        childNode.prePath = node.fullpath + '/';
+        childNode.fullpath = childNode.prePath + childNode.name;
+        updateChildPaths(childNode);
+      }
+    }
+    updateChildPaths(node);
 
     //redraw the page
     this.forceUpdate();
 
-    // Schedule the update
+    // Schedule an update to persist changes to the backend server
     this.scheduleUpdate(node.id, { name: node.name, fullpath: node.fullpath});
   }
 
@@ -176,12 +196,14 @@ export default class extends React.Component{
     Backend.addChildNode(this.props.userObject.token, this.state.sketchId, parentId)
     .then( (result) => {
       // The backend returns an updated version of the tree with the new node
-      this.setState({tree: result.tree});
+      let tree = result.tree;
+      this.parseTree(tree)
+      this.setState({tree: tree});
       let nodeId = result.node.id;
 
       let newNode = this.findNode(nodeId, result.tree);
-      let parentPath = parent ? parent.fullpath : '';
-      newNode.fullpath = parentPath;
+      //let parentPath = parent ? parent.fullpath : '';
+      //newNode.fullpath = parentPath;
       this.setState({selectedNode: newNode});
     })
   }
@@ -215,6 +237,106 @@ export default class extends React.Component{
     }else if( eventType === 'detail') {
       let node = this.findNode(event.source, this.state.tree);
       this.setState({selectedNode: node});
+      // If the split panel is hidden, create a split by setting the default splitPaneSize
+      if( this.state.splitPaneSize === "100%") {
+        this.setState({splitPaneSize: "150px"});
+      }
+    }
+  }
+
+  displayDetail() {
+    this.setState({splitPaneSize: "150px"});
+  }
+
+  displayOverview() {
+    this.setState({splitPaneSize: "100%"});
+  }
+
+  handleKeyPress(event) {
+    //console.log(event);
+    if( event.key === 'Escape') {
+      this.setState({selectedNode: '/'});
+      this.displayOverview();
+    }
+
+    if( document.activeElement != null && document.activeElement.localName != 'body') {
+      // The user is probably focused on an input field, so don't do anything with
+      // keys
+      return;
+    }
+    if(event.key === 'ArrowLeft') {
+      // Try to move to the parent node
+      let selectedNode = this.state.selectedNode;
+      let parent = selectedNode.parent;
+      if( parent ) {
+        this.setState({selectedNode: parent});
+      }else {
+        this.setState({selectedNode: '/'});
+        this.displayOverview();
+      }
+    }else if( event.key === 'ArrowRight') {
+      // Try to move to a child node
+      let selectedNode = this.state.selectedNode;
+      if(selectedNode === '/' ) {
+        if( this.state.tree.length > 0) {
+          this.setState({selectedNode: this.state.tree[0]})
+        }
+      }else if(selectedNode.children.length > 0 ) {
+        this.setState({selectedNode: selectedNode.children[0]});
+      }
+    }else if( event.key === 'ArrowDown') {
+      // Try to move to the next sibling
+      let selectedNode = this.state.selectedNode;
+      let parent = selectedNode.parent;
+      if( !parent ) {
+        for( let i = 0; i < this.state.tree.length; i++ ) {
+          let rootNode = this.state.tree[i];
+          if( rootNode.id === selectedNode.id ) {
+            if( (i + 1) < this.state.tree.length ) {
+              this.setState({selectedNode: this.state.tree[i+1]});
+            }
+            return;
+          }
+        }
+      } else {
+        for( let i = 0; i < parent.children.length; i++) {
+          let childNode = parent.children[i];
+          if( childNode.id === selectedNode.id) {
+            if( (i + 1) < parent.children.length ) {
+              this.setState({selectedNode: parent.children[i+1]});
+            }
+            return;
+          }
+        }
+      }
+    }else if( event.key === 'ArrowUp' ) {
+      // Try to move to the previous sibling
+      let selectedNode = this.state.selectedNode;
+      let parent = selectedNode.parent;
+      let prevSibling = null;
+      if( !parent ) {
+        for( let i = 0; i < this.state.tree.length; i++ ) {
+          let rootNode = this.state.tree[i];
+          if( rootNode.id === selectedNode.id) {
+            if( i > 0) {
+              this.setState({selectedNode: prevSibling});
+            }
+            return;
+          }
+          prevSibling = rootNode;
+        }
+      }else {
+        for( let i = 0; i < parent.children.length; i++) {
+          let childNode = parent.children[i];
+          if( childNode.id === selectedNode.id) {
+            if( i > 0) {
+              this.setState({selectedNode: prevSibling});
+            }
+            return;
+          }
+          prevSibling = childNode;
+        }
+      }
     }
   }
 
@@ -253,11 +375,10 @@ export default class extends React.Component{
 
             <VocabularyList vocabulary={vocabulary}/>
           </div>
-          <div>Annotations</div>
-
+          
           <div className="main-content">
             <div className="sketch-canvas">
-              <SplitPane split="horizontal" size={this.state.splitPaneSize} minSize={100} defaultSize={400}>
+              <SplitPane split="horizontal" size={this.state.splitPaneSize} minSize={100}>
                 <div className="svg-wrapper">
                   <CRUDTree
                     rootNodes={this.state.tree}

@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PasswordConfig from '../passwordConfig.js'
 import Backend from '../../adapter/Backend.js'
+import RapidoErrorCodes from '../error/codes.js'
 
 export default class extends React.Component{
 
@@ -150,8 +151,14 @@ export default class extends React.Component{
         });
       })
       .catch((error)=> {
-        // If the user account already exists, re-route user to a login page with an error message
-        this.showAlert(error)
+        if( error.code === RapidoErrorCodes.duplicateUser) {
+          // If the user account already exists, re-route user to a login page with an error message
+          //TODO: Route to login page with error
+          console.log('re-routing to the login page with an error message')
+        }else {
+          this.showAlert(error.detail);
+        }
+
       })
     }
   }

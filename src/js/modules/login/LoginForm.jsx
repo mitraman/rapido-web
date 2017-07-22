@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import AlertContainer from 'react-alert'
 import LoginService from './LoginService.js';
+import RapidoErrorCodes from '../error/codes.js';
 
 export default class extends React.Component{
 
@@ -13,7 +14,8 @@ export default class extends React.Component{
         rememberMe: false,
         errorMessages: {},
         formStarted: false,
-        debug: 'empty'
+        debug: 'empty',
+        loginErrorMessage: ''
       };
 
       // Keep the labels out of the state parameter becuase they aren't changed after being rendered.
@@ -31,15 +33,6 @@ export default class extends React.Component{
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  /* Method to show alert message */
-  showAlert(message){
-    this.props.alertMsg.error(message, {
-      time: 5000,
-      type: 'error',
-      icon: <span className=""></span>
-    });
   }
 
   /* Method to handle input change */
@@ -72,8 +65,11 @@ export default class extends React.Component{
       .then( () => {
           this.props.loginSucceeded();
       }).catch( (error) => {
-        console.log('ERROR:', error);
-        this.showAlert(error)
+        if( error.code === RapidoErrorCodes.invalidLoginCredentials ) {
+          this.setState({'loginErrorMessage': 'You\'ve entered the wrong username or password.'});
+        }else {
+          console.log('ERROR:', error);
+        }
       })
     }
   }
@@ -105,9 +101,16 @@ export default class extends React.Component{
     if (!this.props.fromDashboard) {
       creationLabel = <h3>Create an account</h3>
     }
+
+    let loginAlertDiv = '';
+    if( this.state.loginErrorMessage.length > 0 ) {
+      loginAlertDiv = <div className="alert alert-danger" role="alert">{this.state.loginErrorMessage}</div>
+    }
     return(
       <div>
         <form id="login-form" className="login-form" noValidate onSubmit={this.handleSubmit}>
+
+          {loginAlertDiv}
 
           <div className="form-group">
             <label htmlFor="InputEmail" id="userEmailLabel">{this.labels.email}</label>

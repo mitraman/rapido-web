@@ -27,12 +27,14 @@ export default class {
           } else {
             let contentType = xhr.getResponseHeader('Content-Type');
             //console.log(contentType);
-            if( contentType && contentType.startsWith('application/json')) {
-              let responseBody = JSON.parse(xhr.response);
-              let errorMessage = responseBody.error ? responseBody.error : repsonseBody;
-              reject(errorMessage)
+            if( contentType && contentType.startsWith('application/problem+json')) {
+              reject(JSON.parse(xhr.response));
             }else {
-              reject('unexpected response from server: ', xhr);
+              console.log('unexpected response from server: ', xhr);
+              let problem = {
+                detail: 'Unexpected problem encountered'
+              }
+              reject(problem);
             }
             //console.log('non 200 status: ', xhr.status);
 

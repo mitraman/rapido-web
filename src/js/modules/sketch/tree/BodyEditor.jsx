@@ -33,11 +33,11 @@ export default class extends React.Component{
 
     this.manipulatingBuffer = true;
     if( this.state.data[methodName] ) {
-      this.responseEditor.setValue(this.state.data[methodName].response.body);
-      this.requestEditor.setValue(this.state.data[methodName].request.body);
+      this.responseEditor.setValue(this.state.data[methodName].response.body, 1);
+      this.requestEditor.setValue(this.state.data[methodName].request.body, 1);
     }else {
-      this.responseEditor.setValue('');
-      this.responseEditor.setValue('');
+      this.responseEditor.setValue('', 1);
+      this.responseEditor.setValue('', 1);
     }
     this.manipulatingBuffer = false;
 
@@ -80,7 +80,6 @@ export default class extends React.Component{
       if( !node ) {
         throw new Error('No node passed to <ResponseEditor/>');
       }
-
       this.loadNodeData(node);
     }
   }
@@ -155,6 +154,7 @@ export default class extends React.Component{
     //let enabledState = this.
 
     // Set the editor body based on the active tab
+    console.log(event);
     this.setView(event.target.name);
 
   }
@@ -188,11 +188,11 @@ export default class extends React.Component{
     return (
         <div className="response-edit">
           <ul className="nav nav-tabs">
-            <li role="presentation" className={this.state.tabClasses.get}><a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}>GET</a></li>
-            <li role="presentation" className={this.state.tabClasses.put}><a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}>PUT</a></li>
-            <li role="presentation" className={this.state.tabClasses.post}><a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}>POST</a></li>
+            <li role="presentation" className={this.state.tabClasses.get}><a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-success">GET</span></a></li>
+            <li role="presentation" className={this.state.tabClasses.put}><a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-warning">PUT</span></a></li>
+            <li role="presentation" className={this.state.tabClasses.post}><a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-primary">POST</span></a></li>
             <li role="presentation" className={this.state.tabClasses.patch}><a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}>PATCH</a></li>
-            <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}>DELETE</a></li>
+            <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-danger">DELETE</span></a></li>
           </ul>
           <div id="enabled">
             <input
@@ -204,7 +204,7 @@ export default class extends React.Component{
             <label onClick={() => this.handleEnabledChange()}>Enabled</label>
           </div>
 
-          <SplitPane split="vertical" minSize={50} defaultSize={500}>
+          <SplitPane split="vertical" minSize={50} defaultSize={"50%"}>
             <div>
               <h4>Request</h4>
               <form className="form">

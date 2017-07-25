@@ -67,8 +67,10 @@ export default class extends React.Component{
       }).catch( (error) => {
         if( error.code === RapidoErrorCodes.invalidLoginCredentials ) {
           this.setState({'loginErrorMessage': 'You\'ve entered the wrong username or password.'});
+        }else if(error.detail) {
+          this.setState({'loginErrorMessage': error.detail})
         }else {
-          console.log('ERROR:', error);
+          this.setState({'loginErrorMessage': 'Uh oh!  Something went wrong.'})
         }
       })
     }

@@ -139,13 +139,6 @@ export default class extends React.Component{
           </div>
 
           <div className="form-group">
-            <label htmlFor="InputProjectStyle">Project Style:</label>
-            <select className="form-control" name="style" readOnly>
-              <option>CRUD</option>
-            </select>
-          </div>
-
-          <div className="form-group">
               <button type="submit" id="create-project-button" className="btn btn-default pull-left">Create</button>
           </div>
         </form>

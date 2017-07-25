@@ -264,7 +264,12 @@ export default class extends React.Component{
       // keys
       return;
     }
-    if(event.key === 'ArrowLeft') {
+
+    if(event.key === '+') {
+      let selectedNode = this.state.selectedNode;
+      console.log('to be implemented');
+      //this.addChild(selectedNode);
+    }else if(event.key === 'ArrowLeft') {
       // Try to move to the parent node
       let selectedNode = this.state.selectedNode;
       let parent = selectedNode.parent;
@@ -375,7 +380,7 @@ export default class extends React.Component{
 
             <VocabularyList vocabulary={vocabulary}/>
           </div>
-          
+
           <div className="main-content">
             <div className="sketch-canvas">
               <SplitPane split="horizontal" size={this.state.splitPaneSize} minSize={100}>

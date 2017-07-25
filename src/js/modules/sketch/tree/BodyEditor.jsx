@@ -154,8 +154,8 @@ export default class extends React.Component{
     //let enabledState = this.
 
     // Set the editor body based on the active tab
-    console.log(event);
-    this.setView(event.target.name);
+    // Using currentTarget so we get the A tag instead of the SPAN
+    this.setView(event.currentTarget.name);
 
   }
 

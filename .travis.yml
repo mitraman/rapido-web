@@ -1,15 +1,11 @@
+dist: trusty
 language: node_js
 node_js:
 - '6'
 
 # Install Chrome Browser
 addons:
-apt:
-  sources:
-    - google-chrome
-  packages:
-    - google-chrome-stable
-    - google-chrome-beta
+  chrome: stable
 
 before_install:
   - export CHROME_BIN=chromium-browser

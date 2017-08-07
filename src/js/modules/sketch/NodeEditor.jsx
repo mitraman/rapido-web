@@ -31,7 +31,7 @@ export default class extends React.Component{
   }
 
   nodeDataUpdated(key, fields) {
-    console.log('message body data updated');
+    //console.log('message body data updated');
     // persist the changes to the backend
     // notify the user
     this.props.dataChangeHandler(this.props.node.id, key, fields);

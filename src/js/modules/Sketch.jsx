@@ -7,6 +7,7 @@ import CRUDTree from '../d3/CRUDTreeComponent.jsx';
 import VocabularyList from './vocabulary/VocabularyList';
 import NodeEditor from './sketch/NodeEditor.jsx';
 import ZoomComponent from './sketch/ZoomComponent.jsx';
+import DelayedNodeUpdate from '../adapter/DelayedNodeUpdate.js'
 
 import '../../css/sketch.scss'
 
@@ -18,9 +19,12 @@ export default class extends React.Component{
       selectedNode: '/',
       tree: [],
       selectedIteration: 0,
-      sketchId: 0
+      sketchId: 0,
+      projectId: 0
     }
     this.toggleSideNav = this.toggleSideNav.bind(this);
+    this.intervalTime = 2000;
+    this.delayedNodeUpdate = new DelayedNodeUpdate();
   }
 
   componentDidMount() {
@@ -83,7 +87,7 @@ export default class extends React.Component{
     })
   }
 
-  scheduleUpdate(nodeId, updateObject) {
+  __scheduleUpdate(nodeId, updateObject) {
 
     const intervalTime = 2000;
 
@@ -159,7 +163,17 @@ export default class extends React.Component{
     this.forceUpdate();
 
     // Schedule an update to persist changes to the backend server
-    this.scheduleUpdate(node.id, { name: node.name, fullpath: node.fullpath});
+    //this.scheduleUpdate(node.id, { name: node.name, fullpath: node.fullpath});
+    this.delayedNodeUpdate.write(this.props.userObject.token,
+      this.props.projectId,
+      this.state.sketchId,
+      nodeId,
+      { name: node.name, fullpath: node.fullpath},
+      this.intervalTime)
+    .then( result => {
+      //TODO: Alert the user that changes have been saved.
+      console.log('saved.');
+    })
   }
 
   dataChanged(id,key,fieldMap) {
@@ -185,15 +199,21 @@ export default class extends React.Component{
     }
 
     //TODO: schedule this update
-    Backend.updateNode(this.props.userObject.token,
+    this.delayedNodeUpdate.write(this.props.userObject.token,
+      this.props.projectId,
       this.state.sketchId,
       this.state.selectedNode.id,
-      updateObject);
+      updateObject,
+      this.intervalTime)
+    .then( result => {
+      //TODO: Alert the user that changes have been saved.
+      console.log('saved.');
+    })
   }
 
   addChild(parent) {
     let parentId = parent ? parent.id : null;
-    Backend.addChildNode(this.props.userObject.token, this.state.sketchId, parentId)
+    Backend.addChildNode(this.props.userObject.token, this.props.projectId, this.state.sketchId, parentId)
     .then( (result) => {
       // The backend returns an updated version of the tree with the new node
       let tree = result.tree;

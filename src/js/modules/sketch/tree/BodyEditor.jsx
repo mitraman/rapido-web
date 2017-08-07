@@ -107,6 +107,15 @@ export default class extends React.Component{
     this.loadNodeData(node);
   }
 
+  onFieldChange(e) {
+    console.log(e);
+    console.log(e.target);
+    if( e.target.name === 'requestParams') {
+      console.log(e.target.value)
+      this.setState({requestParams: e.target.value});
+    }
+  }
+
   onEditorChange(e, editorName) {
     // Don't do anything if the change is a result of our code.
     if( this.manipulatingBuffer) return;
@@ -215,7 +224,8 @@ export default class extends React.Component{
                     name="requestParams"
                     placeholder="?[key]=[value]&"
                     type="text"
-                    value={this.state.requestParams}/>
+                    value={this.state.requestParams}
+                    onChange={(e) => this.onFieldChange(e)}/>
                 </div>
                 <label>Content Type:</label>
                 <select className="form-control input-sm" readOnly>

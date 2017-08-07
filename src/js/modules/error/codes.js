@@ -11,5 +11,6 @@ module.exports = {
   fieldValidationError: 'FIELD_VALIDATION_ERROR',
   invalidLoginCredentials: 'INVALID_LOGIN_CREDENTIALS',
   authenticationProblem: 'INVALID_AUTHENTICATION_TOKEN',
+  userNotFound: 'INVALID_USER_ID',
   authorizationError: 'NOT_AUTHORIZED'
 };

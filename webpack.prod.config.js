@@ -54,7 +54,7 @@ module.exports = {
            jQuery: "jquery"
        }),
        new webpack.DefinePlugin({
-          __BACKEND: JSON.stringify("http://localhost:8085")
+          __BACKEND: JSON.stringify("http://www.rapidodesigner.com")
       })
    ],
     resolve: {
@@ -63,12 +63,5 @@ module.exports = {
           path.resolve('./node_modules')
         ],
         extensions: ['', '.js', '.jsx']
-    },
-    devServer: {
-      watchOptions: {
-        // Needed for Windows Subsystem for Linux dev environment:
-        poll: true
-      }
-    },
-    devtool: "cheap-eval-source-map"
+    }
 }

@@ -2,6 +2,7 @@ import React from 'react'
 import AlertContainer from 'react-alert';
 import Backend from '../../adapter/Backend.js';
 import Sketch from '../Sketch.jsx'
+import ErrorCodes from '../error/codes.js';
 import { Route, Redirect } from 'react-router-dom'
 
 import '../../../css/folding-cube.scss'
@@ -11,7 +12,8 @@ export default class extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
-      sketches: []
+      sketches: [],
+      projectNotFound: false
     }
     this.loadProject(this.props.userObject.token, this.props.projectId);
   }
@@ -32,11 +34,30 @@ export default class extends React.Component{
 
       this.setState({sketches: result.project.sketches});
       this.props.setProjectHandler(result.project);
+      this.props.setSketchIndexHandler(1);
+    }).catch( e => {
+      console.log('a problem occurred while loading the project:');
+      console.log(e);
+      if( e.type === 'http://rapidodesigner.com/api/problems/general' &&
+        e.code === ErrorCodes.projectNotFound) {
+          //TODO: How should we alert the user that a project was not found?
+          this.setState({projectNotFound: true});
+      }else if( e.code === ErrorCodes.userNotFound ||
+         e.code === ErrorCodes.authenticationProblem ) {
+        this.props.authErrorHandler(e);
+      }else {
+        console.log('unhandled error:', e);
+      }
     })
   }
 
   /* Render Method */
   render() {
+    if( this.state.projectNotFound ) {
+      return(
+        <Redirect to="/"/>
+      )
+    }
     if( this.state.sketches.length > 0 ) {
       return(
         <Route path="/project/:projectId/sketch/:sketchIteration" render={(routeProps) => {

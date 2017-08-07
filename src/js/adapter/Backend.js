@@ -3,7 +3,8 @@ var Promise = require("bluebird");
 
 export default class {
 
-  static _authenticatedCall(token, method, url, body, responseHandler) {
+  static _authenticatedCall(token, method, url, body, responseHandler, parseJSONarg) {
+    let parseJSON = (typeof parseJSONarg !== 'undefined') ? parseJSONarg : true;
     const baseUrl = __BACKEND;
     let path = baseUrl + url;
     return new Promise( function(resolve, reject ) {
@@ -21,9 +22,13 @@ export default class {
           //console.log('received response');
           // Request finished. Do processing here.
           if( xhr.status >= 200 && xhr.status <= 299 ) {
-            let responseBody = JSON.parse(xhr.response);
-            //console.log(responseBody);
-            resolve(responseHandler(responseBody));
+            if(!parseJSON) {
+              resolve(xhr.response);
+            } else {
+              let responseBody = JSON.parse(xhr.response);
+              //console.log(responseBody);
+              resolve(responseHandler(responseBody));
+            }
           } else {
             let contentType = xhr.getResponseHeader('Content-Type');
             //console.log(contentType);
@@ -120,8 +125,8 @@ export default class {
     })
   }
 
-  static addChildNode(token, sketchId, parentId) {
-    let url = '/api/sketches/' + sketchId + '/nodes'
+  static addChildNode(token, projectId, sketchId, parentId) {
+    let url = '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes'
     if( parentId ) {
         url = url + '/' + parentId;
     }
@@ -134,8 +139,8 @@ export default class {
     });
   }
 
-  static updateNode(token, sketchId, nodeId, updateObject) {
-    let url = '/api/sketches/' + sketchId + '/nodes/' + nodeId;
+  static updateNode(token, projectId, sketchId, nodeId, updateObject) {
+    let url = '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes/' + nodeId;
 
     // let updateObject = {
     //   name: node.name,
@@ -143,6 +148,7 @@ export default class {
     // }
 
     //console.log('updateObject:', updateObject);
+    //console.log(url);
 
     return this._authenticatedCall(token, "PATCH", url, updateObject, function(responseBody) {
       return {
@@ -150,6 +156,14 @@ export default class {
         tree: responseBody.tree
       }
     });
+  }
+
+  static export(token, projectId, sketchIndex, format) {
+    let url = '/api/projects/' + projectId + '/sketches/' + sketchIndex + '/export?format='+format;
+    return this._authenticatedCall(token, "GET", url, null, function(responseBody) {
+      console.log('responseBody:', responseBody);
+      return responseBody;
+    }, false);
   }
 
 

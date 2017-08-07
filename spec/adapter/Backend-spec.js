@@ -202,10 +202,11 @@ describe('Backend client', function() {
 
   describe('Add Child Node', function() {
     let token = 'atoken';
+    let projectId = 14;
     let parentId = 'dkks-8328832';
     let sketchId = 10;
 
-    it('should return details of a child node  and updated tree on success', function(done) {
+    it('should return details of a child node and updated tree on success', function(done) {
       // Setup the mock response
       let mockResponseBody = {
         node: {
@@ -234,12 +235,12 @@ describe('Backend client', function() {
         ]
       }
       //  let url = '/api/sketches/' + sketchId + '/nodes'
-      const url = __BACKEND + '/api/sketches/' + sketchId + '/nodes/' + parentId;
+      const url = __BACKEND + '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes/' + parentId;
       this.server.respondWith("POST", url, function(xhr) {
         xhr.respond(201, {"Content-Type": "application/json"},JSON.stringify(mockResponseBody));
       });
 
-      Backend.addChildNode(token, sketchId, parentId)
+      Backend.addChildNode(token, projectId, sketchId, parentId)
       .then((result) => {
         expect(result.node).not.toBeUndefined();
         expect(result.node.id).not.toBeUndefined();

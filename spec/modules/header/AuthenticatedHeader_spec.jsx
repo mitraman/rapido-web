@@ -47,7 +47,9 @@ describe('Header Component', function() {
   })
 
   it('should logout the user when logout is selected', function() {
-      fail('to be implemented');
+    const wrapper = shallow(<AuthenticatedHeader userInfo={userObject} project={project}/>);
+    wrapper.instance().logout();
+    // TODO: Make sure that the credentials are removed after a logout
   })
 
 

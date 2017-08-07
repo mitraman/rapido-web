@@ -13,18 +13,42 @@ describe('Response Body Editor', function() {
     data: {
       get: {
         enabled: true,
-        requestBody: "requestText",
-        responseBody: "responseText"
+        request: {
+          contentType : 'application/json',
+          queryParams : '?param=value',
+          body : 'requestText'
+        },
+        response: {
+          contentType : 'application/json',
+          status : '200',
+          body : 'responseText'
+        }
       },
       put: {
         enabled: false,
-        requestBody: "{}",
-        responseBody: "{}"
+        request: {
+          contentType : 'application/json',
+          queryParams : '',
+          body : '{}'
+        },
+        response: {
+          contentType : 'application/json',
+          status : '200',
+          body : '{}'
+        }
       },
       delete: {
         enabled: true,
-        requestBody: 'delete requestBody',
-        responseBody: 'delete responseBody'
+        request: {
+          contentType : 'application/json',
+          queryParams : '',
+          body : 'delete requestBody'
+        },
+        response: {
+          contentType : 'application/json',
+          status : '200',
+          body : 'delete responesBody'
+        }
       }
     },
     children: []
@@ -33,15 +57,15 @@ describe('Response Body Editor', function() {
 
   it('should display the response body of the GET method for editing by default', function() {
     const wrapper = mount(<BodyEditor node={selectedNode}/>);
-    expect(wrapper.instance().responseEditor.getValue()).toBe(selectedNode.data['get'].responseBody);
-    expect(wrapper.instance().requestEditor.getValue()).toBe(selectedNode.data['get'].requestBody);
+    expect(wrapper.instance().responseEditor.getValue()).toBe(selectedNode.data['get'].response.body);
+    expect(wrapper.instance().requestEditor.getValue()).toBe(selectedNode.data['get'].request.body);
   })
 
   it('should set the state of the PATCH method response to empty if it is not provided', function() {
     const wrapper = mount(<BodyEditor node={selectedNode}/>);
     //console.log(wrapper.state('data'));
-    expect(wrapper.state('data').patch.responseBody).toBe('');
-    expect(wrapper.state('data').patch.requestBody).toBe('');
+    expect(wrapper.state('data').patch.response.body).toBe('');
+    expect(wrapper.state('data').patch.request.body).toBe('');
   })
 
   describe('delayed persistence', function() {
@@ -70,8 +94,8 @@ describe('Response Body Editor', function() {
 
       let updateHandler = function(methodName, updateData) {
         expect(updateData).toBeDefined();
-        let responseBody = selectedNode.data.get.responseBody;
-        expect(updateData.responseBody).toBe(responseBody);
+        let responseBody = selectedNode.data.get.response.body;
+        expect(updateData.response.body).toBe(responseBody);
         done();
       }
 
@@ -91,8 +115,8 @@ describe('Response Body Editor', function() {
           return;
         }
         expect(data).toBeDefined();
-        console.log(data);
-        expect(data.responseBody).toBe(updatedData);
+        //console.log(data);
+        expect(data.response.body).toBe(updatedData);
         done();
       }
 

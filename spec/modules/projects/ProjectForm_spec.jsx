@@ -45,10 +45,11 @@ describe('ProjectForm Component', function() {
     expect(wrapper.find('textarea[name="projectDescription"]').length).toBe(1);
   })
 
-  it( 'should render a select box for the style', function() {
-    const wrapper = shallow(<ProjectForm/>);
-    expect(wrapper.find('select[name="style"]').length).toBe(1);
-  })
+  // Removed the select box
+  // it( 'should render a select box for the style', function() {
+  //   const wrapper = shallow(<ProjectForm/>);
+  //   expect(wrapper.find('select[name="style"]').length).toBe(1);
+  // })
 
   it('should render a submit button', function() {
     const wrapper = mount(<ProjectForm/>);

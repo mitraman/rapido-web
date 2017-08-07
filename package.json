@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test:local": "karma start",
-    "test": "istanbul cover --include-all-sources karma start --single-run --browsers Firefox",
+    "test": "karma start --single-run",
     "start": "npm run dev",
     "build": "webpack --config webpack.prod.config.js -p",
     "dev": "webpack-dev-server --display-error-details --watch --watch-polling --progress --colors --host=0.0.0.0 --port 8090 --history-api-fallback"

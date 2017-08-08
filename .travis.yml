@@ -12,12 +12,13 @@ before_deploy:
 - npm run build
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: CJ14ot5YyVUF1n5oEVtyp9w9MQ1kZS2cv7W/+af5ujJ2PZ+ygocTEDw6rxjP3IGMOL20tiJFDikdF+SuueBJWl5jnZ7E0NRTq9dqMYEzV65aGV6CrId9r+8ort5SBq791kLhuehdskEa221SnpPV/2srBeuWEkw5V2jplCBgh0yT33W+CBNvT8oXr/zJ2vJrb9E65fP8YVGb8xEf6JjkGRm+Km0w+fkOgQ+w+6xT89pt9vHzilBh9fSZL8dclkZ1UE4RUGK8SFeIHH5qp/j0sIqhF8UHmJrnmXSHosTfVV8WPmpN9McN7YfVEYfIImFw7+xBaHtc9tWDeudtAZBlDzFipA9PaPySidoyvXbsjvptgbZVO4L5+QeQ8C3tvQCqZHWTud84JLw5/8xK0qp4Yt8xS7YbJ26yXWrwFYrtqpWtGi9uvD/kER1e9xgtd9ub6qvo2gH8NRauU5l5QjeRSURdxj2a6M3Vdlm2ueZTdvHMN08UQ9XdegSSvrUxsLCSyhcPNlVGK7AMU4SEnMTSw8sE8VGSLqoKLrfcIsLpkCChI1c592ZAeBuCBS4lBIfuzxkdPzJLIHXh+jHyuTTdNPj/mNqEHUwqC1E1kOAOOtx7sJcC1L+2fwEPmc2afKqtKMAs/WFAeuXby7Muh6ddjOk+McGqo6F+l27e4t2inaw=
   file_glob: true
   file:
-    - "./build/rapido-web.js"
-    - "./build/*"
+    - "build/rapido-web.js"
+    - "build/*"
     - "./index.html"
   on:
     repo: apiacademy/rapido-web

@@ -2,27 +2,18 @@ dist: trusty
 language: node_js
 node_js:
 - '6'
-
-# Install Chrome Browser
 addons:
   chrome: stable
-
 before_install:
-  - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-
+- export CHROME_BIN=chromium-browser
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 before_deploy:
 - npm run build
-
 deploy:
   provider: releases
   api_key:
-    secure: GGO2qhIoLPWcyPMhnKflLhkaBL9os4svGQr5faPZavOiuBRHpGJ9oA6dLdqZ19cL6xBelI51OwdHZdVnnXcNA179f1cwtsBXR9c7akaUZupKOGVm0FMl6zNq0J4dqpoBPh/+nZd+Ysp9Qul1m+al9Bx8TsaeuOQSoeP2zFE7ruNZxmDgN9/hMyKHqVo2QHtRqFrJ/uL5Xt15Bw+scSDU9MprhLP+YNtI3D7h3eXVDTVVt33AfMYbbA4f44ZdAPAw5x+j/XEYsLF4yemVyT99rYsK80+h1g8cLPPmEeIrUuq3hDsRvYOXrSObpr5kDbXoMyTLDrjgOlDrsPovJm5sBUZuXm5JFbbm/SEILJyDYPMbR1WmgmZwk653pNQMooa0NGUAxQMBlCF+ub/gUx33sNSNVN4SrEFiLLphDyejupjGpXZsdiAu1JE7i3ba33RQEYrw7qhOLPaUzioR1DmSazg7Zbr4KBFvp/Ud+lyuctD5vK82rbPjZsoCAx91HJxjYzLTaqq0IEykoef/uvI6AGAX+e6zBNrfmcnGA+au3NGy0ssL5GVtD5dWEpJ7HQ7PhAbry/9F/mSkZoQJO9/RFnOrFKe0BJ2QstMyc10MSGr78v1unjNp2EjutSYhulSp5W2DjcobImxQVNLfE6kUarFgnEMn5wYqgha4orhDEQQ=
-    file_glob: true
-  file:
-    - "./build/*"
-    - "./index.html"
-  skip_cleanup: true
+    secure: CJ14ot5YyVUF1n5oEVtyp9w9MQ1kZS2cv7W/+af5ujJ2PZ+ygocTEDw6rxjP3IGMOL20tiJFDikdF+SuueBJWl5jnZ7E0NRTq9dqMYEzV65aGV6CrId9r+8ort5SBq791kLhuehdskEa221SnpPV/2srBeuWEkw5V2jplCBgh0yT33W+CBNvT8oXr/zJ2vJrb9E65fP8YVGb8xEf6JjkGRm+Km0w+fkOgQ+w+6xT89pt9vHzilBh9fSZL8dclkZ1UE4RUGK8SFeIHH5qp/j0sIqhF8UHmJrnmXSHosTfVV8WPmpN9McN7YfVEYfIImFw7+xBaHtc9tWDeudtAZBlDzFipA9PaPySidoyvXbsjvptgbZVO4L5+QeQ8C3tvQCqZHWTud84JLw5/8xK0qp4Yt8xS7YbJ26yXWrwFYrtqpWtGi9uvD/kER1e9xgtd9ub6qvo2gH8NRauU5l5QjeRSURdxj2a6M3Vdlm2ueZTdvHMN08UQ9XdegSSvrUxsLCSyhcPNlVGK7AMU4SEnMTSw8sE8VGSLqoKLrfcIsLpkCChI1c592ZAeBuCBS4lBIfuzxkdPzJLIHXh+jHyuTTdNPj/mNqEHUwqC1E1kOAOOtx7sJcC1L+2fwEPmc2afKqtKMAs/WFAeuXby7Muh6ddjOk+McGqo6F+l27e4t2inaw=
+  file: "./build/*"
   on:
     repo: apiacademy/rapido-web

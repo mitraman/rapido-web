@@ -24,5 +24,5 @@ To install:
 To start:
 `npm start`
 
-To test with PhantomJS:
+To test with Chrome:
 'npm test'

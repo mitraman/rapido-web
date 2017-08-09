@@ -54,7 +54,7 @@ module.exports = {
            jQuery: "jquery"
        }),
        new webpack.DefinePlugin({
-          __BACKEND: JSON.stringify("https://www.rapidodesigner.com")
+          __BACKEND: JSON.stringify("https://rapidodesigner.com")
       })
    ],
     resolve: {

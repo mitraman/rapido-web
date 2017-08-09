@@ -10,7 +10,7 @@ module.exports = {
         path: './build',
         filename: 'rapido-web.js',
         //make sure port 8090 is used when launching webpack-dev-server
-        publicPath: 'https://rapidodesigner.com/assets'
+        publicPath: 'https://rapidodesigner.com/assets/'
     },
     module: {
         loaders: [
@@ -49,13 +49,19 @@ module.exports = {
         ]
     },
     plugins: [
-       new webpack.ProvidePlugin({
+      new webpack.ProvidePlugin({
            $: "jquery",
            jQuery: "jquery"
-       }),
-       new webpack.DefinePlugin({
+      }),
+      new webpack.DefinePlugin({
           __BACKEND: JSON.stringify("https://rapidodesigner.com")
-      })
+      }),
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify('production')
+        }
+      }),
+      new webpack.optimize.UglifyJsPlugin()
    ],
     resolve: {
         root: [

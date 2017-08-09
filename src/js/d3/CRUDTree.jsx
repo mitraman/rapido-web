@@ -70,6 +70,7 @@ export default class {
                 x: d.y,
                 y: d.x
               })
+              d3.event.stopPropagation();
             }
           });
 
@@ -112,6 +113,8 @@ export default class {
             name: "add",
             source: d.data.id
           })
+          d3.event.stopPropagation();
+
       });
 
     node.append("text")

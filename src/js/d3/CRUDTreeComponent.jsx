@@ -68,11 +68,17 @@ export default class extends React.Component{
     let svgHeight = ($("svg").height());
 
     svg.on('click', function() {
+
+      //console.log('svg clicked');
+      handler({
+        name: "reset"
+      });
       /*
-      console.log('svg clicked');
       console.log('TODO: deselect nodes if svg is clicked');
       console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
       */
+
+
     })
 
     // Create a default root node for the nodes

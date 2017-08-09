@@ -151,8 +151,15 @@ export default class extends React.Component{
           </div>
 
           <div className="input-group">
-            <button type="submit" id="login-button" className="btn btn-primary pull-left">Sign In</button>
-            <a id="forgotPassword" onClick={this.resetPassword}>Forgot Password?</a>
+            <div className="row">
+              <div className="col-md-4">
+                <button type="submit" id="login-button" className="btn btn-primary pull-left">Sign In</button>
+              </div>
+              <div className="col-md-8 pull-right"><a id="forgotPassword" onClick={this.resetPassword}>Forgot Password?</a>
+              </div>
+            </div>
+
+
           </div>
 
         </form>

@@ -39,7 +39,7 @@ export default class DelayedNodeUpdate {
   }
 
   write(token, projectId, sketchId, nodeId, updateObject, intervalTime) {
-    console.log('write:', updateObject);
+    //console.log('write:', updateObject);
 
     return new Promise( (resolve,reject) => {
 

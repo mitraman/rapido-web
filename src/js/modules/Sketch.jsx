@@ -172,7 +172,7 @@ export default class extends React.Component{
       this.intervalTime)
     .then( result => {
       //TODO: Alert the user that changes have been saved.
-      console.log('saved.');
+      //console.log('saved.');
     })
   }
 
@@ -207,7 +207,7 @@ export default class extends React.Component{
       this.intervalTime)
     .then( result => {
       //TODO: Alert the user that changes have been saved.
-      console.log('saved.');
+      //console.log('saved.');
     })
   }
 
@@ -231,7 +231,10 @@ export default class extends React.Component{
   clickHandler(event) {
     let eventType = event.name;
 
-    if( eventType === 'add') {
+    if( eventType === 'reset') {
+      this.setState({selectedNode: '/'});
+      this.setState({splitPaneSize: "100%"});
+    }else if( eventType === 'add') {
       let tree = this.state.tree;
 
       let parent = null;

@@ -48,22 +48,24 @@ export default class extends React.Component{
       return(
         <div id="authenticated">
           <AuthenticatedHeader project={this.state.project} userInfo={this.props.userObject} sketchIndex={this.state.sketchId}/>
-          <div className="row">
-            <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
-            <Switch>
-              <Route path="/project/:projectId" render={(routeProps) => {
-                  return <Project projectId={routeProps.match.params.projectId}
-                    userObject={this.props.userObject}
-                    authErrorHandler={error => this.authErrorHandler(error)}
-                    setProjectHandler={project => {this.setProject(project)}}
-                    setSketchIndexHandler={sketchIndex => {this.setSketchIndex(sketchIndex)}}/>
-                }}/>
-              <Route render={(routeProps) => {
-                  return <ProjectSelection
-                    match={routeProps.match}
-                    authErrorHandler={error => this.authErrorHandler(error)}
-                    userObject={this.props.userObject}/>}} />
-            </Switch>
+          <div className="container-fluid">
+            <div className="row">
+              <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
+              <Switch>
+                <Route path="/project/:projectId" render={(routeProps) => {
+                    return <Project projectId={routeProps.match.params.projectId}
+                      userObject={this.props.userObject}
+                      authErrorHandler={error => this.authErrorHandler(error)}
+                      setProjectHandler={project => {this.setProject(project)}}
+                      setSketchIndexHandler={sketchIndex => {this.setSketchIndex(sketchIndex)}}/>
+                  }}/>
+                <Route render={(routeProps) => {
+                    return <ProjectSelection
+                      match={routeProps.match}
+                      authErrorHandler={error => this.authErrorHandler(error)}
+                      userObject={this.props.userObject}/>}} />
+              </Switch>
+            </div>
           </div>
         </div>
       );

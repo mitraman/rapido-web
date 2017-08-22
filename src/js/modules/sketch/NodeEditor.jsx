@@ -47,7 +47,6 @@ export default class extends React.Component{
     return(
 
       <div>
-        <button className="btn btn-danger pull-right">delete</button>
         <form>
           <div className="input-group form-group-sm">
             <span className="input-group-addon" id="basic-addon1">{this.state.prePath}</span>

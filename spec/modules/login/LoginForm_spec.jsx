@@ -176,7 +176,8 @@ describe('LoginForm Component', function() {
     wrapper.setState({formStarted: true});
 
     // Click submit
-    wrapper.find('button #login-button').get(0).click();
+    //wrapper.find('button #login-button').get(0).click();
+    wrapper.find('button #login-button').simulate('submit');
 
   })
 
@@ -212,7 +213,8 @@ describe('LoginForm Component', function() {
     wrapper.setState({rememberMe: true});
 
     // Click submit
-    wrapper.find('button #login-button').get(0).click();
+    //wrapper.find('button #login-button').get(0).click();
+    wrapper.find('button #login-button').simulate('submit');
 
     var store = {};
 
@@ -263,7 +265,8 @@ describe('LoginForm Component', function() {
     wrapper.setState({rememberMe: false});
 
     // Click submit
-    wrapper.find('button #login-button').get(0).click();
+    //wrapper.find('button #login-button').get(0).click();
+    wrapper.find('button #login-button').simulate('submit');
 
     var store = {};
 

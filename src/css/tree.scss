@@ -15,9 +15,9 @@
 }
 
 .selected-node-uri {
-  fill:yellow;
+  fill: #fffde5;
   stroke:gray;
-  stroke-width: 2px;
+  stroke-width: 5px;
 }
 .node-internal-border {
   stroke: gray;
@@ -41,23 +41,46 @@
   fill: black;
 }
 
+.context-menu {
+  fill: white;
+  stroke: black;
+}
+.delete-button {
+  cursor: pointer;
+  fill: black;
+}
+
+.fa-icon-text {
+  fill: black;
+}
+
 .badges {
   font-weight: bold;
   text-shadow: 2px -1px 2 gray;
   .get {
-    fill: green;
+    fill: #179603;
+    stroke: white;
+    stroke-width: 2;
   }
   .post {
-    fill: blue;
+    fill: #706900;
+    stroke: white;
+    stroke-width: 2;
   }
   .put {
-    fill: orange;
+    fill: #1400f5;
+    stroke: white;
+    stroke-width: 2;
   }
   .delete {
-    fill: red;
+    fill: #ad0300;
+    stroke: white;
+    stroke-width: 2;
   }
   .patch {
-    fill: brown;
+    fill: #008ead;
+    stroke: white;
+    stroke-width: 2;
   }
   text {
     fill: white;

@@ -29,7 +29,6 @@ export default class extends React.Component{
         transition: 'scale'
       };
       this.handleChange = this.handleChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -59,16 +58,18 @@ export default class extends React.Component{
 
   /* Method to handle form submission */
   handleSubmit(e) {
+    console.log('handleSubmit');
     e.preventDefault();
     if( !this.state.formStarted ) {
+      console.log('pristine');
       // Project name is the only required field, so set an error message jsut for that field
+      console.log(this);
       this.setState({errorMessages: {projectName: 'Please provide a name for the new project.'}});
+      console.log('set errormessage');
+      console.log(this.state.errorMessages);
     }else if (Object.keys(this.state.errorMessages).length !== 0  ) {
-      const thisForm = this;
-      // Remind the user know that there are problems with the form
-      Object.keys(this.state.errorMessages).forEach(function(key) {
-        thisForm.showAlert(thisForm.state.errorMessages[key]);
-      });
+      // Remind the user that there are problems with the form
+      this.showAlert('There are problems with the form. Please correct them before continuing.');
     } else {
       Backend.createProject(this.props.userObject.token,
       {
@@ -93,8 +94,6 @@ export default class extends React.Component{
     if( !validityState.valid ) {
       if (validityState.valueMissing) {
         errorMessages[input.name] = `${label} is a required field`;
-      } else if (validityState.typeMismatch) {
-        errorMessages[input.name] =  `${label} should be a valid email address`;
       } else {
         console.warn('unexpected conformance validator problem: ', validityState);
         errorMessages[input.name] = `Invalid field value`;
@@ -110,7 +109,7 @@ export default class extends React.Component{
 
     return(
       <div>
-        <form id="project-form" className="project-form" noValidate onSubmit={this.handleSubmit}>
+        <form id="project-form" className="project-form" noValidate onSubmit={(e) => {this.handleSubmit(e)}}>
           <div className="form-group">
             <label htmlFor="InputProjectName" id="projectNameLabel">Project Name:</label>
             <input

@@ -158,6 +158,17 @@ export default class {
     });
   }
 
+  static deleteNode(token, projectId, sketchId, nodeId) {
+    let url = '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes/' + nodeId;
+
+    return this._authenticatedCall(token, "DELETE", url, null, function(responseBody) {
+      return {
+        node: responseBody.node,
+        tree: responseBody.tree
+      }
+    });
+  }
+
   static export(token, projectId, sketchIndex, format) {
     let url = '/api/projects/' + projectId + '/sketches/' + sketchIndex + '/export?format='+format;
     return this._authenticatedCall(token, "GET", url, null, function(responseBody) {

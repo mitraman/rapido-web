@@ -29,7 +29,7 @@ export default class extends React.Component{
 
   componentDidMount() {
     let sketch = this.props.sketches[this.props.sketchIteration-1];
-    this.setState({sketchId: sketch.id});
+    this.setState({sketchId: sketch.index});
 
     this.parseTree(sketch.tree);
     this.setState({tree: sketch.tree});
@@ -42,6 +42,7 @@ export default class extends React.Component{
   }
 
   toggleSideNav() {
+    console.log('toggleSideNav');
       if( this.state.navState === 'show-nav') {
         // show the side nave and change the state
         this.setState({navState: 'nav-hidden'});
@@ -85,53 +86,6 @@ export default class extends React.Component{
     tree.forEach(root => {
       parseNode(root);
     })
-  }
-
-  __scheduleUpdate(nodeId, updateObject) {
-
-    const intervalTime = 2000;
-
-    // check if a timeout is already scheduled
-    if(this.timeoutID) {
-      // Cancel the last timeout
-      window.clearTimeout(this.timeoutID);
-
-      if( this.pendingUpdate.id === nodeId) {
-        // This is another update for the same node, so merge the updateObjects
-        if( updateObject.name ) {
-          this.pendingUpdate.updateObject.name = updateObject.name;
-        }
-        if( updateObject.fullpath ) {
-          this.pendingUpdate.updateObject.fullpath = updateObject.fullpath;
-        }
-        if( updateObject.data ) {
-          this.pendingUpdate.updateObject.data = updateObject.data;
-        }
-      }else {
-        // This is an update for a new node, so fire off the old one immediately
-        Backend.updateNode(this.props.userObject.token,
-          this.state.sketchId,
-          this.pendingUpdate.id,
-          this.pendingUpdate.updateObject);
-      }
-    }
-
-    // Save the update details
-    this.pendingUpdate = {
-      id: nodeId,
-      updateObject: updateObject
-    }
-
-    // Scheudle the new update
-    this.timeoutID = window.setTimeout(() => {
-      Backend.updateNode(this.props.userObject.token,
-        this.state.sketchId,
-        this.pendingUpdate.id,
-        this.pendingUpdate.updateObject);
-
-        // TODO: alert with a toast
-
-    }, intervalTime)
   }
 
   uriChanged(nodeId, value) {
@@ -198,7 +152,6 @@ export default class extends React.Component{
       this.forceUpdate();
     }
 
-    //TODO: schedule this update
     this.delayedNodeUpdate.write(this.props.userObject.token,
       this.props.projectId,
       this.state.sketchId,
@@ -225,6 +178,10 @@ export default class extends React.Component{
       //let parentPath = parent ? parent.fullpath : '';
       //newNode.fullpath = parentPath;
       this.setState({selectedNode: newNode});
+      // If the split panel is hidden, create a split by setting the default splitPaneSize
+      if( this.state.splitPaneSize === "100%") {
+        this.setState({splitPaneSize: "150px"});
+      }
     })
   }
 
@@ -243,6 +200,7 @@ export default class extends React.Component{
         parent = this.findNode(event.source, tree);
       }
 
+      //TODO: use the delayedNodeUpdate function
       // If there is a pending change, trigger it first.
       if(this.timeoutID) {
         Backend.updateNode(this.props.userObject.token,
@@ -264,6 +222,9 @@ export default class extends React.Component{
       if( this.state.splitPaneSize === "100%") {
         this.setState({splitPaneSize: "150px"});
       }
+    }else if( eventType === 'delete') {
+      // Popup a confirmation modal
+      $('#deleteConfirmationModal').modal();
     }
   }
 
@@ -273,6 +234,13 @@ export default class extends React.Component{
 
   displayOverview() {
     this.setState({splitPaneSize: "100%"});
+  }
+
+  handleDeleteConfirmed() {
+    let selectedNode = this.state.selectedNode;
+    if( selectedNode && selectedNode != '/') {
+      
+    }
   }
 
   handleKeyPress(event) {
@@ -292,6 +260,12 @@ export default class extends React.Component{
       let selectedNode = this.state.selectedNode;
       console.log('to be implemented');
       //this.addChild(selectedNode);
+    }else if( event.key === 'Delete') {
+      let selectedNode = this.state.selectedNode;
+      if( selectedNode && selectedNode != '/') {
+        // Popup a confirmation modal
+        $('#deleteConfirmationModal').modal();
+      }
     }else if(event.key === 'ArrowLeft') {
       // Try to move to the parent node
       let selectedNode = this.state.selectedNode;
@@ -385,48 +359,69 @@ export default class extends React.Component{
         dataChangeHandler={(id,key,fields)=>{this.dataChanged(id,key,fields)}}
         /> : <div/>;
 
-
-
     return(
 
-      <div id="slide-wrapper"
-        className={this.state.navState}
-        ref={(input) => {this.slideWrapper = input;}}
-        >
-        <div id="slide-canvas">
-          <div id="side-nav">
-            <button className="btn btn-sm side-nav-tab"
-              onClick={this.toggleSideNav}>
-              <i className="fa fa-book fa-2x" aria-hidden="true"></i>
-            </button>
-            <h2>Vocabulary</h2>
+    <div id="sketch">
 
-            <VocabularyList vocabulary={vocabulary}/>
+    <div id="deleteConfirmationModal" className="modal fade" tabIndex="-1" role="dialog">
+      <div className="modal-dialog" role="document">
+        <div className="modal-content">
+          <div className="modal-body">
+            <p>Are you sure you want to delete this node and all of its children?</p>
           </div>
-
-          <div className="main-content">
-            <div className="sketch-canvas">
-              <SplitPane split="horizontal" size={this.state.splitPaneSize} minSize={100}>
-                <div className="svg-wrapper">
-                  <CRUDTree
-                    rootNodes={this.state.tree}
-                    handler={ e => {this.clickHandler(e)}}
-                    width="100%"
-                    height="100%"
-                    selectedNode={this.state.selectedNode} />
-               </div>
-                <div className="property-pane">
-                  <div>
-                   {EditPane}
-                 </div>
-                </div>
-              </SplitPane>
-           </div>
+          <div className="modal-footer">
+            <button
+              onClick={() => this.handleDeleteConfirmed()}
+              type="button"
+              className="btn btn-danger pull-left"
+              data-dismiss="modal">Delete</button>
+            <button type="button" className="btn btn-primary" data-dismiss="modal">Cancel</button>
           </div>
-
         </div>
       </div>
+    </div>
 
+    <div id="slide-wrapper"
+      className={this.state.navState}
+      ref={(input) => {this.slideWrapper = input;}}>
+      <div id ="slide-canvas">
+
+        <div id="side-nav">
+          <button className="btn btn-sm side-nav-tab"
+            onClick={this.toggleSideNav}>
+            <i className="fa fa-book fa-2x" aria-hidden="true"></i>
+          </button>
+          <h2>Vocabulary</h2>
+          <VocabularyList vocabulary={vocabulary}/>
+        </div>
+
+        <div className="main-content">
+          <div className="sketch-canvas">
+            <SplitPane
+              split="horizontal"
+              size={this.state.splitPaneSize}
+              minSize={100}>
+              <div className="svg-wrapper">
+                <CRUDTree
+                  rootNodes={this.state.tree}
+                  handler={ e => {this.clickHandler(e)}}
+                  width="100%"
+                  height="100%"
+                  selectedNode={this.state.selectedNode} />
+              </div>
+              <div className="property-pane">
+                <div>
+                 {EditPane}
+                </div>
+              </div>
+            </SplitPane>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    </div>
     )
   }
 }

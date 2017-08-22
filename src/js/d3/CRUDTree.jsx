@@ -117,6 +117,7 @@ export default class {
 
       });
 
+
     node.append("text")
       .attr("font-size", "18")
       .text("+")
@@ -126,6 +127,52 @@ export default class {
       })
       .style("pointer-events",  "none")
 
+/***
+    // context menu
+    let contextMenuGroup = node.append("g")
+      .attr("transform", "translate(" + ((resourceBoxWidth/2) - 30) + "," + (resourceBoxHeight - 15) + ")")
+      .attr("visibility", function(d) {
+        if (selectedNode && d.data.id === selectedNode.id && selectedNode != '/'){
+          return "visible";
+        }else {
+          return "hidden";
+        }
+      })
+
+    contextMenuGroup.append("rect")
+      .attr("width", 60)
+      .attr("height", 30)
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .attr("class", "context-menu")
+
+    contextMenuGroup.append("circle")
+      .attr("r", "15")
+      .attr("class", "delete-button")
+      .attr("x", "37")
+      .attr("y", "15")
+      .on("click", function(d) {
+        console.log('delete menu clicked.');
+        d3.event.stopPropagation();
+        handler({
+          name: "delete",
+          source: d.data.id,
+        })
+      })
+
+      contextMenuGroup.append("text")
+        .attr("font-family", "FontAwesome")
+        .attr("font-size", function(d) {
+          //return d.size +'em';
+          return '1.4em';
+        })
+        .text(() => { return '\uf014'})
+        .style("pointer-events",  "none")
+        .attr("class", "fa-icon-text")
+        .attr("text-anchor", "middle")
+        .attr("x", "37")
+        .attr("y", "15")
+**/
 
     // Full URI path
     node.append("text")
@@ -133,6 +180,13 @@ export default class {
       .text(function(d) { return d.data.fullpath;})
       .attr("transform", "translate(10," + (resourceBoxHeight-7) + ")")
       .style("pointer-events",  "none")
+      .attr("visibility", function(d) {
+        if (selectedNode && d.data.id === selectedNode.id ){
+          return "visible";
+        }else {
+          return "hidden";
+        }
+      })
 
 
     // Method badges

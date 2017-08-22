@@ -4,9 +4,12 @@ import AceEditor from 'react-ace';
 import * as Ace from 'brace';
 
 import SplitPane from 'react-split-pane';
+import BootstrapToggle from 'bootstrap-toggle';
 
 import 'brace/mode/javascript';
 import 'brace/theme/github';
+
+import 'bootstrap-toggle/css/bootstrap-toggle.min.css';
 
 export default class extends React.Component{
 
@@ -16,6 +19,13 @@ export default class extends React.Component{
       selectedMethodIndex: 0,
       activeTab: 'get',
       tabClasses: {get: 'active'},
+      methodLabels: {
+        get: 'label get disabled',
+        put: 'label put disabled',
+        post: 'label post disabled',
+        patch: 'label patch disabled',
+        delete: 'label delete disabled'
+      },
       data: {},
       isMethodEnabled: false
     }
@@ -41,6 +51,17 @@ export default class extends React.Component{
     }
     this.manipulatingBuffer = false;
 
+  }
+
+  // Sets the state of the method label classes based on whether they are enabled
+  setMethodLabelClass(methodName) {
+    let classValue = 'label ' + methodName;
+    if( this.state.data[methodName].enabled === false ) {
+      classValue = classValue + ' disabled';
+    }
+    let methodLabels = this.state.methodLabels;
+    methodLabels[methodName] = classValue;
+    this.setState({methodLabels: methodLabels});
   }
 
   // Loads editor state values based on node data
@@ -70,7 +91,20 @@ export default class extends React.Component{
     }
 
     // Store the message body data and set the editor tab to 'get'
-    this.setState({data: data}, () => {this.setView('get')});
+    this.setState({data: data}, () => {
+      this.setView('get')
+
+      // Set the classnames for all method labels
+      this.setMethodLabelClass('get');
+      this.setMethodLabelClass('put');
+      this.setMethodLabelClass('post');
+      this.setMethodLabelClass('delete');
+      this.setMethodLabelClass('patch');
+
+    });
+
+
+
   }
 
   componentWillReceiveProps(nextProps){
@@ -108,11 +142,14 @@ export default class extends React.Component{
   }
 
   onFieldChange(e) {
-    console.log(e);
-    console.log(e.target);
     if( e.target.name === 'requestParams') {
-      console.log(e.target.value)
       this.setState({requestParams: e.target.value});
+      this.props.updateHandler(this.state.activeTab,
+        { request: { queryParams: e.target.value }} );
+    }else if( e.target.name === 'statusCode') {
+      this.setState({statusCode: e.target.value});
+      this.props.updateHandler(this.state.activeTab,
+        { response: { status: e.target.value } } );
     }
   }
 
@@ -125,9 +162,12 @@ export default class extends React.Component{
     if( editorName === 'responseBody') {
       // If the response body was empty, automatically enable this method
       if( data[this.state.activeTab].response.body.length === 0  ) {
+        /*
         this.setState({isMethodEnabled: true});
         data[this.state.activeTab].enabled = true;
         this.props.updateHandler(this.state.activeTab, {enabled: true});
+        */
+        this.handleEnabledChange();
       }
       data[this.state.activeTab].response.body = this.responseEditor.getValue();
     }else if( editorName === 'requestBody' ) {
@@ -153,6 +193,14 @@ export default class extends React.Component{
     let newCheckBoxState = !this.state.isMethodEnabled;
     this.setState({isMethodEnabled: newCheckBoxState});
     this.props.updateHandler(this.state.activeTab, {enabled: newCheckBoxState })
+
+    // Update the method class Labels
+    let data = this.state.data;
+    let methodName = this.state.activeTab;
+    data[this.state.activeTab].enabled = newCheckBoxState;
+    this.setState({data: data}, () => {
+      this.setMethodLabelClass(this.state.activeTab);
+    })
   }
 
   // Called when the user selects a method tab
@@ -197,17 +245,28 @@ export default class extends React.Component{
     return (
         <div className="response-edit">
           <ul className="nav nav-tabs">
-            <li role="presentation" className={this.state.tabClasses.get}><a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-success">GET</span></a></li>
-            <li role="presentation" className={this.state.tabClasses.put}><a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-warning">PUT</span></a></li>
-            <li role="presentation" className={this.state.tabClasses.post}><a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-primary">POST</span></a></li>
-            <li role="presentation" className={this.state.tabClasses.patch}><a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}>PATCH</a></li>
-            <li role="presentation" className={this.state.tabClasses.delete}><a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}><span className="label label-danger">DELETE</span></a></li>
+            <li role="presentation" className={this.state.tabClasses.get}>
+              <a name="get" href="#" onClick={(e) => {this.tabSelected(e)}}><span className={this.state.methodLabels.get}>GET</span></a>
+            </li>
+            <li role="presentation" className={this.state.tabClasses.put}>
+              <a name="put" href="#" onClick={(e) => {this.tabSelected(e)}}><span className={this.state.methodLabels.put}>PUT</span></a>
+            </li>
+            <li role="presentation" className={this.state.tabClasses.post}>
+              <a name="post" href="#" onClick={(e) => {this.tabSelected(e)}}><span className={this.state.methodLabels.post}>POST</span></a>
+            </li>
+            <li role="presentation" className={this.state.tabClasses.patch}>
+              <a name="patch" href="#" onClick={(e) => {this.tabSelected(e)}}><span className={this.state.methodLabels.patch}>PATCH</span></a>
+            </li>
+            <li role="presentation" className={this.state.tabClasses.delete}>
+              <a name="delete" href="#" onClick={(e) => {this.tabSelected(e)}}><span className={this.state.methodLabels.delete}>DELETE</span></a>
+            </li>
           </ul>
           <div id="enabled">
             <input
               name="isMethodEnabled"
               type="checkbox"
               checked={this.state.isMethodEnabled}
+              data-toggle="toggle"
               onChange={() => this.handleEnabledChange()}>
             </input>
             <label onClick={() => this.handleEnabledChange()}>Enabled</label>
@@ -245,7 +304,8 @@ export default class extends React.Component{
                   name="statusCode"
                   placeholder="Default Status Code"
                   type="text"
-                  value={this.state.statusCode}/>
+                  value={this.state.statusCode}
+                  onChange={(e) => this.onFieldChange(e)}/>
               </div>
               <label>Content Type:</label>
               <select className="form-control input-sm" readOnly>

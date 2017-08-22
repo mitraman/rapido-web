@@ -67,7 +67,7 @@ export default class extends React.Component{
               onClick={ (e)=>{ this.setState({view: 'list'}) }}><span className="glyphicon glyphicon-th-list" aria-hidden="true"></span></button>
           </div>
       </div>
-        <div className="row projectsview top-buffer">
+        <div className="row projectsview button-bar-buffer">
           {projectsView}
         </div>
       </div>

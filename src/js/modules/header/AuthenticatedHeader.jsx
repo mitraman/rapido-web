@@ -60,27 +60,25 @@ export default class extends React.Component{
     }
 
     return (
-      <div className="navbar navbar-default navbar-static-top">
-        <div className="container-fluid">
+      <div className="container-fluid">
+        <div className="navbar navbar-default navbar-static-top">
+          <Link className="navbar-left navbar-brand app-title" to="/home" id="logo" >Rápido</Link>
+          <h3 className="navbar-text"><span className="label label-default">{this.props.project.name}</span></h3>
+          {downloadMenu}
 
-            <Link className="navbar-left navbar-brand app-title" to="/home" id="logo" >Rápido</Link>
-            <h3 className="navbar-text"><span className="label label-default">{this.props.project.name}</span></h3>
-            {downloadMenu}
-
-            <ul className="nav navbar-nav navbar-right">
-              <li className="dropdown">
-            <a id="userProfileMenu"
-              className="navbar-link userProfile"
-              data-target="#"
-              data-toggle="dropdown"
-              role="button" aria-haspopup="true" aria-expanded="false">{userName} <span className="caret"></span></a>
-              <ul className="dropdown-menu" aria-labelledby="userProfileMenu">
-                <li id="signout"><a href="#" onClick={this.logout}>Sign Out</a></li>
-              </ul>
-              </li>
+          <ul className="nav navbar-nav navbar-right">
+            <li className="dropdown">
+          <a id="userProfileMenu"
+            className="navbar-link userProfile"
+            data-target="#"
+            data-toggle="dropdown"
+            role="button" aria-haspopup="true" aria-expanded="false">{userName} <span className="caret"></span></a>
+            <ul className="dropdown-menu" aria-labelledby="userProfileMenu">
+              <li id="signout"><a href="#" onClick={this.logout}>Sign Out</a></li>
             </ul>
-
-        </div>
+            </li>
+          </ul>
+          </div>
       </div>
     )
   }

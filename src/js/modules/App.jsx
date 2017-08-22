@@ -60,7 +60,7 @@ export default class extends React.Component {
     // Setup the body
     if( authenticated ) {
       return (
-        <div id="root" className ="container-fluid">
+        <div id="root">
           <AuthenticatedApp userObject={userObject} />
         </div>
       )
@@ -73,5 +73,5 @@ export default class extends React.Component {
       );
     }
   }
-  
+
 }

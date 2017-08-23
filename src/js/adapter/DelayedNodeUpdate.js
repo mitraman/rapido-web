@@ -13,6 +13,26 @@ export default class DelayedNodeUpdate {
     };
   }
 
+  // Immediately write any scheduled updates
+  flush() {
+    return new Promise( (resolve,reject) => {
+      if(this.timeoutID) {
+        // Cancel the last timeout
+        window.clearTimeout(this.timeoutID);
+        Backend.updateNode(this.scheduledUpdate.token,
+          this.scheduledUpdate.projectId,
+          this.scheduledUpdate.sketchId,
+          this.scheduledUpdate.nodeId,
+          this.scheduledUpdate.updateObject)
+        .then(result => {
+          resolve();
+        });
+      }else {
+        resolve();
+      }
+    })
+  }
+
   scheduleUpdate(token, projectId, sketchId, nodeId, updateObject, intervalTime) {
     // Scheudle the new update
     this.scheduledUpdate = {

@@ -57,8 +57,6 @@ export default class extends React.Component{
 
   update (svgElement, rootNodes, handler, selectedNode) {
 
-    //console.log(selectedNode);
-
     // Cleanup any existing graphs
     let svg = d3.select(svgElement);
     const g = this.state.g;

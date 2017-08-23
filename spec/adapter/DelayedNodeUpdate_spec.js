@@ -46,6 +46,47 @@ describe('Backend client', function() {
     done();
   })
 
+  it('should return immediately on flush when no update is scheduled', function(done) {
+
+    spyOn(Backend, 'updateNode').and.returnValue(
+      new Promise( (resolve,reject) => {
+          resolve({});
+      })
+    );
+
+    this.DelayedNodeUpdate.flush()
+    .then(() => {
+      expect(Backend.updateNode.calls.count()).toBe(0);
+    }).catch(e => {
+      fail(e);
+    }).finally(done);
+  })
+
+  it('should fire a delayed call immediaely on flush()', function(done) {
+    spyOn(Backend, 'updateNode').and.returnValue(
+      new Promise( (resolve,reject) => {
+          resolve({});
+      })
+    );
+
+      // Add the call
+      this.DelayedNodeUpdate.write(this.token,
+        this.projectId,
+        this.sketchId,
+        this.nodeId,
+        this.updateObject,
+        this.intervalTime);
+      expect(Backend.updateNode).not.toHaveBeenCalled();
+
+      // flush
+      this.DelayedNodeUpdate.flush()
+      .then(() => {
+        expect(Backend.updateNode.calls.count()).toBe(1);
+      }).catch(e => {
+        fail(e);
+      }).finally(done);
+  })
+
   it('should fire a previously delayed call immediately if another update is added', function(done) {
 
 

@@ -18,31 +18,55 @@ export default class extends React.Component{
     this.state = {
       selectedNode: '/',
       tree: [],
-      selectedIteration: 0,
+      sketchIteration: 0,
       sketchId: 0,
-      projectId: 0
+      projectId: 0,
+      treeHash: {}
     }
     this.toggleSideNav = this.toggleSideNav.bind(this);
     this.intervalTime = 2000;
     this.delayedNodeUpdate = new DelayedNodeUpdate();
   }
 
-  componentDidMount() {
+  componentWillMount() {
+    //console.log('componentWillMount');
     let sketch = this.props.sketches[this.props.sketchIteration-1];
-    this.setState({sketchId: sketch.index});
+    this.setState({sketchId: sketch.id});
 
-    this.parseTree(sketch.tree);
     this.setState({tree: sketch.tree});
+
+    let hash = this.generateHash(sketch.tree);
+    this.setState({treeHash: hash});
 
     // Remove the detail pane because no node has been selected yet.
     this.setState({splitPaneSize: "100%"});
 
     document.addEventListener('keydown', (e) => this.handleKeyPress(e), false);
+  }
 
+  componentWillReceiveProps() {
+    //console.log('componentWillReceiveProps');
+
+    // Update the view based on the new props
+    let sketch = this.props.sketches[this.props.sketchIteration-1];
+    this.setState({sketchId: sketch.id});
+    this.setState({tree: sketch.tree});
+
+    let hash = this.generateHash(sketch.tree);
+    this.setState({treeHash: hash});
+  }
+
+  // Utility methods to manipulate GUI elements
+  showDetailPane() {
+    this.setState({splitPaneSize: "150px"});
+  }
+
+  hideDetailPane() {
+    this.setState({splitPaneSize: "100%"});
   }
 
   toggleSideNav() {
-    console.log('toggleSideNav');
+    //console.log('toggleSideNav');
       if( this.state.navState === 'show-nav') {
         // show the side nave and change the state
         this.setState({navState: 'nav-hidden'});
@@ -51,63 +75,47 @@ export default class extends React.Component{
       }
   }
 
-  //Recursive function to walk through tree
-  findNode(id, nodeList) {
-    for( let i = 0; i < nodeList.length; i++ ) {
-      if( nodeList[i].id === id ) {
-        return nodeList[i];
-      }else if( nodeList[i].children && nodeList[i].children.length > 0) {
-        let result = this.findNode(id, nodeList[i].children)
-        if( result ) {
-          return result;
-        }
-      }
-    }
-    return null;
-  }
+  // Generates the hash table for a tree
+  // The tree hash makes it easier for the GUI to find nodes
+  generateHash(tree) {
+    let storeNode = function(node, hash) {
+        // store this node in the hash
+        hash[node.id] = node;
 
-  // Add helper properties to the tree structure for the GUI and processing
-  parseTree(tree) {
-    let parseNode = function(node, parentNode) {
-      node.parent = parentNode;
-      if( !parentNode ) {
-        node.prePath = '/';
-      }else {
-        node.prePath = parentNode.fullpath + '/';
-      }
-      node.fullpath = node.prePath + node.name;
-
-
-      node.children.forEach( child => {
-        parseNode(child, node);
-      });
+        // process children recursively
+        node.children.forEach(child => {
+          storeNode(child, hash);
+        })
     }
 
-    tree.forEach(root => {
-      parseNode(root);
+    let hash = {};
+    tree.forEach(rootNode => {
+      storeNode(rootNode, hash);
     })
+    return hash;
   }
 
+
+
+  // Called by the child CRUDTreeComponent when the user changes the URI of a node
   uriChanged(nodeId, value) {
-    // fullpath: (parentPath) + / + name
-
-    // Update the tree node
-
+    // Get the node we need to update
     let node = this.state.selectedNode;
     if(nodeId != this.state.selectedNode.id) {
-      node = this.findNode(nodeId, this.state.tree);
+      node = this.state.treeHash[nodeId];
     }
 
-    // Update the name of the node
+    // Update the 'name' of the node with the new URI value
     node.name = value;
-    node.fullpath = node.prePath + node.name;
+    let parentNode = this.state.treeHash[node.parentId];
+    node.fullpath = parentNode ? parentNode.fullpath + '/' + node.name : '/' + node.name;
 
-    //update the fullpath for this node and its children
+    // Update the fullpath for this node and its descendants
+    // NOTE: We are operating on the in-memory tree, but the backend will perform the same operation
     let updateChildPaths = function(node) {
-      for(let i =0; i < node.children.length; i++) {
+      for(let i=0; i < node.children.length; i++) {
         let childNode = node.children[i];
-        childNode.prePath = node.fullpath + '/';
-        childNode.fullpath = childNode.prePath + childNode.name;
+        childNode.fullpath = node.fullpath + '/' + childNode.name;
         updateChildPaths(childNode);
       }
     }
@@ -116,13 +124,12 @@ export default class extends React.Component{
     //redraw the page
     this.forceUpdate();
 
-    // Schedule an update to persist changes to the backend server
-    //this.scheduleUpdate(node.id, { name: node.name, fullpath: node.fullpath});
+    // Schedule a backend update to persist changes to the backend server
     this.delayedNodeUpdate.write(this.props.userObject.token,
       this.props.projectId,
-      this.state.sketchId,
+      this.props.sketchIteration,
       nodeId,
-      { name: node.name, fullpath: node.fullpath},
+      { name: node.name },
       this.intervalTime)
     .then( result => {
       //TODO: Alert the user that changes have been saved.
@@ -130,6 +137,7 @@ export default class extends React.Component{
     })
   }
 
+  // called when a node's method data has been updated
   dataChanged(id,key,fieldMap) {
     let updateObject = {
       data: {}
@@ -139,7 +147,8 @@ export default class extends React.Component{
     if( fieldMap.hasOwnProperty('enabled') ) {
       // This type of change will impact the badges visible on the node
       // Update the node in the tree
-      let node = this.findNode(id, this.state.tree);
+      //let node = this.findNode(id, this.state.tree);
+      let node = this.state.treeHash[id];
       if(!node.data[key]) {
         node.data[key] = {
           enabled: true
@@ -154,7 +163,7 @@ export default class extends React.Component{
 
     this.delayedNodeUpdate.write(this.props.userObject.token,
       this.props.projectId,
-      this.state.sketchId,
+      this.props.sketchIteration,
       this.state.selectedNode.id,
       updateObject,
       this.intervalTime)
@@ -164,17 +173,26 @@ export default class extends React.Component{
     })
   }
 
+  // Called when the GUI triggers an add child event
   addChild(parent) {
     let parentId = parent ? parent.id : null;
-    Backend.addChildNode(this.props.userObject.token, this.props.projectId, this.state.sketchId, parentId)
-    .then( (result) => {
+    this.delayedNodeUpdate.flush()
+    .then( () => {
+      Backend.addChildNode(this.props.userObject.token,
+        this.props.projectId,
+        this.props.sketchIteration,
+        parentId)
+    }).then( (result) => {
       // The backend returns an updated version of the tree with the new node
       let tree = result.tree;
-      this.parseTree(tree)
       this.setState({tree: tree});
+
+      let hash = this.generateHash(tree)
+      this.setState({treeHash: hash});
+
       let nodeId = result.node.id;
 
-      let newNode = this.findNode(nodeId, result.tree);
+      let newNode = this.state.treeHash[nodeId];
       //let parentPath = parent ? parent.fullpath : '';
       //newNode.fullpath = parentPath;
       this.setState({selectedNode: newNode});
@@ -189,22 +207,28 @@ export default class extends React.Component{
     let eventType = event.name;
 
     if( eventType === 'reset') {
+      // Reset the sketch view
+
       this.setState({selectedNode: '/'});
       this.setState({splitPaneSize: "100%"});
+
     }else if( eventType === 'add') {
+      // Add a new child node
+
       let tree = this.state.tree;
 
       let parent = null;
       if( event.source ) {
         // If the source is not null, the new node will be a child of an existing node
-        parent = this.findNode(event.source, tree);
+        //parent = this.findNode(event.source, tree);
+        parent = this.state.treeHash[event.source]
       }
 
       //TODO: use the delayedNodeUpdate function
       // If there is a pending change, trigger it first.
       if(this.timeoutID) {
         Backend.updateNode(this.props.userObject.token,
-          this.state.sketchId,
+          this.props.sketchIteration,
           this.pendingUpdate.id,
           this.pendingUpdate.updateObject)
         .then( () => {
@@ -216,38 +240,64 @@ export default class extends React.Component{
         this.addChild(parent);
       }
     }else if( eventType === 'detail') {
-      let node = this.findNode(event.source, this.state.tree);
+      // Display editable properties of a node
+
+      //let node = this.findNode(event.source, this.state.tree);
+      let node = this.state.treeHash[event.source];
       this.setState({selectedNode: node});
       // If the split panel is hidden, create a split by setting the default splitPaneSize
       if( this.state.splitPaneSize === "100%") {
         this.setState({splitPaneSize: "150px"});
       }
     }else if( eventType === 'delete') {
-      // Popup a confirmation modal
+      // Popup a delete confirmation modal, if the user accepts deletion,
+      // handleDeleteConfirmed() will be called.
       $('#deleteConfirmationModal').modal();
     }
   }
 
-  displayDetail() {
-    this.setState({splitPaneSize: "150px"});
-  }
-
-  displayOverview() {
-    this.setState({splitPaneSize: "100%"});
-  }
-
+  // Deletes a sub-tree or node after the user confirms a deletion request
   handleDeleteConfirmed() {
+    // Make sure that the selected node exists and is not the root node
     let selectedNode = this.state.selectedNode;
     if( selectedNode && selectedNode != '/') {
-      
+
+      // If there are operations waiting to be saved, send them to the backend now
+      this.delayedNodeUpdate.flush()
+      .then( () => {
+        // Make the delete request
+        Backend.deleteNode(this.props.userObject.token,
+          this.props.projectId,
+          this.props.sketchIteration,
+          selectedNode.id)
+      }).then( (result) => {
+        // Get the updated tree and render it again
+        return Backend.getSketch(this.props.userObject.token, this.state.sketchId);
+      }).then( result => {
+        let tree = result.sketch.tree;
+
+        this.setState({selectedNode: '/'});
+        this.setState({tree: tree});
+
+        let hash = this.generateHash(tree);
+        this.setState({treeHash: hash});
+
+        // Remove the detail pane because no node has been selected yet.
+        this.hideDetailPane();
+
+      }).catch( e => {
+        console.log('something went wrong while trying to delete this node:', e);
+      })
+
     }
   }
 
+  // Keyboard accelerators
   handleKeyPress(event) {
     //console.log(event);
     if( event.key === 'Escape') {
       this.setState({selectedNode: '/'});
-      this.displayOverview();
+      this.hideDetailPane();
     }
 
     if( document.activeElement != null && document.activeElement.localName != 'body') {
@@ -269,12 +319,13 @@ export default class extends React.Component{
     }else if(event.key === 'ArrowLeft') {
       // Try to move to the parent node
       let selectedNode = this.state.selectedNode;
-      let parent = selectedNode.parent;
+      if( selectedNode === '/') { return; }
+      let parent = this.state.treeHash[selectedNode.parentId];
       if( parent ) {
         this.setState({selectedNode: parent});
       }else {
         this.setState({selectedNode: '/'});
-        this.displayOverview();
+        this.hideDetailPane();
       }
     }else if( event.key === 'ArrowRight') {
       // Try to move to a child node
@@ -289,7 +340,8 @@ export default class extends React.Component{
     }else if( event.key === 'ArrowDown') {
       // Try to move to the next sibling
       let selectedNode = this.state.selectedNode;
-      let parent = selectedNode.parent;
+      if( selectedNode === '/') { return; }
+      let parent = this.state.treeHash[selectedNode.parentId];
       if( !parent ) {
         for( let i = 0; i < this.state.tree.length; i++ ) {
           let rootNode = this.state.tree[i];
@@ -314,7 +366,8 @@ export default class extends React.Component{
     }else if( event.key === 'ArrowUp' ) {
       // Try to move to the previous sibling
       let selectedNode = this.state.selectedNode;
-      let parent = selectedNode.parent;
+      if( selectedNode === '/') { return; }
+      let parent = this.state.treeHash[selectedNode.parentId];
       let prevSibling = null;
       if( !parent ) {
         for( let i = 0; i < this.state.tree.length; i++ ) {

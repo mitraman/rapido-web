@@ -22,7 +22,7 @@ export default class {
           //console.log('received response');
           // Request finished. Do processing here.
           if( xhr.status >= 200 && xhr.status <= 299 ) {
-            if(!parseJSON) {
+            if(!parseJSON || xhr.status === 204) {
               resolve(xhr.response);
             } else {
               let responseBody = JSON.parse(xhr.response);
@@ -124,6 +124,18 @@ export default class {
       };
     })
   }
+
+  static getSketch(token, sketchId) {
+    let sketchUrl = '/api/sketch/' + sketchId;
+
+    return this._authenticatedCall(token, "GET", sketchUrl, null, function(responseBody) {
+      console.log('responseBody:', responseBody);
+      return {
+        sketch: responseBody.sketch
+      };
+    })
+  }
+
 
   static addChildNode(token, projectId, sketchId, parentId) {
     let url = '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes'

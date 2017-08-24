@@ -292,33 +292,41 @@ describe('Sketch Component', function() {
     beforeEach(function(){
       // Setup the tree
       let node = createNode('my-node');
+      let root2 = createNode('root2');
+      let root3 = createNode('root3');
+      let root4 = createNode('root4');
       let child1 = createNode('child1', node.id);
       let child2 = createNode('child2', node.id);
+      let child3 = createNode('child3', node.id);
       let gc1 = createNode('gc1', child2.id);
 
       node.children.push(child1);
       node.children.push(child2);
+      node.children.push(child3);
       child2.children.push(gc1);
 
       this.sketches[0].tree.push(node);
-
+      this.sketches[0].tree.push(root2);
+      this.sketches[0].tree.push(root3);
+      this.sketches[0].tree.push(root4);
     })
 
-    it('should move to the first root node on a right arrow', function() {
+    it('should move to the middle root node on a right arrow', function() {
       const wrapper = shallow(<Sketch
         sketches={this.sketches}
         sketchIteration={1}/>);
       wrapper.instance().handleKeyPress({key: 'ArrowRight'});
-      expect(wrapper.state('selectedNode').id).toBe('my-node');
+      expect(wrapper.state('selectedNode').id).toBe('root2');
     })
 
-    it('should move to the first child on two right arrows', function() {
+    it('should move to the middle child of a root node', function() {
       const wrapper = shallow(<Sketch
         sketches={this.sketches}
         sketchIteration={1}/>);
+
+      wrapper.instance().clickHandler({name: 'detail', source: 'my-node'});
       wrapper.instance().handleKeyPress({key: 'ArrowRight'});
-      wrapper.instance().handleKeyPress({key: 'ArrowRight'});
-      expect(wrapper.state('selectedNode').id).toBe('child1');
+      expect(wrapper.state('selectedNode').id).toBe('child2');
     })
 
     it('should not move right on a childless node', function() {
@@ -413,10 +421,10 @@ describe('Sketch Component', function() {
         sketchIteration={1}/>);
 
       // Select the grandchild node
-      wrapper.instance().clickHandler({name: 'detail', source: 'child2'});
+      wrapper.instance().clickHandler({name: 'detail', source: 'child3'});
 
       wrapper.instance().handleKeyPress({key: 'ArrowDown'});
-      expect(wrapper.state('selectedNode').id).toBe('child2');
+      expect(wrapper.state('selectedNode').id).toBe('child3');
     })
 
     it('should move to the next sibling on a down arrow', function() {

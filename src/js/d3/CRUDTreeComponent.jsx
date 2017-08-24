@@ -16,11 +16,14 @@ export default class extends React.Component{
   }
 
   componentDidMount () {
+    //console.log('componentDidMount');
     this.initialize(this.svgElement);
     this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
   }
 
   componentDidUpdate () {
+    // console.log('componentDidUpdate');
+    // console.log(this.props.rootNodes);
     this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
   }
 

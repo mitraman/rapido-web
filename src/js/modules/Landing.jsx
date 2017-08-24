@@ -1,7 +1,6 @@
 import React from 'react'
 import RegistrationForm from './register/RegistrationForm'
 import AlertContainer from 'react-alert';
-import createHistory from 'history/createBrowserHistory'
 import LoginService from './login/LoginService';
 import Header from './header/Header';
 import { Route, Redirect } from 'react-router-dom'

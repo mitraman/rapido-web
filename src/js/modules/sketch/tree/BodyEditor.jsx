@@ -50,7 +50,6 @@ export default class extends React.Component{
       this.responseEditor.setValue('', 1);
     }
     this.manipulatingBuffer = false;
-
   }
 
   // Sets the state of the method label classes based on whether they are enabled
@@ -205,15 +204,18 @@ export default class extends React.Component{
 
   // Called when the user selects a method tab
   tabSelected(event) {
-    // Set the active tab
+    // Prevent the browser from changing the URI when the anchor link is clicked
+    event.preventDefault();
 
     // Set the enabled checkbox state
-    //let enabledState = this.
+    let enabledState = this.
 
     // Set the editor body based on the active tab
     // Using currentTarget so we get the A tag instead of the SPAN
-    this.setView(event.currentTarget.name);
+    setView(event.currentTarget.name);
 
+    // After applying preventDefault to the event, this.setView doesn't work
+    //this.setView(event.currentTarget.name);
   }
 
   render() {

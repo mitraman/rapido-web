@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Backend from '../../adapter/Backend.js';
-import createHistory from 'history/createBrowserHistory';
-const history = createHistory();
 import fileDownload from 'react-file-download';
 import '../../../css/header.scss'
 import 'bootstrap/dist/js/bootstrap';

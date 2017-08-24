@@ -176,13 +176,19 @@ export default class extends React.Component{
   // Called when the GUI triggers an add child event
   addChild(parent) {
     let parentId = parent ? parent.id : null;
+    /*
     this.delayedNodeUpdate.flush()
     .then( () => {
-      Backend.addChildNode(this.props.userObject.token,
+      return Backend.addChildNode(this.props.userObject.token,
         this.props.projectId,
         this.props.sketchIteration,
         parentId)
-    }).then( (result) => {
+    }).then( (result) => {*/
+    Backend.addChildNode(this.props.userObject.token,
+      this.props.projectId,
+      this.props.sketchIteration,
+      parentId)
+    .then( result => {
       // The backend returns an updated version of the tree with the new node
       let tree = result.tree;
       this.setState({tree: tree});
@@ -331,11 +337,15 @@ export default class extends React.Component{
       // Try to move to a child node
       let selectedNode = this.state.selectedNode;
       if(selectedNode === '/' ) {
+        // Move to the middle root node
         if( this.state.tree.length > 0) {
-          this.setState({selectedNode: this.state.tree[0]})
+          let index = Math.ceil(this.state.tree.length / 2);
+          this.setState({selectedNode: this.state.tree[index-1]})
         }
       }else if(selectedNode.children.length > 0 ) {
-        this.setState({selectedNode: selectedNode.children[0]});
+        // Move to the middle child
+        let index = Math.ceil(selectedNode.children.length / 2);
+        this.setState({selectedNode: selectedNode.children[index-1]});
       }
     }else if( event.key === 'ArrowDown') {
       // Try to move to the next sibling

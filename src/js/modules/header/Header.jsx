@@ -1,8 +1,5 @@
 import React from 'react'
 import { Link, Redirect } from 'react-router-dom'
-import createHistory from 'history/createBrowserHistory'
-const history = createHistory()
-
 import LoginForm from '../login/LoginForm.jsx'
 import Modal from '../Modal.jsx'
 import '../../../css/header.scss'

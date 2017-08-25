@@ -12,6 +12,12 @@ module.exports = {
         //make sure port 8090 is used when launching webpack-dev-server
         publicPath: 'https://rapidodesigner.com/assets/'
     },
+    stats: {
+      assets: false,
+      warnings: true,
+      errors: true,
+      errorDetails: true
+    },
     module: {
         loaders: [
             {

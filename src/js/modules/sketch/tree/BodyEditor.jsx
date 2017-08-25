@@ -27,7 +27,8 @@ export default class extends React.Component{
         delete: 'label delete disabled'
       },
       data: {},
-      isMethodEnabled: false
+      isMethodEnabled: false,
+      requestEditorVisiblityStyle: 'visible'
     }
   }
 
@@ -50,6 +51,12 @@ export default class extends React.Component{
       this.responseEditor.setValue('', 1);
     }
     this.manipulatingBuffer = false;
+
+    if( methodName === 'get') {
+      this.setState({requestEditorVisiblityStyle: 'hidden'});
+    }else {
+      this.setState({requestEditorVisiblityStyle: 'visible'});
+    }
   }
 
   // Sets the state of the method label classes based on whether they are enabled
@@ -222,7 +229,12 @@ export default class extends React.Component{
 
     let requestEditorStyle = {
       width: '600px',
-      height: '100%'
+      height: '100%',
+      visibility: this.state.requestEditorVisiblityStyle
+    }
+
+    let requestContentTypeStyle = {
+      visibility: this.state.requestEditorVisiblityStyle
     }
 
     let requestPanelStyle = {
@@ -288,13 +300,17 @@ export default class extends React.Component{
                     value={this.state.requestParams}
                     onChange={(e) => this.onFieldChange(e)}/>
                 </div>
+                <div style={requestContentTypeStyle}>
                 <label>Content Type:</label>
                 <select className="form-control input-sm" readOnly>
                   <option>application/json</option>
                 </select>
+                </div>
 
               </form>
-              <div id="requestEditorPane" style={requestEditorStyle} ref={(e) => { this.requestEditDiv = e} }></div>
+              <div id="requestEditorPane"
+                style={requestEditorStyle}
+                ref={(e) => { this.requestEditDiv = e} }></div>
               </div>
             <div>
               <h4>Response</h4>

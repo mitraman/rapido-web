@@ -61,6 +61,12 @@ module.exports = function(config) {
               }
             ]
       },
+      stats: {
+        assets: false,
+        warnings: true,
+        errors: true,
+        errorDetails: true
+      },
       resolve: {
           extensions: ['', '.js', '.jsx']
       },

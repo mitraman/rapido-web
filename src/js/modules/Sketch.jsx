@@ -415,9 +415,15 @@ export default class extends React.Component{
       {word: 'word 4', sketches: []}
     ]
 
+    let prePath = '';
+    if( this.state.selectedNode.id ) {
+      prePath = this.state.treeHash[this.state.selectedNode.id].fullpath;
+    }
+
     let EditPane =  this.state.selectedNode ?
       <NodeEditor
         node={this.state.selectedNode}
+        prePath ={prePath}
         uriChangeHandler={(id,val)=>{this.uriChanged(id,val)}}
         dataChangeHandler={(id,key,fields)=>{this.dataChanged(id,key,fields)}}
         /> : <div/>;

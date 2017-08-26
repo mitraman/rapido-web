@@ -7,7 +7,6 @@ export default class extends React.Component{
     super(props);
     this.state = {
       url: this.props.node.name,
-      prePath : this.props.node.prePath + '/',
       requestParams: '?'
     }
   }
@@ -15,7 +14,6 @@ export default class extends React.Component{
   componentWillReceiveProps(nextProps){
     if(nextProps.node.id  != this.props.node.id) {
       this.setState({url: nextProps.node.name});
-      this.setState({prePath: nextProps.node.prePath});
     }
   }
 
@@ -49,7 +47,7 @@ export default class extends React.Component{
       <div>
         <form>
           <div className="input-group form-group-sm">
-            <span className="input-group-addon" id="basic-addon1">{this.state.prePath}</span>
+            <span className="input-group-addon" id="basic-addon1">{this.props.prePath}</span>
             <input
               className="form-control"
               type="text"

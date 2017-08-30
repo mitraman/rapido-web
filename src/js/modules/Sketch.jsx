@@ -416,9 +416,11 @@ export default class extends React.Component{
     ]
 
     let prePath = '';
-    if( this.state.selectedNode.id ) {
-      prePath = this.state.treeHash[this.state.selectedNode.id].fullpath;
+    /*
+    if( this.state.selectedNode != '/' && this.state.selectedNode.id ) {
+      prePath = this.state.treeHash[this.state.selectedNode.parentId].fullpath;
     }
+    */
 
     let EditPane =  this.state.selectedNode ?
       <NodeEditor

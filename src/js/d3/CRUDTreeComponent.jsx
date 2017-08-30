@@ -60,26 +60,35 @@ export default class extends React.Component{
 
   update (svgElement, rootNodes, handler, selectedNode) {
 
+    console.log('update()');
+
     // Cleanup any existing graphs
     let svg = d3.select(svgElement);
     const g = this.state.g;
+
+    // NOTE: Tempoararilyremoved
     g.selectAll("*").remove();
 
     let svgWidth = ($("svg").width());
     let svgHeight = ($("svg").height());
 
-    svg.on('click', function() {
+    //TODO: Set a pan extent so that the user can't lose the sketch by panning it away
 
-      //console.log('svg clicked');
+
+    let zoom = d3.zoom();
+    svg.call(zoom.on("zoom", () => {
+      g.attr("transform", d3.event.transform);
+    }));
+
+
+    // Click handler for the svg object
+    svg.on('click', function() {
       handler({
         name: "reset"
       });
-      /*
-      console.log('TODO: deselect nodes if svg is clicked');
-      console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
-      */
 
-
+      //console.log('TODO: deselect nodes if svg is clicked');
+      //console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
     })
 
     // Create a default root node for the nodes
@@ -103,16 +112,11 @@ export default class extends React.Component{
               + " " + (d.parent.y + CRUDTree.resourceBoxWidth()) + "," + (d.parent.x + CRUDTree.halfBoxHeight());
         });
 
+
     // draw the tree nodes
     let drawNodesResult = CRUDTree.drawNodes(svg, g, nodes, handler, selectedNode);
-    let node = drawNodesResult.node;
+    let node = drawNodesResult.node
     node.exit().remove();
-
-    //TODO: Set a pan extent so that the user can't lose the sketch by panning it away
-    let zoom = d3.zoom();
-    svg.call(zoom.on("zoom", () => {
-      g.attr("transform", d3.event.transform);
-    }));
 
     if( selectedNode === '/') {
       // Zoom out and center the graph
@@ -126,7 +130,6 @@ export default class extends React.Component{
     }
     else {
       // Move the position of the tree to the selected node
-      //console.log(drawNodesResult.translations[selectedNode.id]);
       let offsetX = (0 - drawNodesResult.translations[selectedNode.id].y);
       let offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
       const xPadding = 20;
@@ -138,10 +141,6 @@ export default class extends React.Component{
       svg.transition().duration(200)
       .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
     }
-
-    // Use less of an x offset for the initial root node
-    //const xPadding = svgWidth / 2;
-
 
 
   }

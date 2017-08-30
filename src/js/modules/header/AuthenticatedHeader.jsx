@@ -21,16 +21,16 @@ export default class extends React.Component{
   }
 
   exportOAPI2() {
-    console.log('swagger export');
     // Make the call to do an export
-    console.log(this.props.project);
-    console.log(this.props.sketchIndex);
+    //console.log(this.props.project);
+    //console.log(this.props.sketchIndex);
     let exportData =
 
     Backend.export(this.props.userInfo.token, this.props.project.id, this.props.sketchIndex, 'oai2')
     .then(exportData => {
-      console.log(exportData);
-      fileDownload(exportData, 'test.yaml');
+      //console.log(exportData);
+      let filename = this.props.project.name + '.yaml';
+      fileDownload(exportData, filename);
     });
 
   }

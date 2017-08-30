@@ -22,7 +22,7 @@
     "bootstrap-toggle": "^2.2.2",
     "brace": "~0.9.1",
     "css-loader": "~0.26.1",
-    "d3": "^4.2.3",
+    "d3": "^4.10.0",
     "file-loader": "~0.9.0",
     "history": "^4.6.1",
     "http-server": "^0.9.0",

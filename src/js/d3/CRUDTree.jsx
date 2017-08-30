@@ -17,6 +17,7 @@ export default class {
   static halfBoxWidth() { return halfBoxWidth; }
 
   static drawNodes(svg, g, rootTreeNode, handler, selectedNode) {
+
     let translations = {};
 
     // Create a new <g> for every object in the nodeList
@@ -55,15 +56,20 @@ export default class {
           .attr("rx", 10)
           .attr("ry", 10)
   		    .attr("class", function(d) {
+            let classString = '';
             if (selectedNode && d.data.id === selectedNode.id ){
-              return "selected-node-uri";
+              classString += "selected-node-uri";
             }else {
-              return "node-uri";
+              classString += "node-uri";
             }
+            if( d.data.name.startsWith(':') ||
+              ( d.data.name.startsWith('{') && d.data.name.endsWith('}')) ) {
+              classString += " parameterized-node-uri";
+            }
+            return classString;
           })
           .on("click", function(d) {
             if( !d.data.isRoot) {
-              //console.log('node clicked');
               handler({
                 name: "detail",
                 source: d.data.id,
@@ -194,70 +200,12 @@ export default class {
     node.append("g")
       .attr("class", "badges");
 
-    // GET Badge
-    badges.append("rect")
-      .filter(function(d) {
-        if( d.data.isRoot ) return;
-        if( d.data.data.get  ){
-          return d.data.data.get.enabled;
-        }else {
-          return false;
-        }
-      })
-      .attr("width", 30)
-      .attr("height", 12)
-      .attr("rx", 3)
-      .attr("ry", 2)
-      .attr("transform", "translate(8,4)")
-      .attr("class", "get")
-    .append('svg:title')
-      .text('GET');
-
-
-    // PUT badge
-    badges.append("rect")
-      .filter(function(d) {
-        if( d.data.isRoot ) return;
-        if( d.data.data.put  ){
-          return d.data.data.put.enabled;
-        }else {
-          return false;
-        }
-      })
-      .attr("width", 30)
-      .attr("height", 12)
-      .attr("rx", 3)
-      .attr("ry", 2)
-      .attr("transform", "translate(46,4)")
-      .attr("class", "put")
-    .append('svg:title')
-      .text('PUT');
-
-    // POST badge
-    badges.append("rect")
-      .filter(function(d) {
-        if( d.data.isRoot ) return;
-        if( d.data.data.post  ){
-          return d.data.data.post.enabled;
-        }else {
-          return false;
-        }
-      })
-      .attr("width", 30)
-      .attr("height", 12)
-      .attr("rx", 3)
-      .attr("ry", 2)
-      .attr("transform", "translate(84,4)")
-      .attr("class", "post")
-    .append('svg:title')
-      .text('POST');
-
-      // DELETE badge
+    let appendBadge = function(name, translateX, badges) {
       badges.append("rect")
         .filter(function(d) {
           if( d.data.isRoot ) return;
-          if( d.data.data.delete  ){
-            return d.data.data.delete.enabled;
+          if( d.data.data[name]  ){
+            return d.data.data[name].enabled;
           }else {
             return false;
           }
@@ -266,29 +214,19 @@ export default class {
         .attr("height", 12)
         .attr("rx", 3)
         .attr("ry", 2)
-        .attr("transform", "translate(122,4)")
-        .attr("class", "delete")
+        .attr("transform", "translate("+ translateX + ",4)")
+        .attr("class", name)
       .append('svg:title')
-        .text('DELETE');
+        .text(name.toUpperCase());
+    }
 
-      // PATCH badge
-      badges.append("rect")
-        .filter(function(d) {
-          if( d.data.isRoot ) return;
-          if( d.data.data.patch  ){
-            return d.data.data.patch.enabled;
-          }else {
-            return false;
-          }
-        })
-        .attr("width", 30)
-        .attr("height", 12)
-        .attr("rx", 3)
-        .attr("ry", 2)
-        .attr("transform", "translate(160,4)")
-        .attr("class", "patch")
-      .append('svg:title')
-        .text('PATCH');
+    //TODO: Use utility method to generate badges
+    appendBadge('get', 8, badges);
+    appendBadge('put', 46, badges);
+    appendBadge('post', 84, badges);
+    appendBadge('delete', 122, badges);
+    appendBadge('patch', 160, badges);
+
 
   return {
     translations: translations,

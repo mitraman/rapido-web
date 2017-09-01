@@ -46,7 +46,6 @@ export default class extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('componentWillReceiveProps');
     // If there has been a change in props, update the editor state
     if( this.props.node !== nextProps.node ) {
       let node = nextProps.node;
@@ -57,7 +56,6 @@ export default class extends React.Component{
     }
 
     // Update the autocomplete word list
-    console.log('updating vocab')
     let vocabulary = this.props.vocabulary;
     this.setState({wordCompleter:{
     getCompletions: function(editor, session, pos, prefix, callback) {

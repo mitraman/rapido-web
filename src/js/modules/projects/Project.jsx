@@ -2,8 +2,9 @@ import React from 'react'
 import AlertContainer from 'react-alert';
 import Backend from '../../adapter/Backend.js';
 import Sketch from '../Sketch.jsx'
+import Export from '../export/Export.jsx';
 import ErrorCodes from '../error/codes.js';
-import { Route, Redirect } from 'react-router-dom'
+import { Route, Redirect, Switch } from 'react-router-dom'
 
 import '../../../css/folding-cube.scss'
 
@@ -59,12 +60,21 @@ export default class extends React.Component{
     }
     if( this.state.sketches.length > 0 ) {
       return(
-        <Route path="/project/:projectId/sketch/:sketchIteration" render={(routeProps) => {
+        <Switch>
+          <Route path="/project/:projectId/sketch/:sketchIteration/export" render={(routeProps) => {
+            return <Export
+              sketches={this.state.sketches}
+              projectId={routeProps.match.params.projectId}
+              sketchIteration={routeProps.match.params.sketchIteration}
+              userObject={this.props.userObject}/> }} />
+          <Route path="/project/:projectId/sketch/:sketchIteration" render={(routeProps) => {
             return <Sketch
               sketches={this.state.sketches}
               projectId={routeProps.match.params.projectId}
               sketchIteration={routeProps.match.params.sketchIteration}
               userObject={this.props.userObject}/> }} />
+              
+        </Switch>
       )
     }else {
       let centreStyle = {textAlign: 'center'};

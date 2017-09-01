@@ -1,13 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Backend from '../../adapter/Backend.js';
 import fileDownload from 'react-file-download';
 import '../../../css/header.scss'
 import 'bootstrap/dist/js/bootstrap';
+import Modal from '../Modal.jsx'
+
 
 export default class extends React.Component{
   constructor(props) {
     super(props)
+    this.state = {
+      routeExport: false
+    }
   }
 
   logout() {
@@ -35,6 +40,11 @@ export default class extends React.Component{
 
   }
 
+  export() {
+    console.log('export clicked');
+    this.setState({routeExport: true});
+  }
+
   render() {
     let userName = this.props.userInfo.fullName;
     if( this.props.userInfo.nickName && this.props.userInfo.nickName.length > 0 ) {
@@ -42,7 +52,9 @@ export default class extends React.Component{
     }
 
     let downloadMenu = '';
+    let exportButton = '';
     if( this.props.sketchIndex > 0) {
+      exportButton = <button type="button" className="btn btn-default" id="export" onClick={(e)=>{this.export(e)}}>Export</button>
       downloadMenu = <ul className="nav navbar-nav">
         <li className="dropdown">
           <a id="downloadMenu"
@@ -57,12 +69,17 @@ export default class extends React.Component{
       </ul>;
     }
 
+    if(this.state.routeExport) {
+      let url = '/project/' + this.props.project.id + '/sketch/' + this.props.sketchIndex + '/export';
+      return <Redirect push to={url}/>;
+    }
+
     return (
       <div className="container-fluid">
         <div className="navbar navbar-default navbar-static-top">
           <Link className="navbar-left navbar-brand app-title" to="/home" id="logo" >Rápido</Link>
           <h3 className="navbar-text"><span className="label label-default">{this.props.project.name}</span></h3>
-          {downloadMenu}
+          {exportButton}
 
           <ul className="nav navbar-nav navbar-right">
             <li className="dropdown">

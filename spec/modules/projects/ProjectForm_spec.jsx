@@ -2,8 +2,8 @@ import React from 'react';
 import ProjectForm from '../../../src/js/modules/projects/ProjectForm.jsx';
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow, mount } from 'enzyme';
-import sinon from 'sinon';
-
+import Backend from '../../../src/js/adapter/Backend.js';
+var Promise = require("bluebird");
 import TypeAheadTextInput from '../../../src/js/modules/form/TypeAheadTextInput.jsx';
 
 function createSimulatedElement(name, value, validState) {
@@ -133,33 +133,20 @@ describe('ProjectForm Component', function() {
 
     let projectId = 141;
     let projectCreated = function(id) {
-      expect(id).toBe(projectId);
+      expect(id).toBe(10);
       done();
     }
 
     spyOn(ProjectForm.prototype, "showAlert").and.callThrough();
 
-
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
-
-    this.server.respondWith("POST", __BACKEND + "/api/projects", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.name).toBe(project.name);
-      expect(jsonBody.description).toBe(project.description);
-      expect(jsonBody.style).toBe('CRUD');
-
-      xhr.respond(200, {"Content-Type": "application/json"},
-        JSON.stringify({
-           id: projectId,
-           sketches: [
-             {
-               id: 1
-             }
-           ]
-        }));
-   });
+    spyOn(Backend, 'createProject').and.callFake((token, project) => {
+      expect(project.name).toBe('project name');
+      expect(project.description).toBe('description');
+      expect(token).toBe('blah');
+      return new Promise( (resolve,reject) => {
+        resolve({id: 10});
+      })
+    })
 
     const wrapper = mount(<ProjectForm userObject={userObject} projectCreated={projectCreated}/>);
 
@@ -179,32 +166,28 @@ describe('ProjectForm Component', function() {
 
   })
 
+  //TODO: update the project form to parse a Rapido error properly
   it('should alert the user if the API call fails', function(done) {
-    const serverError = 'some unexplained problem';
 
     const project = {
       name: 'project name',
-      description: 'desription'
+      description: 'description'
     }
 
     const userObject = {
       token: 'blah'
     }
-    // Setup Sinon for mocking backend server
-    this.server = sinon.fakeServer.create();
-    this.server.respondImmediately = true;
 
-    this.server.respondWith("POST", __BACKEND + "/api/projects", function(xhr) {
-      let jsonBody = JSON.parse(xhr.requestBody);
-      expect(jsonBody.name).toBe(project.name);
-      expect(jsonBody.description).toBe(project.description);
-      expect(jsonBody.style).toBe('CRUD');
-
-      xhr.respond(401, {"Content-Type": "application/json"},
-        JSON.stringify({
-           error: serverError
-        }));
-    });
+    spyOn(Backend, 'createProject').and.callFake((token, project) => {
+      expect(project.name).toBe('project name');
+      expect(project.description).toBe('description');
+      expect(token).toBe('blah');
+      return new Promise( (resolve,reject) => {
+        reject({
+          code: 'error'
+        });
+      })
+    })
 
     spyOn(ProjectForm.prototype, 'showAlert').and.callFake(function (error) {
       //console.log(error);
@@ -225,6 +208,5 @@ describe('ProjectForm Component', function() {
 
 
   });
-
 
 });

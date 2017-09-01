@@ -28,7 +28,7 @@ export default class {
       })
     .enter().append("g")
       .attr("class", function(d) {
-        if( d.data.isRoot ) {
+        if( d.data.type === 'root' ) {
           return "root-node";
         }else {
           return "node" + (d.children ? " node--internal" : " node--leaf");
@@ -36,8 +36,7 @@ export default class {
       .attr("id", function(d) { return d.data.id })
       .attr("transform", function(d) {
         // Store the translation coordinates for easier lookups
-        let id = (d.data.isRoot) ? 'root' : d.data.id;
-        translations[id] = {x: d.x, y: d.y};
+        translations[d.data.id] = {x: d.x, y: d.y};
         return "translate(" + d.y + "," + d.x + ")"; });
 
   // inbound connector
@@ -51,7 +50,7 @@ export default class {
 
   // CRUD Node
   node.append("rect")
-          .attr("width", (d) => { return (d.data.isRoot ? rootBoxWidth : resourceBoxWidth) })
+          .attr("width", resourceBoxWidth)
           .attr("height", resourceBoxHeight)
           .attr("rx", 10)
           .attr("ry", 10)
@@ -69,15 +68,13 @@ export default class {
             return classString;
           })
           .on("click", function(d) {
-            if( !d.data.isRoot) {
-              handler({
-                name: "detail",
-                source: d.data.id,
-                x: d.y,
-                y: d.x
-              })
-              d3.event.stopPropagation();
-            }
+            handler({
+              name: "detail",
+              source: d.data.id,
+              x: d.y,
+              y: d.x
+            })
+            d3.event.stopPropagation();
           });
 
   // CRUD Node URI (not the full path)
@@ -87,22 +84,20 @@ export default class {
       return "translate(" + urlLeftMargin + "," + ((resourceBoxHeight / 2)+ urlFontSize/2) + ")"
     })
     .style("pointer-events",  "none")
-    .text(function(d) {  return (d.data.isRoot ? "/" : d.data.name); })
+    .text(function(d) {  return d.data.name; })
 
     // top separator
     node.append("path")
       .attr("class", "node-internal-border")
       .attr("d", function(d) {
-        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
-        return "M0,20," + boxWidth + ",20"
+        return "M0,20," + resourceBoxWidth + ",20"
       });
 
     // bottom separator
     node.append("path")
         .attr("class", "node-internal-border")
         .attr("d", function(d) {
-          let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
-          return "M0," + (resourceBoxHeight - 20) + "," + boxWidth + "," + (resourceBoxHeight - 20);
+          return "M0," + (resourceBoxHeight - 20) + "," + resourceBoxWidth + "," + (resourceBoxHeight - 20);
       });
 
     // outbound node
@@ -110,8 +105,7 @@ export default class {
       .attr("r", "15")
       .attr("class", "connector-out")
       .attr("transform", function(d) {
-        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
-        return "translate(" + boxWidth + "," + resourceBoxHeight / 2 +")";
+        return "translate(" + resourceBoxWidth + "," + resourceBoxHeight / 2 +")";
       })
       .on("click", function(d) {
           //console.log("out connector clicked");
@@ -128,8 +122,7 @@ export default class {
       .attr("font-size", "18")
       .text("+")
       .attr("transform", function(d) {
-        let boxWidth = (d.data.isRoot ? rootBoxWidth : resourceBoxWidth);
-        return "translate(" + (boxWidth - 5) + "," + (resourceBoxHeight / 2  + 5)+ ")";
+        return "translate(" + (resourceBoxWidth - 5) + "," + (resourceBoxHeight / 2  + 5)+ ")";
       })
       .style("pointer-events",  "none")
 
@@ -203,7 +196,6 @@ export default class {
     let appendBadge = function(name, translateX, badges) {
       badges.append("rect")
         .filter(function(d) {
-          if( d.data.isRoot ) return;
           if( d.data.data[name]  ){
             return d.data.data[name].enabled;
           }else {

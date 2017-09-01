@@ -216,7 +216,7 @@ describe('Backend client', function() {
           children: [],
           responseData: {}
         },
-        tree: [
+        rootNode:
           {
             id: parentId,
             name: 'test',
@@ -232,7 +232,7 @@ describe('Backend client', function() {
               }
             ]
           }
-        ]
+
       }
       //  let url = '/api/sketches/' + sketchId + '/nodes'
       const url = __BACKEND + '/api/projects/' + projectId + '/sketches/' + sketchId + '/nodes/' + parentId;
@@ -244,7 +244,7 @@ describe('Backend client', function() {
       .then((result) => {
         expect(result.node).not.toBeUndefined();
         expect(result.node.id).not.toBeUndefined();
-        expect(result.tree).not.toBeUndefined();
+        expect(result.rootNode).toBeDefined();
         done();
       })
     })

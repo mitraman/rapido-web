@@ -1,6 +1,5 @@
 import React from 'react';
 import brace from 'brace';
-import AceEditor from 'react-ace';
 import * as Ace from 'brace';
 
 import SplitPane from 'react-split-pane';
@@ -8,6 +7,7 @@ import BootstrapToggle from 'bootstrap-toggle';
 
 import 'brace/mode/javascript';
 import 'brace/theme/github';
+import 'brace/ext/language_tools';
 
 import 'bootstrap-toggle/css/bootstrap-toggle.min.css';
 
@@ -30,6 +30,46 @@ export default class extends React.Component{
       isMethodEnabled: false,
       requestEditorVisiblityStyle: 'visible'
     }
+
+    let vocabulary = this.props.vocabulary;
+    this.state.wordCompleter = {
+    getCompletions: function(editor, session, pos, prefix, callback) {
+        callback(null, vocabulary.map(function(word) {
+            return {
+                caption: word,
+                value: word,
+                meta: "vocabulary"
+            };
+        }));
+      }
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    console.log('componentWillReceiveProps');
+    // If there has been a change in props, update the editor state
+    if( this.props.node !== nextProps.node ) {
+      let node = nextProps.node;
+      if( !node ) {
+        throw new Error('No node passed to <ResponseEditor/>');
+      }
+      this.loadNodeData(node);
+    }
+
+    // Update the autocomplete word list
+    console.log('updating vocab')
+    let vocabulary = this.props.vocabulary;
+    this.setState({wordCompleter:{
+    getCompletions: function(editor, session, pos, prefix, callback) {
+        callback(null, vocabulary.map(function(word) {
+            return {
+                caption: word,
+                value: word,
+                meta: "vocabulary"
+            };
+        }));
+      }
+    }});
   }
 
   // Sets the contents of all inputs for a method
@@ -88,6 +128,7 @@ export default class extends React.Component{
       };
     }
 
+    //console.log('loadNodeData: ', node);
     let data = {
       'get': buildMethodData('get', node.data),
       'put': buildMethodData('put', node.data),
@@ -113,25 +154,25 @@ export default class extends React.Component{
 
   }
 
-  componentWillReceiveProps(nextProps){
-    // If there has been a change in props, update the editor state
-    if( this.props.node !== nextProps.node ) {
-      let node = nextProps.node;
-      if( !node ) {
-        throw new Error('No node passed to <ResponseEditor/>');
-      }
-      this.loadNodeData(node);
-    }
-  }
+
 
   componentDidMount() {
 
+
+
     // Setup the editor
+    //ace.acequire("ace/ext/language_tools");
     this.responseEditor = ace.edit(this.responseEditDiv);
     this.responseEditor.setTheme("ace/theme/github");
     this.responseEditor.getSession().setMode("ace/mode/javascript");
     this.responseEditor.on("change", (e) => {this.onEditorChange(e, 'responseBody')});
     this.responseEditor.$blockScrolling = Infinity;
+    this.responseEditor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: false,
+      enableLiveAutocompletion: true
+    })
+    this.responseEditor.completers = [this.state.wordCompleter];
 
     this.requestEditor = ace.edit(this.requestEditDiv);
     this.requestEditor.setTheme("ace/theme/github");
@@ -182,16 +223,8 @@ export default class extends React.Component{
 
     // Store the changes in state
     this.setState({data: data});
+    this.props.updateHandler(this.state.activeTab, this.state.data[this.state.activeTab] );
 
-    //TODO: we should just push the event up and let the parent deal with the timer
-    // Set a timer - we won't send these changes to the backend  unless a duration has passed without any more changes
-    const intervalTime = 3000;
-    if(this.timeoutID) {
-      // Cancel the last timeout
-      window.clearTimeout(this.timeoutID);    }
-    this.timeoutID = window.setTimeout(() => {
-      this.props.updateHandler(this.state.activeTab, this.state.data[this.state.activeTab] );
-    }, intervalTime)
   }
 
   // Called when the enbaled checkbox is changed

@@ -79,7 +79,7 @@ export default class extends React.Component{
       }).then( (result) => {
         this.props.projectCreated(result.id)
       }).catch( (error) => {
-        //console.log('Error occurred while creating project:', error);
+        console.log('Error occurred while creating project:', error);
         this.showAlert(error);
       })
     }

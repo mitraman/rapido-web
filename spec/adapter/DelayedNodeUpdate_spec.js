@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 let adapter;
 
-describe('Backend client', function() {
+describe('DelayedNodeUpdate', function() {
 
   beforeAll(function() {
     this.projectId = 10;
@@ -27,6 +27,101 @@ describe('Backend client', function() {
 
   afterEach(function(){
     jasmine.clock().uninstall();
+  })
+
+  it('function mergeObjects should merge the properties of two objects', function() {
+    let originalObject = {
+      name: 'old_name',
+      fullpath: 'old_fullpath',
+      enabled: true,
+      data: {
+        get: {
+          enabled: true,
+          request: {
+            arrayTest: [
+              'old_val1',
+              {
+                name: 'old_objname',
+              }
+            ],
+            body: 'old_body',
+            remain: 'old_remain'
+          },
+          response: {
+
+          }
+        },
+        put: {
+          enabled: false,
+          response:{
+            status: 200
+          }
+        }
+      }
+    }
+
+    let newObject = {
+      fullpath: 'new_fullpath',
+      newfield: 'new',
+      new_enabled: true,
+      data: {
+        get: {
+          enabled: false,
+          request: {
+            arrayTest: [
+              'replace_all'
+            ],
+            body: 'new_body'
+          },
+          response: {
+            status: 200
+          }
+        },
+        post: {
+          request: {
+            body: 'new_body'
+          }
+        }
+      },
+      newObjectField: {
+        field: 'newField'
+      }
+    }
+
+    let mergedObject = this.DelayedNodeUpdate.mergeObjects(originalObject, newObject);
+    expect(mergedObject.name).toBe('old_name');
+    expect(mergedObject.fullpath).toBe('new_fullpath');
+    expect(mergedObject.enabled).toBe(true);
+    expect(mergedObject.new_enabled).toBe(true);
+    expect(mergedObject.data).toEqual({
+      get: {
+        enabled: false,
+        request: {
+          arrayTest: [
+            'replace_all'
+          ],
+          body: 'new_body',
+          remain: 'old_remain'
+        },
+        response: {
+          status: 200
+        }
+      },
+      post: {
+        request: {
+          body: 'new_body'
+        }
+      },
+      put: {
+        enabled: false,
+        response:{
+          status: 200
+        }
+      }
+    });
+    expect(mergedObject.newObjectField).toEqual({
+      field: 'newField'
+    });
   })
 
   it('should not fire the backend call until the timer expires', function(done) {
@@ -178,6 +273,7 @@ describe('Backend client', function() {
     spyOn(Backend, 'updateNode').and.callFake(
       (token, projectId, sketchId, nodeId, updateObject) => {
         let data = updateObject.data;
+        console.log(data);
         expect(data.get).toBeDefined();
         expect(data.put).toBeDefined();
         expect(data.post).toBeDefined();

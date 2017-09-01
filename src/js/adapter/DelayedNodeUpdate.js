@@ -58,114 +58,70 @@ export default class DelayedNodeUpdate {
     });
   }
 
+  // Merges objects, favouring the new object's properties
+  // NOTE: arrays are replaced and merge assumes all fields with the same name have the same type
+  mergeObjects(originalObject, newObject) {
+    let mergedObject = {};
+
+    // Recursively copy new keys over
+    Object.keys(newObject).forEach(key => {
+      if( !originalObject.hasOwnProperty(key) ) {
+        mergedObject[key] = newObject[key];
+      }else if( typeof originalObject[key] === 'object' ){
+        if( Array.isArray(originalObject[key])) {
+          mergedObject[key] = newObject[key];
+        }else {
+          let childObject = this.mergeObjects(originalObject[key], newObject[key]);
+          mergedObject[key] = childObject;
+        }
+      }else {
+        mergedObject[key] = newObject[key];
+      }
+    });
+
+    // Shallow copy any keys that only exist in the original object
+    Object.keys(originalObject).forEach(key => {
+      if(!mergedObject.hasOwnProperty(key)) {
+        mergedObject[key] = originalObject[key];
+      }
+    })
+
+    return mergedObject
+
+  }
+
   write(token, projectId, sketchId, nodeId, updateObject, intervalTime) {
     //console.log('write:', updateObject);
 
-    return new Promise( (resolve,reject) => {
+    // check if a timeout is already scheduled
+    if(this.timeoutID) {
+      // Cancel the last timeout
+      window.clearTimeout(this.timeoutID);
 
-      // check if a timeout is already scheduled
-      if(this.timeoutID) {
-        // Cancel the last timeout
-        window.clearTimeout(this.timeoutID);
+      // If the new update is for the same node as the scheduled one, merge the updates
+      if( this.scheduledUpdate.projectId === projectId &&
+        this.scheduledUpdate.sketchId === sketchId &&
+        this.scheduledUpdate.nodeId === nodeId) {
 
-        // If the new update is for the same node as the scheduled one, merge the updates
-        if( this.scheduledUpdate.projectId === projectId &&
-          this.scheduledUpdate.sketchId === sketchId &&
-          this.scheduledUpdate.nodeId === nodeId) {
-
-          let mergedUpdate = {};
-
-          if( !updateObject.name) {
-            if( this.scheduledUpdate.updateObject.name) {
-              mergedUpdate.name = this.scheduledUpdate.updateObject.name;
-            }
-          }else {
-            mergedUpdate.name = updateObject.name;
-          }
-
-          if( !updateObject.fullpath ) {
-            if( this.scheduledUpdate.updateObject.fullpath ) {
-              mergedUpdate.fullpath = this.scheduledUpdate.updateObject.fullpath;
-            }
-          }else {
-            mergedUpdate.fullpath = updateObject.fullpath;
-          }
-
-          if( !updateObject.data &&  this.scheduledUpdate.updateObject.data ) {
-              mergedUpdate.data = this.scheduledUpdate.updateObject.data;
-          }else if( updateObject.data && !this.scheduledUpdate.updateObject.data ) {
-              mergedUpdate.data = updateObject.data;
-          }else if(updateObject.data) {
-            // Merge each object key
-            let mergedData = this.scheduledUpdate.updateObject.data;
-
-            Object.keys(updateObject.data).forEach( key => {
-              if( mergedData[key] ) {
-                if( updateObject.data[key].hasOwnProperty('enabled') ) {
-                  mergedData[key].enabled = updateObject.data[key].enabled;
-                }
-
-                if( updateObject.data[key].request) {
-
-                  if( !mergedData[key].request) {
-                    mergedData[key].request = {};
-                  }
-
-                  if( updateObject.data[key].request.contentType ) {
-                    mergedData[key].request.contentType =  updateObject.data[key].request.contentType
-                  }
-                  if( updateObject.data[key].request.queryParams ) {
-                    mergedData[key].request.queryParams =  updateObject.data[key].request.queryParams
-                  }
-                  if( updateObject.data[key].request.body ) {
-                    mergedData[key].request.body =  updateObject.data[key].request.body
-                  }
-                }
-
-                if( updateObject.data[key].response) {
-
-                  if( !mergedData[key].response) {
-                    mergedData[key].response = {};
-                  }
-
-                  if( updateObject.data[key].response.status ) {
-                    mergedData[key].response.status =  updateObject.data[key].response.status
-                  }
-                  if( updateObject.data[key].response.contentType ) {
-                    mergedData[key].response.contentType =  updateObject.data[key].response.contentType
-                  }
-                  if( updateObject.data[key].response.body ) {
-                    mergedData[key].response.body =  updateObject.data[key].response.body
-                  }
-
-                }
-              }else {
-                mergedData[key] = updateObject.data[key];
-              }
-            })
-
-            mergedUpdate.data = mergedData;
-
-          }
-
-          return this.scheduleUpdate(token, projectId, sketchId, nodeId, mergedUpdate, intervalTime)
-
-        }else {
-          // This is an update for a new node, so fire off the old one immediately
-          Backend.updateNode(this.scheduledUpdate.token,
-            this.scheduledUpdate.projectId,
-            this.scheduledUpdate.sketchId,
-            this.scheduledUpdate.nodeId,
-            this.scheduledUpdate.updateObject);
-
-          return this.scheduleUpdate(token, projectId, sketchId, nodeId, updateObject, intervalTime)
-        }
+        let mergedUpdate = this.mergeObjects(this.scheduledUpdate.updateObject, updateObject);
+        return this.scheduleUpdate(token, projectId, sketchId, nodeId, mergedUpdate, intervalTime)
 
       }else {
-        // Case where there is no update scheduled
-        return this.scheduleUpdate(token, projectId, sketchId, nodeId, updateObject, intervalTime);
+        // This is an update for a new node, so fire off the old one immediately
+        Backend.updateNode(this.scheduledUpdate.token,
+          this.scheduledUpdate.projectId,
+          this.scheduledUpdate.sketchId,
+          this.scheduledUpdate.nodeId,
+          this.scheduledUpdate.updateObject);
+
+        return this.scheduleUpdate(token, projectId, sketchId, nodeId, updateObject, intervalTime)
       }
-    });
+
+    }else {
+      // Case where there is no update scheduled
+      return this.scheduleUpdate(token, projectId, sketchId, nodeId, updateObject, intervalTime);
+    }
   }
+
 
 }

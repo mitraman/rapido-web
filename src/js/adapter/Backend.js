@@ -109,7 +109,7 @@ export default class {
     }
     return this._authenticatedCall(token, "POST", "/api/projects", body, function(responseBody) {
       return {
-        id: responseBody.id
+        id: responseBody.project.id
       };
     })
   }
@@ -129,7 +129,6 @@ export default class {
     let sketchUrl = '/api/sketch/' + sketchId;
 
     return this._authenticatedCall(token, "GET", sketchUrl, null, function(responseBody) {
-      console.log('responseBody:', responseBody);
       return {
         sketch: responseBody.sketch
       };
@@ -146,7 +145,7 @@ export default class {
     return this._authenticatedCall(token, "POST", url, null, function(responseBody) {
       return {
         node: responseBody.node,
-        tree: responseBody.tree
+        rootNode: responseBody.rootNode
       }
     });
   }
@@ -165,7 +164,7 @@ export default class {
     return this._authenticatedCall(token, "PATCH", url, updateObject, function(responseBody) {
       return {
         node: responseBody.node,
-        tree: responseBody.tree
+        rootNode: responseBody.rootNode
       }
     });
   }
@@ -176,7 +175,7 @@ export default class {
     return this._authenticatedCall(token, "DELETE", url, null, function(responseBody) {
       return {
         node: responseBody.node,
-        tree: responseBody.tree
+        rootNode: responseBody.rootNode
       }
     });
   }
@@ -184,7 +183,7 @@ export default class {
   static export(token, projectId, sketchIndex, format) {
     let url = '/api/projects/' + projectId + '/sketches/' + sketchIndex + '/export?format='+format;
     return this._authenticatedCall(token, "GET", url, null, function(responseBody) {
-      console.log('responseBody:', responseBody);
+      //console.log('responseBody:', responseBody);
       return responseBody;
     }, false);
   }

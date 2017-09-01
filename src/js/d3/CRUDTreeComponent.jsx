@@ -15,16 +15,30 @@ export default class extends React.Component{
     }
   }
 
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   return true;
+  //   //console.log('shouldComponentUpdate - nextProps:', nextProps);
+  //   //console.log('shouldComponentUpdate - nextState:', nextState);
+  //   if( nextProps._buildingTree === true ){
+  //     console.log('not updating - waiting for tree to be built');
+  //     return false;
+  //   } else {
+  //     console.log('safe to udpate');
+  //     return true;
+  //   }
+  //   return !nextProps._buildingTree;
+  // }
+
   componentDidMount () {
     //console.log('componentDidMount');
     this.initialize(this.svgElement);
-    this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
+    this.update(this.svgElement, this.props.rootNode, this.props.handler, this.props.selectedNode);
   }
 
   componentDidUpdate () {
-    // console.log('componentDidUpdate');
-    // console.log(this.props.rootNodes);
-    this.update(this.svgElement, this.props.rootNodes, this.props.handler, this.props.selectedNode);
+     //console.log('componentDidUpdate');
+     //console.log(this.props.rootNode);
+    this.update(this.svgElement, this.props.rootNode, this.props.handler, this.props.selectedNode);
   }
 
   componentWillUnmount () {
@@ -58,15 +72,14 @@ export default class extends React.Component{
     };
   }
 
-  update (svgElement, rootNodes, handler, selectedNode) {
+  update (svgElement, rootNode, handler, selectedNode) {
 
-    console.log('update()');
+    //console.log('update()');
 
     // Cleanup any existing graphs
     let svg = d3.select(svgElement);
     const g = this.state.g;
 
-    // NOTE: Tempoararilyremoved
     g.selectAll("*").remove();
 
     let svgWidth = ($("svg").width());
@@ -88,19 +101,10 @@ export default class extends React.Component{
       });
 
       //console.log('TODO: deselect nodes if svg is clicked');
-      //console.log('TODO: stop propogating events when node is clicked so that svg.onClick does not get called');
     })
 
-    // Create a default root node for the nodes
-    let treeRoot = {
-      name: "ROOT",
-      isRoot: true,
-      children: rootNodes
-    };
-
-    const root = d3.hierarchy(treeRoot);
+    const root = d3.hierarchy(rootNode);
     var nodes = this.state.tree(root);
-
 
     // draw link paths between the nodes in the tree
     var link = g.selectAll(".tree-link")
@@ -114,34 +118,34 @@ export default class extends React.Component{
 
 
     // draw the tree nodes
+    //console.log('drawing nodes');
     let drawNodesResult = CRUDTree.drawNodes(svg, g, nodes, handler, selectedNode);
+    //console.log('nodes drawn');
     let node = drawNodesResult.node
     node.exit().remove();
 
-    if( selectedNode === '/') {
-      // Zoom out and center the graph
-      let offsetX = 400;
-      let offsetY = 200;
+    //console.log('translations:', drawNodesResult.translations);
 
-      let scale = 0.5;
-      let translate = [offsetX, offsetY];
-      svg.transition().duration(75)
-      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
+    // Move the position of the tree to the selected node
+    //console.log(drawNodesResult);
+    //console.log(selectedNode);
+    let offsetX = 0;
+    let offsetY = 0;
+    if(selectedNode) {
+      //console.log('translations: ', drawNodesResult.translations[selectedNode.id]);
+      offsetX = (0 - drawNodesResult.translations[selectedNode.id].y);
+      offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
     }
-    else {
-      // Move the position of the tree to the selected node
-      let offsetX = (0 - drawNodesResult.translations[selectedNode.id].y);
-      let offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
-      const xPadding = 20;
-      const yPadding = 20;
-      //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
-      //zoom.translate([offsetX,offsetY]);
-      let scale = 1;
-      let translate = [offsetX + xPadding, offsetY + yPadding];
-      svg.transition().duration(200)
-      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
-    }
-
+    //console.log('after translations');
+    const xPadding = 20;
+    const yPadding = 20;
+    //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
+    //zoom.translate([offsetX,offsetY]);
+    let scale = 1;
+    let translate = [offsetX + xPadding, offsetY + yPadding];
+    svg.transition().duration(200)
+    .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
+    //console.log('finished update');
 
   }
 

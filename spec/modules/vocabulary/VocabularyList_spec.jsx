@@ -6,12 +6,17 @@ import { shallow, mount } from 'enzyme';
 
 describe('Vocabulary Component', function() {
 
+/*
   const vocabList = [
     {word: 'word 1', sketches: [12,13]},
     {word: 'word 2', sketches: []},
     {word: 'word 3', sketches: [12]},
     {word: 'word 4', sketches: []}
   ];
+  */
+  const vocabList = [
+    'word 1', 'word 2', 'word 3', 'word 4'
+  ]
 
 
   describe('Layout', function() {
@@ -71,7 +76,7 @@ describe('Vocabulary Component', function() {
       expect(words.length).toBe(vocabList.length);
 
       for(let i = 0; i < words.length; i++ ) {
-        expect((words.get(i).textContent)).toBe(vocabList[i].word);
+        expect((words.get(i).textContent)).toBe(vocabList[i]);
       }
     })
 

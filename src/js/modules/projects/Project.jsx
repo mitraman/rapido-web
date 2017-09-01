@@ -15,12 +15,10 @@ export default class extends React.Component{
       sketches: [],
       projectNotFound: false
     }
-    console.log('this.loadProject');
     this.loadProject(this.props.userObject.token, this.props.projectId);
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('project:componentWillReceiveProps');
     if(nextProps.projectId != this.props.projectId) {
       this.loadProject(this.props.userObject.token, this.props.projectId);
     }

@@ -12,15 +12,31 @@ export default class extends React.Component{
   }
 
   componentWillReceiveProps(nextProps){
+    //console.log('componentWillReceiveProps:', nextProps);
     if(nextProps.node.id  != this.props.node.id) {
       this.setState({url: nextProps.node.name});
     }
   }
 
+
+  componentDidUpdate(prevProps, prevState) {
+    // console.log('componentDidUpdate');
+    if( prevProps.node.id != this.props.node.id ) {
+        // console.log('setting focus');
+        // this.urlField.focus();
+    }
+
+    //this.urlField.focus();
+  }
+
   componentDidMount() {
+    console.log('NodeEditor componentDidMount');
+    //this.urlField.focus();
   }
 
   onChange(e) {
+    //TODO: Validate the change and don't allow illegal characters
+
     this.setState({url: e.target.value});
     if(e.target.name === 'nodeUrl') {
       // Notify the parent that the uri has changed
@@ -38,10 +54,12 @@ export default class extends React.Component{
   /* Render Method */
   render() {
 
-    let bodyEditor = <div/>
-    if( this.props.node != '/') {
-      bodyEditor = <BodyEditor node={this.props.node} updateHandler={(key,fields)=>this.nodeDataUpdated(key,fields)}/>
-    }
+    let bodyEditor =
+    <BodyEditor
+      vocabulary={this.props.vocabulary}
+      node={this.props.node}
+      updateHandler={(key,fields)=>this.nodeDataUpdated(key,fields)}/>
+
     return(
 
       <div>
@@ -55,6 +73,7 @@ export default class extends React.Component{
               id="formInputURI"
               placeholder="enter path segment here"
               value={this.state.url}
+              ref={(input) => { this.urlField = input;}}
               onChange={(e) => this.onChange(e)}/>
           </div>
         </form>

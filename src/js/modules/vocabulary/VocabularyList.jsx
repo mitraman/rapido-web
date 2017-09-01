@@ -10,6 +10,8 @@ export default class extends React.Component{
   /* Render Method */
   render() {
 
+    //console.log('VoabList:', this.props.vocabulary);
+
     let words = [];
     let columns = []
     let numberOfColumns = (this.props.numberOfColumns) ? this.props.numberOfColumns: 1;
@@ -17,7 +19,7 @@ export default class extends React.Component{
 
     if( numberOfColumns === 1) {
       this.props.vocabulary.forEach( (word, index) => {
-        words.push(<div key={index} className="vocabularyWord">{word.word}</div>)
+        words.push(<div key={index} className="vocabularyWord">{word}</div>)
       });
 
       columns.push(<div key="1" className="col-md-12 vocabularyListColumn">{words}</div>);
@@ -39,8 +41,8 @@ export default class extends React.Component{
 
       let columnIndex = 0;
       for(let i = 0; i < this.props.vocabulary.length; i++ ) {
-        let word = this.props.vocabulary[i].word;
-        wordColumns[columnIndex].push(<div key={"word"+i} className="vocabularyWord">{word.word}</div>);
+        let word = this.props.vocabulary[i];
+        wordColumns[columnIndex].push(<div key={"word"+i} className="vocabularyWord">{word}</div>);
         if( columnIndex+1 < numberOfColumns) {
           columnIndex++;
         }else {

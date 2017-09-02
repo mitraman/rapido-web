@@ -63,16 +63,22 @@ export default class extends React.Component{
 
     return(
       <div id="landing">
-        {githubBadge}
         <Header/>
+        <div className="container-fluid">
         <div className="row">
           <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
-          <div className="col-md-4">
-            <h3>Sketch your way to a great API.</h3>
+          <div className="col-md-8">
+            <div className="banner"><h2>Discover your best API design faster.</h2></div>
+            <div className="copy">
+              <p>Rapido is an <a href="www.apiacademy.co">API Academy tool</a> that lets your rapidly <i>sketch</i> an API design.</p>
           </div>
-          <div className="col-md-3 registration-section">
-              <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={registered} />
           </div>
+          <div className="col-md-4 registration-section">
+            <RegistrationForm alertBox={this.state.alertBox} registrationSuceeded={registered} />
+          </div>
+        </div>
+        <div className="row">
+        </div>
         </div>
       </div>
     )

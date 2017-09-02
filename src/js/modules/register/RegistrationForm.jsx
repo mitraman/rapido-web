@@ -167,10 +167,10 @@ export default class extends React.Component{
   render() {
     let creationLabel;
     if (!this.props.fromDashboard) {
-      creationLabel = <h3>Create an account</h3>
+      creationLabel = <h3>Create an account and start sketching</h3>
     }
     return(
-      <div className="col-md-12">
+      <div>
         <form id="registration" className="col-md-12 create-account-form" >
           {creationLabel}
           <div id="fullName" className={this.state.inputClassList.fullName}>

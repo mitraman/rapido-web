@@ -214,8 +214,8 @@ describe('RegistrationForm Component', function() {
   it('should register a user on successful entry of the form', function(done) {
 
     spyOn(RegistrationForm.prototype, "showAlert").and.callFake(function(message) {
-      //console.log(message);
-      fail('resitration failed with errror');
+      console.log('error message:', message);
+      fail('registration failed with errror');
     });
 
     const userId = 14141;
@@ -238,11 +238,14 @@ describe('RegistrationForm Component', function() {
 
       xhr.respond(200, {"Content-Type": "application/json"},
         JSON.stringify({
-           id: userId,
-           fullName: xhr.requestBody.fullname,
-           nickName: xhr.requestBody.nickname,
-           email: xhr.requestBody.email
+          user: {
+             id: 14141,
+             fullName: xhr.requestBody.fullname,
+             nickName: xhr.requestBody.nickname,
+             email: xhr.requestBody.email
+          }
         }));
+
    });
 
 

@@ -110,6 +110,15 @@ export default class {
     })
   }
 
+  static sendCode(email) {
+    const body = {
+      email: email
+    }
+    return this._call("POST", "/api/resendEmail", body, function(responseBody) {
+      return {};
+    });
+  }
+
   static getProjects(token) {
 
     return this._authenticatedCall(token, "GET", "/api/projects", null, function(responseBody) {

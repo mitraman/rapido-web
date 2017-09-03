@@ -5,6 +5,7 @@ module.exports = {
   duplicateUser: 'DUPLICATE_USER',
   verificationRequired: 'VERIFICATION_REQUIRED',
   invalidVerificationToken: 'INVALID_VERIFICATION_TOKEN',
+  alreadyVerified: 'ALREADY_VERIFIED',
   unsupportedContentType: 'UNSUPPORTED_CONTENTTYPE',
   unsupportedAcceptType: 'UNSUPPORTED_ACCEPTTYPE',
   POSTwithNoBody: 'POST_WITH_NO_BODY',

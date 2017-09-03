@@ -151,13 +151,16 @@ export default class extends React.Component{
         });
       })
       .catch((error)=> {
+
         if( error.code === RapidoErrorCodes.duplicateUser) {
           // If the user account already exists, re-route user to a login page with an error message
           //TODO: Route to login page with error
           this.showAlert(this.state.email + ' is already registered');
           //console.log('re-routing to the login page with an error message')
-        }else {
+        }else if(error.detail){
           this.showAlert(error.detail);
+        }else {
+          this.showAlert(error);
         }
 
       })

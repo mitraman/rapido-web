@@ -143,10 +143,12 @@ describe('Backend client', function() {
 
        xhr.respond(200, {"Content-Type": "application/json"},
          JSON.stringify({
+           user: {
             id: (Math.random() * (32767 - 1)) + 1,
             fullName: xhr.requestBody.fullname,
             nickName: xhr.requestBody.nickname,
             email: xhr.requestBody.email
+          }
          }));
     });
 

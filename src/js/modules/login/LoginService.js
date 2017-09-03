@@ -3,6 +3,19 @@ import Promise from 'bluebird';
 
 export default class {
 
+    static setVerified(verifiedStatus) {
+      if(localStorage.getItem('userInfo')) {
+        let userObject = JSON.parse(localStorage.getItem('userInfo'));
+        userObject.isVerified = verifiedStatus;
+        localStorage.setItem('userInfo', JSON.stringify(userObject));
+      }else if( sessionStorage.getItem('userInfo')) {
+        let userObject = JSON.parse(sessionStorage.getItem('userInfo'));
+        userObject.isVerified = verifiedStatus;
+        sessionStorage.setItem('userInfo', JSON.stringify(userObject));
+
+      }
+    }
+
     static storeUserInfo(userId, email, fullName, token, nickName, isVerified, rememberMe) {
       let userInfo = JSON.stringify({
         userId: userId,

@@ -3,6 +3,7 @@ import AlertContainer from 'react-alert';
 import AuthenticatedHeader from './header/AuthenticatedHeader';
 import ProjectSelection from './projects/ProjectSelection';
 import Project from './projects/Project';
+import VerifyComponent from './register/VerifyComponent';
 import Sketch from './Sketch';
 import { Route, Redirect, Switch } from 'react-router-dom'
 
@@ -52,6 +53,7 @@ export default class extends React.Component{
             <div className="row">
               <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
               <Switch>
+                <Route path="/verify" component={VerifyComponent}/>
                 <Route path="/project/:projectId" render={(routeProps) => {
                     return <Project projectId={routeProps.match.params.projectId}
                       userObject={this.props.userObject}

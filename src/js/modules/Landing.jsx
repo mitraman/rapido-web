@@ -31,11 +31,9 @@ export default class extends React.Component{
   render() {
     let registered =  (registeredUser) => {
       // The user has been succesfully registered, try to automatically login
-      //let loginService = new LoginService();
       LoginService.login(registeredUser.email, registeredUser.password)
       .then( () => {
         // Redirect to the projects page
-        //this.props.loggedIn();
         this.setState({loggedIn: true});
       } )
       .catch( (error) => {

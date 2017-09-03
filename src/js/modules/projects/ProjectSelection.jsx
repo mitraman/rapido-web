@@ -54,6 +54,7 @@ export default class extends React.Component{
     }
 
     return(
+      <div className="col-md-12">
       <div id="projectSelector">
         <Modal id="projectModal" title="New Project" body={projectForm}/>
         <div className ="buttonbar">
@@ -70,6 +71,7 @@ export default class extends React.Component{
         <div className="row projectsview button-bar-buffer">
           {projectsView}
         </div>
+      </div>
       </div>
     )
   }

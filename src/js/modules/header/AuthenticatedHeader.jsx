@@ -25,23 +25,23 @@ export default class extends React.Component{
     }
   }
 
-  exportOAPI2() {
-    // Make the call to do an export
-    //console.log(this.props.project);
-    //console.log(this.props.sketchIndex);
-    let exportData =
-
-    Backend.export(this.props.userInfo.token, this.props.project.id, this.props.sketchIndex, 'oai2')
-    .then(exportData => {
-      //console.log(exportData);
-      let filename = this.props.project.name + '.yaml';
-      fileDownload(exportData, filename);
-    });
-
-  }
+  // exportOAPI2() {
+  //   // Make the call to do an export
+  //   //console.log(this.props.project);
+  //   //console.log(this.props.sketchIndex);
+  //   let exportData =
+  //
+  //   Backend.export(this.props.userInfo.token, this.props.project.id, this.props.sketchIndex, 'oai2')
+  //   .then(exportData => {
+  //     //console.log(exportData);
+  //     let filename = this.props.project.name + '.yaml';
+  //     fileDownload(exportData, filename);
+  //   });
+  //
+  // }
 
   export() {
-    console.log('export clicked');
+    //console.log('export clicked');
     this.setState({routeExport: true});
   }
 
@@ -74,6 +74,13 @@ export default class extends React.Component{
       return <Redirect push to={url}/>;
     }
 
+    let alertBar = '';
+    if( !this.props.userInfo.isVerified) {
+      alertBar = <div className="row">
+        <div className="col-md-12 alert-warning alert-bar" role="alert"><p><strong>You won't be able to create a new project until you follow the verification link we sent you at {this.props.userInfo.email}</strong></p>
+        <a href="#" className="alert-link">If you are having trouble, we can send you another verification email.</a></div>
+      </div>
+    }
     return (
       <div className="container-fluid">
         <div className="navbar navbar-default navbar-static-top">
@@ -93,7 +100,8 @@ export default class extends React.Component{
             </ul>
             </li>
           </ul>
-          </div>
+        </div>
+        {alertBar}
       </div>
     )
   }

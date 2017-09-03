@@ -5,6 +5,7 @@ import Modal from '../Modal.jsx'
 import '../../../css/header.scss';
 import APIAcademyLogo from '../../../img/api-academy-logo.gif';
 import 'bootstrap/dist/js/bootstrap';
+import RapidoErrorCodes from '../error/codes.js';
 
 export default class extends React.Component{
 
@@ -30,6 +31,20 @@ export default class extends React.Component{
       );
     }
 
+
+    let flashAlert = '';
+    // if( this.props.location) {
+    //   console.log('location.state:', this.props.location.state);
+    //   console.log('code:', this.props.location.state.code);
+    //   if( this.props.location.state.code === RapidoErrorCodes.invalidVerificationToken) {
+    //     flashAlert = (
+    //     <div className="row">
+    //       <div className="col-md-12 alert-error alert-bar" role="alert">Sorry, the verification code you used didn't seem to work.
+    //       <a href="#" className="alert-link">Click here if you'd like us to send you another verification email with a new code.</a></div>
+    //     </div>);
+    //   }
+    // }
+
     return (
       <div id="guestHeader" >
         <Modal id="loginModal" title="Sign in" body={loginBody}/>
@@ -48,6 +63,8 @@ export default class extends React.Component{
             </div>
           </div>
         </div>
+
+        {flashAlert}
       </div>
     )
   }

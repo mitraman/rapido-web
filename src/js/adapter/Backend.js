@@ -70,7 +70,7 @@ export default class {
 
     return this._call("POST", "/api/register", body, function(responseBody){
       return {
-        id: responseBody.id
+        id: responseBody.user.id
       };
     })
   }
@@ -87,7 +87,25 @@ export default class {
         userId: responseBody.userId,
         fullName: responseBody.fullName,
         email: responseBody.email,
-        nickName: responseBody.nickName
+        nickName: responseBody.nickName,
+        isVerified: responseBody.isVerified
+      };
+    })
+  }
+
+  static verify(code) {
+    const body = {
+        code: code
+    }
+
+    return this._call("POST", "/api/verify", body, function(responseBody) {
+      return {
+        token: responseBody.token,
+        userId: responseBody.userId,
+        fullName: responseBody.fullName,
+        email: responseBody.email,
+        nickName: responseBody.nickName,
+        isVerified: responseBody.isVerified
       };
     })
   }

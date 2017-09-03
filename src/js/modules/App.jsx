@@ -3,6 +3,7 @@ import { Route, Redirect, Switch } from 'react-router-dom'
 import Header from './header/Header';
 import AuthenticatedHeader from './header/AuthenticatedHeader';
 import LoginComponent from './login/LoginComponent.jsx';
+import VerifyComponent from './register/VerifyComponent.jsx';
 import Landing from './Landing.jsx';
 import AuthenticatedApp from './AuthenticatedApp';
 
@@ -67,6 +68,7 @@ export default class extends React.Component {
     }else  {
       return (
         <Switch>
+          <Route path="/verify" component={VerifyComponent}/>
           <Route path="/login" component={LoginComponent}/>
           <Route component={Landing}/>
         </Switch>

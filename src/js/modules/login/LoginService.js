@@ -3,6 +3,25 @@ import Promise from 'bluebird';
 
 export default class {
 
+    static storeUserInfo(userId, email, fullName, token, nickName, isVerified, rememberMe) {
+      let userInfo = JSON.stringify({
+        userId: userId,
+        email: email,
+        fullName: fullName,
+        token: token,
+        nickName: nickName,
+        isVerified: isVerified
+      });
+
+      if( rememberMe ) {
+        localStorage.setItem('userInfo', userInfo );
+      }else {
+        sessionStorage.setItem('userInfo', userInfo );
+      }
+
+      return userInfo;
+    }
+
     static login(email, password, rememberMe) {
       return new Promise( (resolve, reject)=> {
         Backend.login({
@@ -16,7 +35,8 @@ export default class {
             email: email,
             fullName: result.fullName,
             token: result.token,
-            nickName: result.nickName
+            nickName: result.nickName,
+            isVerified: result.isVerified
           });
 
           if( rememberMe ) {

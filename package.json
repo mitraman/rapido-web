@@ -7,8 +7,8 @@
     "dev": "webpack-dev-server --display-error-details --watch --watch-polling --progress --colors --host=0.0.0.0 --port 8090 --history-api-fallback"
   },
   "name": "rapido-web",
-  "description": "SPA front end for the Rapido API design app",
-  "version": "0.0.0",
+  "description": "react based front end for the Rapido API design app",
+  "version": "0.0.1",
   "private": true,
   "author": "Ronnie Mitra",
   "homepage": "",

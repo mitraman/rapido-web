@@ -7,6 +7,9 @@ const webpack = require('webpack');
 module.exports = function(config) {
   config.set({
 
+    // The Travis-CI karma test is failing, trying to run karma
+    target: 'node',
+
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
@@ -17,6 +20,7 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
+    // TODO: Remove phantomjs-polyfill-object-assign
     files: [
       './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
       './spec/**/*spec.js*'

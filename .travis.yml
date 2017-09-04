@@ -3,7 +3,7 @@ language: node_js
 node_js:
 - '6'
 addons:
-  chrome: stable
+  chrome: beta
 before_install:
 - export CHROME_BIN=chromium-browser
 - export DISPLAY=:99.0

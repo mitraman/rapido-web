@@ -29,11 +29,15 @@ export default class extends React.Component{
     // Render a projectRow for each row that we have
     let projectRows = [];
     rows.forEach( (row,index)=> {
-      projectRows.push(<ProjectRow key={index} projects={row} selectionHandler={this.props.selectionHandler} />);
+      projectRows.push(<ProjectRow
+        key={index}
+        projects={row}
+        selectionHandler={this.props.selectionHandler}
+        deletionHandler={this.props.deletionHandler}/>);
     });
 
     return (
-      <div id="projectGrid">
+      <div id="projectGrid" className="col-md-12">
         {projectRows}
       </div>
     )

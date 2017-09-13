@@ -14,7 +14,11 @@ export default class extends React.Component{
     let projectCells = [];
 
     this.props.projects.forEach((project)=> {
-      projectCells.push(<ProjectCell key={project.id} project={project} selectionHandler={this.props.selectionHandler}/>);
+      projectCells.push(<ProjectCell
+        key={project.id}
+        project={project}
+        selectionHandler={this.props.selectionHandler}
+        deletionHandler={this.props.deletionHandler}/>);
     })
 
     return (

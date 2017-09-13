@@ -30,7 +30,7 @@ export default class extends React.Component{
   }
 
   componentDidMount() {
-    console.log('NodeEditor componentDidMount');
+    //console.log('NodeEditor componentDidMount');
     //this.urlField.focus();
   }
 

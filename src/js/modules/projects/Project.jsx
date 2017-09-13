@@ -4,6 +4,8 @@ import Backend from '../../adapter/Backend.js';
 import Sketch from '../Sketch.jsx'
 import Export from '../export/Export.jsx';
 import ErrorCodes from '../error/codes.js';
+import AuthenticatedHeader from '../header/AuthenticatedHeader';
+
 import { Route, Redirect, Switch } from 'react-router-dom'
 
 import '../../../css/folding-cube.scss'
@@ -11,6 +13,7 @@ import '../../../css/folding-cube.scss'
 export default class extends React.Component{
 
   constructor(props) {
+    // console.log('Project: constructor');
     super(props);
     this.state = {
       sketches: [],
@@ -20,6 +23,7 @@ export default class extends React.Component{
   }
 
   componentWillReceiveProps(nextProps) {
+    // console.log('componentWillReceiveProps:', nextProps);
     if(nextProps.projectId != this.props.projectId) {
       this.loadProject(this.props.userObject.token, this.props.projectId);
     }
@@ -34,7 +38,7 @@ export default class extends React.Component{
       }
       this.setState({sketches: result.project.sketches});
       this.props.setProjectHandler(result.project);
-      this.props.setSketchIndexHandler(1);
+      //this.props.setSketchIndexHandler(1);
     }).catch( e => {
       console.log('a problem occurred while loading the project:');
       console.log(e);
@@ -59,22 +63,32 @@ export default class extends React.Component{
       )
     }
     if( this.state.sketches.length > 0 ) {
-      return(
-        <Switch>
-          <Route path="/project/:projectId/sketch/:sketchIteration/export" render={(routeProps) => {
-            return <Export
-              sketches={this.state.sketches}
-              projectId={routeProps.match.params.projectId}
-              sketchIteration={routeProps.match.params.sketchIteration}
-              userObject={this.props.userObject}/> }} />
-          <Route path="/project/:projectId/sketch/:sketchIteration" render={(routeProps) => {
-            return <Sketch
-              sketches={this.state.sketches}
-              projectId={routeProps.match.params.projectId}
-              sketchIteration={routeProps.match.params.sketchIteration}
-              userObject={this.props.userObject}/> }} />
-              
-        </Switch>
+    return(
+      <div id="Project">
+        <AuthenticatedHeader
+          project={this.props.project}
+          userInfo={this.props.userObject}
+          sketchIndex={this.props.sketchIndex}/>
+          <div className="container-fluid">
+            <div className="row">
+              <Switch>
+                  <Route path="/project/:projectId/sketch/:sketchIteration/export" render={(routeProps) => {
+                    return <Export
+                      sketches={this.state.sketches}
+                      projectId={routeProps.match.params.projectId}
+                      sketchIteration={routeProps.match.params.sketchIteration}
+                      userObject={this.props.userObject}/> }} />
+                  <Route path="/project/:projectId/sketch/:sketchIteration" render={(routeProps) => {
+                    return <Sketch
+                      sketches={this.state.sketches}
+                      projectId={routeProps.match.params.projectId}
+                      sketchIteration={routeProps.match.params.sketchIteration}
+                      userObject={this.props.userObject}/> }} />
+              </Switch>
+            </div>
+          </div>
+        </div>
+
       )
     }else {
       let centreStyle = {textAlign: 'center'};

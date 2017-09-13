@@ -152,6 +152,16 @@ export default class {
     })
   }
 
+  static createSketch(token, projectId) {
+    let url = '/api/projects/' + projectId + '/sketches';
+
+    return this._authenticatedCall(token, "POST", url, null, function(responseBody) {
+      return {
+        sketch: responseBody.sketch
+      };
+    })
+  }
+
   static getSketch(token, sketchId) {
     let sketchUrl = '/api/sketch/' + sketchId;
 

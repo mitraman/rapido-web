@@ -1,5 +1,6 @@
 import React from 'react';
 import AuthenticatedHeader from '../../../src/js/modules/header/AuthenticatedHeader.jsx';
+import Backend from '../../../src/js/adapter/Backend.js';
 import ReactTestUtils from 'react-addons-test-utils';
 import { shallow } from 'enzyme';
 
@@ -51,6 +52,5 @@ describe('Header Component', function() {
     wrapper.instance().logout();
     // TODO: Make sure that the credentials are removed after a logout
   })
-
 
 });

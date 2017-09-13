@@ -5,6 +5,7 @@ import ProjectList from './ProjectList';
 import Backend from '../../adapter/Backend.js';
 import ProjectForm from './ProjectForm.jsx'
 import Modal from '../Modal.jsx'
+import AuthenticatedHeader from '../header/AuthenticatedHeader.jsx';
 import { Route, Redirect } from 'react-router-dom'
 
 export default class extends React.Component{
@@ -37,14 +38,26 @@ export default class extends React.Component{
     this.selectionHandler(projectId);
   }
 
+  deleteProject(projectId) {
+    // Delete a project from the list
+    console.log('deleting project ', projectId);
+  }
+
   /* Render Method */
   render() {
 
     let projectsView;
     if( this.state.view === 'grid' ) {
-      projectsView = <ProjectGrid projects={this.state.projects} selectionHandler={(e) => this.selectionHandler(e)}/>
+      projectsView = <ProjectGrid
+        projects={this.state.projects}
+        selectionHandler={(e) => this.selectionHandler(e)}
+        deletionHandler={(e) => this.deleteProject(e)}
+        />
     }else if( this.state.view === 'list' ) {
-      projectsView = <ProjectList projects={this.state.projects} selectionHandler={this.selectionHandler}/>
+      projectsView = <ProjectList
+        projects={this.state.projects}
+        selectionHandler={(e) => this.selectionHandler(e)}
+        deletionHandler={(e) => this.deleteProject(e)}/>
     }
 
     let projectForm = <ProjectForm projectCreated={id => {this.projectCreated(id)} } {...this.props}/>
@@ -54,25 +67,32 @@ export default class extends React.Component{
     }
 
     return(
-      <div className="col-md-12">
-      <div id="projectSelector">
-        <Modal id="projectModal" title="New Project" body={projectForm}/>
-        <div className ="buttonbar">
-          <button className="btn btn-default btn-lg" type="button" data-toggle="modal" data-target="#projectModal" >Create a New Project..</button>
-          <div className="btn-group pull-right">
-            <button className="btn btn-sm"
-              type="button"
-              onClick={ (e)=>{ this.setState({view: 'grid'}) }}><span className="glyphicon glyphicon-th" aria-hidden="true"></span></button>
-            <button className="btn btn-sm"
-              type="button"
-              onClick={ (e)=>{ this.setState({view: 'list'}) }}><span className="glyphicon glyphicon-th-list" aria-hidden="true"></span></button>
+      <div id="ProjectSelection">
+        <AuthenticatedHeader userInfo={this.props.userObject}/>
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col-md-12">
+                <div id="projectSelector">
+                  <Modal id="projectModal" title="New Project" body={projectForm}/>
+                  <div className ="buttonbar">
+                    <button className="btn btn-default btn-lg" type="button" data-toggle="modal" data-target="#projectModal" >Create a New Project..</button>
+                    <div className="btn-group pull-right">
+                      <button className="btn btn-sm"
+                        type="button"
+                        onClick={ (e)=>{ this.setState({view: 'grid'}) }}><span className="glyphicon glyphicon-th" aria-hidden="true"></span></button>
+                      <button className="btn btn-sm"
+                        type="button"
+                        onClick={ (e)=>{ this.setState({view: 'list'}) }}><span className="glyphicon glyphicon-th-list" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+                <div className="row projectsview button-bar-buffer">
+                  {projectsView}
+                </div>
+              </div>
           </div>
-      </div>
-        <div className="row projectsview button-bar-buffer">
-          {projectsView}
         </div>
       </div>
-      </div>
+    </div>
     )
   }
 }

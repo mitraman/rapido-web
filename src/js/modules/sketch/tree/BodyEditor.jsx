@@ -159,7 +159,6 @@ export default class extends React.Component{
 
 
     // Setup the editor
-    //ace.acequire("ace/ext/language_tools");
     this.responseEditor = ace.edit(this.responseEditDiv);
     this.responseEditor.setTheme("ace/theme/github");
     this.responseEditor.getSession().setMode("ace/mode/javascript");
@@ -206,7 +205,8 @@ export default class extends React.Component{
     //data[this.state.activeTab] = this.responseEditor.getValue();
     if( editorName === 'responseBody') {
       // If the response body was empty, automatically enable this method
-      if( data[this.state.activeTab].response.body.length === 0  ) {
+      if( data[this.state.activeTab].response.body.length === 0 ||
+      data[this.state.activeTab].response.body === '{\n}' ) {
         /*
         this.setState({isMethodEnabled: true});
         data[this.state.activeTab].enabled = true;
@@ -214,6 +214,43 @@ export default class extends React.Component{
         */
         this.handleEnabledChange();
       }
+
+      console.log('parsing JSON');
+      // If this is valid JSON, update the vocabList
+      try{
+        let bodyJson = JSON.parse(data[this.state.activeTab].response.body);
+
+        console.log('body is valid');
+        console.log(bodyJson);
+
+        console.log(this.props.vocabulary);
+
+        // Check if the keys exist in the vocabulary array
+        // console.log(this.props.vocabulary.indexOf('testing'));
+        // console.log(this.props.vocabulary.indexOf('not-in'));
+
+        // parse all of the object keys and add them to the vocab if they don't already exist
+        Object.keys(bodyJson).forEach(key => {
+          console.log('key: ', key);
+          if(this.props.vocabulary.indexOf(key) < 0 ) {
+            // Add it to the vocab
+            console.log('adding key ', key);
+          }
+        })
+
+
+
+        // Parse keys
+
+        // Check if there are any new keys
+
+        // If there are, add them
+
+      } catch (e) {
+        // Don't do anything if it's not JSON valid yet
+        //console.log(e);
+      }
+
       data[this.state.activeTab].response.body = this.responseEditor.getValue();
     }else if( editorName === 'requestBody' ) {
       data[this.state.activeTab].request.body = this.requestEditor.getValue();

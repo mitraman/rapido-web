@@ -32,36 +32,34 @@ export default class extends React.Component{
     this.treeParser = new TreeParser();
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   console.log('this.props:', this.props);
-  //   console.log('Sketch.componentWillReceiveProps - nextProps:', nextProps);
-  // }
-  //
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log('Sketch.shouldComponentUpdate - nextProps:', nextProps);
-  //   console.log('Sketch.shouldComponentUpdate - nextState:', nextState);
-  //   return true;
-  // }
 
   componentWillMount() {
+    //console.log('SKetch - componentWillMount');
     let sketch = this.props.sketches[this.props.sketchIteration-1];
     this.initializeTree(sketch);
 
 
     // Remove the detail pane because no node has been selected yet.
     this.setState({splitPaneSize: "100%"});
-
     document.addEventListener('keydown', (e) => this.handleKeyPress(e), false);
 
 
   }
 
-  componentWillReceiveProps() {
-    //console.log('componentWillReceiveProps');
+  componentWillReceiveProps(nextProps) {
+    // console.log('Sketch - componentWillReceiveProps nextProps:', nextProps);
+    // console.log('Sketch - componentWillReceiveProps oldProps:', this.props);
 
-    // Update the view based on the new props
-    let sketch = this.props.sketches[this.props.sketchIteration-1];
-    this.initializeTree(sketch);
+    // Update the view if the sketch iteration has changed
+    if( nextProps.sketchIteration != this.props.sketchIteration ||
+      nextProps.projectId != this.props.projectId) {
+      //console.log('re-rendering tree');
+      let sketch = nextProps.sketches[nextProps.sketchIteration-1];
+      //console.log('sketch:', sketch);
+      this.initializeTree(sketch);
+    }else {
+      //console.log('not re-rendering');
+    }
 
   }
 

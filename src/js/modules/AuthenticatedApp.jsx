@@ -11,20 +11,20 @@ import { Route, Redirect, Switch } from 'react-router-dom'
 export default class extends React.Component{
 
   constructor(props) {
+    //console.log('AuthenticatedApp:constructor');
     super(props);
     this.state = {
       project: {},
-      sketchId: 0,
       authenticationError: false
     }
   }
 
+  // componentWillUpdate() {
+  //   console.log('AuthenticatedApp:willUpdate');
+  // }
+
   setProject(project) {
     this.setState({project: project});
-  }
-
-  setSketchIndex(sketchId) {
-    this.setState({sketchId: sketchId});
   }
 
   authErrorHandler(error) {
@@ -35,42 +35,38 @@ export default class extends React.Component{
 
   /* Render Method */
   render() {
-
     if( this.state.authenticationError ) {
       return(
         <div>
-          <AuthenticatedHeader project={this.state.project} userInfo={this.props.userObject} sketchIndex={this.state.sketchId}/>
+          <AuthenticatedHeader userInfo={this.props.userObject}/>
           <div className="row">
             <div className="alert alert-danger">There is a problem with your user credentais.  Try signing out and loging in again.</div>
           </div>
         </div>
       );
-    }else {
-      return(
-        <div id="authenticated">
-          <AuthenticatedHeader project={this.state.project} userInfo={this.props.userObject} sketchIndex={this.state.sketchId}/>
-          <div className="container-fluid">
-            <div className="row">
-              <AlertContainer ref={(a) => this.msg = a} {...this.alertOptions} />
-              <Switch>
-                <Route path="/verify" component={VerifyComponent}/>
-                <Route path="/project/:projectId" render={(routeProps) => {
-                    return <Project projectId={routeProps.match.params.projectId}
-                      userObject={this.props.userObject}
-                      authErrorHandler={error => this.authErrorHandler(error)}
-                      setProjectHandler={project => {this.setProject(project)}}
-                      setSketchIndexHandler={sketchIndex => {this.setSketchIndex(sketchIndex)}}/>
-                  }}/>
-                <Route render={(routeProps) => {
-                    return <ProjectSelection
-                      match={routeProps.match}
-                      authErrorHandler={error => this.authErrorHandler(error)}
-                      userObject={this.props.userObject}/>}} />
-              </Switch>
-            </div>
-          </div>
-        </div>
-      );
     }
+
+    return(
+
+            <Switch>
+              <Route path="/verify" component={VerifyComponent}/>
+              <Route path="/project/:projectId/sketch/:sketchIndex" render={(routeProps) => {
+                  return <Project
+                    projectId={routeProps.match.params.projectId}
+                    sketchIndex={routeProps.match.params.sketchIndex}
+                    location={routeProps.location}
+                    project={this.state.project}
+                    userObject={this.props.userObject}
+                    authErrorHandler={error => this.authErrorHandler(error)}
+                    setProjectHandler={project => {this.setProject(project)}}/>
+                }}/>
+              <Route render={(routeProps) => {
+                  return <ProjectSelection
+                    match={routeProps.match}
+                    authErrorHandler={error => this.authErrorHandler(error)}
+                    userObject={this.props.userObject}/>}} />
+            </Switch>
+
+    );
   }
 }

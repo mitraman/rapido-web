@@ -30,14 +30,14 @@ export default class extends React.Component{
   // }
 
   componentDidMount () {
-    //console.log('componentDidMount');
+    // console.log('CRUDTreeComponent - componentDidMount');
     this.initialize(this.svgElement);
     this.update(this.svgElement, this.props.rootNode, this.props.handler, this.props.selectedNode);
   }
 
   componentDidUpdate () {
-     //console.log('componentDidUpdate');
-     //console.log(this.props.rootNode);
+    //  console.log('CRUDTreeComponent - componentDidUpdate');
+    //  console.log(this.props.rootNode);
     this.update(this.svgElement, this.props.rootNode, this.props.handler, this.props.selectedNode);
   }
 
@@ -51,6 +51,8 @@ export default class extends React.Component{
   }
 
   initialize (svg, data, options) {
+
+    // console.log('CRUDTreeComponent:initialize');
 
     // initialize method called once when component mounts
     const g = d3.select(svg)
@@ -70,11 +72,14 @@ export default class extends React.Component{
       g: g,
       tree: tree
     };
+
+    // console.log('CRUDTreeComponent:initialize complete.');
+
   }
 
   update (svgElement, rootNode, handler, selectedNode) {
 
-    //console.log('update()');
+    // console.log('CRUDTree:update()');
 
     // Cleanup any existing graphs
     let svg = d3.select(svgElement);
@@ -127,7 +132,7 @@ export default class extends React.Component{
     //console.log('translations:', drawNodesResult.translations);
 
     // Move the position of the tree to the selected node
-    //console.log(drawNodesResult);
+    // console.log('drawNodesResult:',drawNodesResult);
     //console.log(selectedNode);
     let offsetX = 0;
     let offsetY = 0;
@@ -136,7 +141,7 @@ export default class extends React.Component{
       offsetX = (0 - drawNodesResult.translations[selectedNode.id].y);
       offsetY = (0 - drawNodesResult.translations[selectedNode.id].x);
     }
-    //console.log('after translations');
+    // console.log('after translations');
     const xPadding = 20;
     const yPadding = 20;
     //g.attr("transform", "translate(" + (offsetX + xPadding) + "," + (offsetY + yPadding) + ")");
@@ -145,7 +150,7 @@ export default class extends React.Component{
     let translate = [offsetX + xPadding, offsetY + yPadding];
     svg.transition().duration(200)
     .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
-    //console.log('finished update');
+    // console.log('finished update');
 
   }
 

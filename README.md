@@ -1,4 +1,4 @@
-#rápido-web
+# rápido-web
 
 Rapido is an API design tool that facilitates the _sketching_ phase of design.  At a minimum, a sketch should be:
 
